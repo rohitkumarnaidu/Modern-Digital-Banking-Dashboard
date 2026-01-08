@@ -1,21 +1,20 @@
+import os
+import json
 import firebase_admin
 from firebase_admin import credentials, messaging
-import os
 
-# -------------------------------
-# Firebase Initialization (SAFE)
-# -------------------------------
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FIREBASE_KEY_PATH = os.path.join(BASE_DIR, "config", "firebase_key.json")
+def init_firebase():
+    if firebase_admin._apps:
+        return
 
-if not firebase_admin._apps:
-    cred = credentials.Certificate(FIREBASE_KEY_PATH)
+    firebase_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
+    if not firebase_json:
+        raise RuntimeError("FIREBASE_CREDENTIALS_JSON not set")
+
+    cred_dict = json.loads(firebase_json)
+    cred = credentials.Certificate(cred_dict)
     firebase_admin.initialize_app(cred)
 
-
-# -------------------------------
-# Push Notification Sender
-# -------------------------------
 def send_push_notification(token: str, title: str, body: str):
     message = messaging.Message(
         notification=messaging.Notification(
@@ -24,8 +23,4 @@ def send_push_notification(token: str, title: str, body: str):
         ),
         token=token,
     )
-
-    try:
-        messaging.send(message)
-    except Exception:
-        pass
+    messaging.send(message)
