@@ -88,7 +88,11 @@ app.include_router(admin_profile_router)
 def root():
     return {"message": "Banking API Running"}
 
-origins = ["http://localhost:5173", "http://localhost:3000"]
+origins = ["http://localhost:5173",
+          "http://localhost:3000",
+          "https://modern-digital-banking-dashboard-8q5y9g9iz.vercel.app",
+          "https://modern-digital-banking-dashboard-tawny.vercel.app",
+          ]
 
 app.add_middleware(
     CORSMiddleware,
