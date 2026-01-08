@@ -36,6 +36,8 @@ import {
   X
 } from "lucide-react";
 import logo from "@/assets/logo.png";
+import api from "@/services/api";
+
 
 const Dashboard = () => {
   const location = useLocation();
@@ -98,14 +100,10 @@ const Dashboard = () => {
   useEffect(() => {
   const fetchUnreadAlerts = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/alerts", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      });
-      const data = await res.json();
-      setUnreadCount(data.length);
+      const res = await api.get("/alerts");
+      setUnreadCount(res.data.length);
     } catch (err) {
+      console.error("Failed to fetch alerts:", err);
       setUnreadCount(0);
     }
   };
