@@ -49,8 +49,15 @@ from app.routers.admin_dashboard import router as admin_dashboard_router
 from app.routers.admin_analytics import router as admin_analytics_router
 from app.routers.admin_profile import router as admin_profile_router
 
+from app.firebase.firebase import init_firebase
+
 
 app = FastAPI(title="Modern Digital Banking Dashboard API")
+
+@app.on_event("startup")
+def startup_event():
+    init_firebase()
+
 
 # include auth router (this registers /auth/* endpoints)
 app.include_router(auth_router)
