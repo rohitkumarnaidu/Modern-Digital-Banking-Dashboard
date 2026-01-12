@@ -9,7 +9,7 @@ const PLANS = [
   { amount: 599, desc: "2GB/day • 84 days" },
 ];
 
-const MobileRechargeModal = ({ onClose }) => {
+const MobileRechargeModal = ({ onClose, selectedAccountId }) => {
   const [step, setStep] = useState(1);
   const [mobile, setMobile] = useState("");
   const [operator, setOperator] = useState("");
@@ -33,8 +33,10 @@ const MobileRechargeModal = ({ onClose }) => {
         to: mobile,
         amount: plan?.amount,
         mode: "UPI",
+        bill_type: "mobile_recharge",
         purpose: "Mobile Recharge",
-        operator,
+        provider: operator,
+        account_id: selectedAccountId,
         plan: plan?.desc,
       }}
     >
@@ -58,6 +60,9 @@ const MobileRechargeModal = ({ onClose }) => {
                 className="w-full bg-blue-600 text-white py-3 rounded-xl disabled:opacity-40"
               >
                 Continue
+              </button>
+              <button onClick={reset} className="text-sm text-gray-500">
+                Cancel
               </button>
             </div>
           )}

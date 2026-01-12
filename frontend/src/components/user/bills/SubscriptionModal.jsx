@@ -29,7 +29,7 @@ const SUBSCRIPTIONS = {
   ],
 };
 
-const SubscriptionModal = ({ onClose }) => {
+const SubscriptionModal = ({ onClose, selectedAccountId }) => {
   const [step, setStep] = useState(1);
   const [service, setService] = useState("");
   const [subscriberId, setSubscriberId] = useState("");
@@ -51,8 +51,10 @@ const SubscriptionModal = ({ onClose }) => {
         to: subscriberId,
         amount: plan?.amount,
         mode: "UPI",
+        bill_type: "subscription",
         purpose: "Subscription Payment",
         service,
+        account_id: selectedAccountId,
         plan: plan?.desc,
       }}
     >
@@ -61,16 +63,6 @@ const SubscriptionModal = ({ onClose }) => {
           {/* STEP 1 : SELECT SERVICE */}
           {step === 1 && (
             <div className="space-y-4">
-              {/* HEADER ROW */}
-              <div className="flex items-center justify-between">
-                <div />
-                <button
-                  onClick={onClose}
-                  className="text-sm text-blue-600"
-                >
-                  ← Back
-                </button>
-              </div>
 
               <div className="grid grid-cols-2 gap-3">
                 {Object.keys(SUBSCRIPTIONS).map((s) => (
@@ -84,8 +76,13 @@ const SubscriptionModal = ({ onClose }) => {
                   >
                     {s}
                   </button>
+
+                  
                 ))}
               </div>
+                  <button onClick={reset} className="text-sm text-gray-500">
+                    Cancel
+                  </button>
             </div>
           )}
 

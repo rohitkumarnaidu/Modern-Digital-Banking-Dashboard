@@ -49,6 +49,8 @@ const Bills = () => {
   const [editingBill, setEditingBill] = useState(null);
 
   const [accounts, setAccounts] = useState([]);
+  const [selectedAccountId, setSelectedAccountId] = useState(null);
+
 
   const fetchBills = async () => {
     try {
@@ -86,6 +88,12 @@ const Bills = () => {
 
     fetchAccounts();
   }, []);
+
+  useEffect(() => {
+    if (accounts.length > 0 && !selectedAccountId) {
+      setSelectedAccountId(accounts[0].id);
+    }
+  }, [accounts]); 
 
 
   const bills = [
@@ -188,6 +196,23 @@ const Bills = () => {
           Pay your utility bills and recharges securely
         </p>
       </div>
+
+      {/* ACCOUNT SELECTOR */}
+      <div className="max-w-sm mt-4">
+        <label className="text-sm font-medium">Pay from account</label>
+        <select
+          value={selectedAccountId || ""}
+          onChange={(e) => setSelectedAccountId(Number(e.target.value))}
+          className="w-full border rounded-lg px-3 py-2 mt-1"
+        >
+          {accounts.map(acc => (
+            <option key={acc.id} value={acc.id}>
+              {acc.bank_name} • {acc.masked_account}
+            </option>
+          ))}
+        </select>
+      </div>
+
 
       {/* ADD BILL — BELOW GLOBAL ICONS */}
       <div className="flex justify-end">
@@ -401,7 +426,12 @@ const Bills = () => {
       createPortal(
         (() => {
           const ActiveModal = BILL_MODAL_MAP[activeItem.key];
-          return <ActiveModal onClose={() => setActiveItem(null)} />;
+          return (
+            <ActiveModal
+              onClose={() => setActiveItem(null)}
+              selectedAccountId={selectedAccountId}
+            />
+          );
         })(),
         document.getElementById("modal-root")
       )}

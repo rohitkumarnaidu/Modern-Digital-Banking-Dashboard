@@ -2,12 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EnterPinModal from "../payments/EnterPinModal";
 
-const BaseBillModal = ({
-  title,
-  children,
-  confirmData,
-  onClose,
-}) => {
+const BaseBillModal = ({ title, children, confirmData, onClose }) => {
   const navigate = useNavigate();
   const [showPin, setShowPin] = useState(false);
 
@@ -27,13 +22,20 @@ const BaseBillModal = ({
       <EnterPinModal
         open={showPin}
         onClose={() => setShowPin(false)}
-        onConfirm={() => {
+        onConfirm={(pin) => {
           setShowPin(false);
           onClose();
+
           navigate("/dashboard/bill-processing", {
             state: {
-              ...confirmData,
-              time: new Date().toLocaleString(),
+              bill_id: confirmData.bill_id ?? null,
+              account_id: confirmData.account_id,
+              amount: confirmData.amount,
+              pin,
+              bill_type: confirmData.bill_type,
+              provider: confirmData.provider || null,
+              reference_id: crypto.randomUUID(),
+              to: confirmData.to,
             },
           });
         }}

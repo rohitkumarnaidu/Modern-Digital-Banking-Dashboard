@@ -1,13 +1,3 @@
-/**
- * Page: BillProcessing
- *
- * Purpose:
- * - Used ONLY for Bills
- * - Calls backend bills API
- * - Shows processing UI
- * - Does NOT affect send money
- */
-
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "@/services/api";
@@ -25,24 +15,49 @@ const BillProcessing = () => {
     const processBill = async () => {
       try {
         await api.post("/bills/pay", {
-          to: state.to,
+          bill_id: state.bill_id,
+          account_id: state.account_id,
           amount: state.amount,
-          mode: state.mode,
-          purpose: state.purpose,
-          provider: state.provider,
-          operator: state.operator,
-          plan: state.plan,
+          pin: state.pin,
+          bill_type: state.bill_type,
+          reference_id: state.reference_id,
+          provider: state.provider || null,
         });
 
-        navigate("/dashboard/payment-success", { state });
-      } catch (err) {
-        console.error("Bill payment failed", err);
-        navigate("/dashboard/payment-failed", { state });
+        navigate("/dashboard/payment-success", {
+          state: {
+            to: state.to,
+            amount: state.amount,
+            mode: "UPI",
+            time: new Date().toLocaleString(),
+            source: "bills",
+          },
+        });
+      } catch (error) {
+        let reason = "Transaction failed";
+        const detail = error?.response?.data?.detail;
+
+        if (typeof detail === "string") {
+          reason = detail;
+        } else if (Array.isArray(detail) && detail.length > 0) {
+          reason = detail[0]?.msg || reason;
+        }
+
+        navigate("/dashboard/payment-failed", {
+          state: {
+            to: state.to,
+            amount: state.amount,
+            mode: "UPI",
+            reason,
+            time: new Date().toLocaleString(),
+            source: "bills",
+          },
+        });
       }
     };
 
     processBill();
-  }, []);
+  }, [state, navigate]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">

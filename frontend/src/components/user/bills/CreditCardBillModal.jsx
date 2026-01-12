@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EnterPinModal from "../payments/EnterPinModal";
 
-const CreditCardBillModal = ({ onClose }) => {
+const CreditCardBillModal = ({ onClose, selectedAccountId }) => {
   const navigate = useNavigate();
 
   const [cardLast4, setCardLast4] = useState("");
@@ -59,16 +59,20 @@ const CreditCardBillModal = ({ onClose }) => {
       <EnterPinModal
         open={showPin}
         onClose={() => setShowPin(false)}
-        onConfirm={() => {
+        onConfirm={(pin) => {
           setShowPin(false);
           onClose();
+
           navigate("/dashboard/bill-processing", {
             state: {
+              bill_id: null,
+              account_id: selectedAccountId,
+              amount: Number(amount),
+              pin,
+              bill_type: "credit_card",
+              provider: "Credit Card",
               to: `XXXX-XXXX-XXXX-${cardLast4}`,
-              amount,
-              mode: "UPI",
-              purpose: "Credit Card Bill",
-              time: new Date().toLocaleString(),
+              reference_id: crypto.randomUUID(),
             },
           });
         }}

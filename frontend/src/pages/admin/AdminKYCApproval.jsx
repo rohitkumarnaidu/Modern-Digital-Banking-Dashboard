@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { ShieldCheck, XCircle, CheckCircle } from "lucide-react";
+import { ShieldCheck, XCircle, CheckCircle, Search, User } from "lucide-react";
 import api from "@/services/api";
 
 const AdminKYCApproval = () => {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState("ALL");
   const [selectedUser, setSelectedUser] = useState(null);
+  const [search, setSearch] = useState("");
 
   const KYC_UI_MAP = {
     UNVERIFIED: "PENDING",
@@ -22,6 +23,7 @@ const AdminKYCApproval = () => {
   const fetchUsers = async () => {
     const res= await api.get("/admin/users", {
       params: {
+        search: search || undefined,
         kyc_status:
          filter === "ALL" 
          ? undefined 
@@ -43,7 +45,7 @@ const AdminKYCApproval = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [filter]);
+  }, [filter, search]);
 
 
   const updateStatus = async (id, status) => {
@@ -69,19 +71,34 @@ const AdminKYCApproval = () => {
         Review and verify customer identity details.
       </p>
 
-      {/* FILTER */}
-      <div style={{ marginBottom: "16px" }}>
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          style={select}
-        >
-          <option value="ALL">All</option>
-          <option value="PENDING">Pending</option>
-          <option value="APPROVED">Approved</option>
-          <option value="REJECTED">Rejected</option>
-        </select>
+
+      {/* FILTER BAR */}
+      <div style={filters}>
+        <div style={inputWrap}>
+          <Search size={16} style={inputIcon} />
+          <input
+            placeholder="Search by name or email"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={searchInput}
+          />
+        </div>
+
+        <div style={selectWrap}>
+          <ShieldCheck size={16} style={inputIcon} />
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            style={select}
+          >
+            <option value="ALL">All KYC Status</option>
+            <option value="PENDING">Pending</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+          </select>
+        </div>
       </div>
+
 
       {/* TABLE */}
       <div style={card}>
@@ -214,10 +231,13 @@ const StatusBadge = ({ status }) => {
 /* ---------------- STYLES ---------------- */
 
 const select = {
-  padding: "10px 14px",
+  width: "100%",
+  padding: "10px 10px 10px 36px", // 👈 THIS IS THE FIX
   borderRadius: "10px",
   border: "1px solid #cbd5f5",
+  background: "#fff",
 };
+
 
 const card = {
   background: "#fff",
@@ -326,4 +346,40 @@ const reviewBtn = {
   fontSize: "13px",
   fontWeight: 600,
   cursor: "pointer",
+};
+
+const filters = {
+  display: "flex",
+  gap: "10px",
+  background: "#ffffff",
+  padding: "14px",
+  borderRadius: "14px",
+  boxShadow: "0 6px 20px rgba(0,0,0,0.06)",
+  marginBottom: "20px",
+};
+
+
+const inputWrap = {
+  position: "relative",
+  flex: 1,
+};
+
+const inputIcon = {
+  position: "absolute",
+  left: "10px",
+  top: "50%",
+  transform: "translateY(-50%)",
+  color: "#64748b",
+};
+
+const searchInput = {
+  width: "100%",
+  padding: "10px 10px 10px 36px",
+  borderRadius: "10px",
+  border: "1px solid #cbd5f5",
+};
+
+const selectWrap = {
+  position: "relative",
+  width: "220px",
 };
