@@ -32,14 +32,14 @@ const PaymentFailed = () => {
   const reason = state.reason || "Transaction failed";
 
   const receiptText = `
-Payment Failed
---------------
-To: ${state.to}
-Amount: ₹${state.amount}
-Mode: ${state.mode}
-Reason: ${reason}
-Time: ${state.time}
-`;
+    Payment Failed
+    --------------
+    To: ${state.to}
+    Amount: ₹${state.amount}
+    Mode: ${state.mode}
+    Reason: ${reason}
+    Time: ${state.time}
+    `;
 
   const downloadReceipt = () => {
     const blob = new Blob([receiptText], { type: "text/plain" });
@@ -61,6 +61,17 @@ Time: ${state.time}
       alert("Sharing not supported on this device");
     }
   };
+
+  const handleHome = () => {
+    if (state?.source === "bills") {
+      navigate("/dashboard/bills");
+    } else if (state?.source === "send-money") {
+      navigate("/dashboard/send-money");
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
 
   return (
     <>
@@ -134,14 +145,17 @@ Time: ${state.time}
 
           <div className="flex gap-3">
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(state?.source === "bills"
+                ? "/dashboard/bills"
+                : "/dashboard/send-money"
+              )}
               className="flex-1 border py-3 rounded-lg"
             >
               Retry
             </button>
 
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={handleHome}
               className="flex-1 bg-indigo-600 text-white py-3 rounded-lg"
             >
               Home

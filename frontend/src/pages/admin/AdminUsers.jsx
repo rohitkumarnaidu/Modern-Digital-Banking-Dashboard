@@ -27,6 +27,12 @@ const AdminUsers = () => {
     }
   };
 
+  const KYC_FILTER_MAP = {
+    PENDING: "unverified",
+    APPROVED: "verified",
+    REJECTED: "rejected",
+  };
+
 
   const fetchUsers = async () => {
     try {
@@ -35,7 +41,7 @@ const AdminUsers = () => {
       const res = await api.get("/admin/users", {
         params: {
           search: search || undefined,
-          kyc_status: kycFilter === "ALL" ? undefined : kycFilter.toLowerCase(),
+          kyc_status: kycFilter === "ALL" ? undefined : KYC_FILTER_MAP[kycFilter],
         },
       });
 

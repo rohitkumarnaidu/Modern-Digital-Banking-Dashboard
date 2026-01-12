@@ -3,7 +3,7 @@ import BaseBillModal from "./BaseBillModal";
 
 const PROVIDERS = ["TNEB", "APSPDCL", "TSSPDCL", "BESCOM", "MSEDCL"];
 
-const ElectricityBillModal = ({ onClose }) => {
+const ElectricityBillModal = ({ onClose, selectedAccountId }) => {
   const [step, setStep] = useState(1);
   const [consumerNo, setConsumerNo] = useState("");
   const [provider, setProvider] = useState("");
@@ -28,7 +28,9 @@ const ElectricityBillModal = ({ onClose }) => {
         to: consumerNo,
         amount,
         mode: "UPI",
+        bill_type: "electricity",
         purpose: "Electricity Bill",
+        account_id: selectedAccountId,
         provider,
       }}
     >
@@ -48,6 +50,10 @@ const ElectricityBillModal = ({ onClose }) => {
                 className="w-full bg-blue-600 text-white py-3 rounded-xl disabled:opacity-40"
               >
                 Continue
+              </button>
+
+              <button onClick={reset} className="text-sm text-gray-500">
+                Cancel
               </button>
             </div>
           )}

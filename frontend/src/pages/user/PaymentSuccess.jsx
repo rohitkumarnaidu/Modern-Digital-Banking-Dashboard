@@ -31,13 +31,13 @@ const PaymentSuccess = () => {
   if (!state) return null;
 
   const receiptText = `
-Payment Successful
-------------------
-To: ${state.to}
-Amount: ₹${state.amount}
-Mode: ${state.mode}
-Time: ${state.time}
-`;
+    Payment Successful
+    ------------------
+    To: ${state.to}
+    Amount: ₹${state.amount}
+    Mode: ${state.mode}
+    Time: ${state.time}
+    `;
 
   const downloadReceipt = () => {
     const blob = new Blob([receiptText], { type: "text/plain" });
@@ -59,6 +59,17 @@ Time: ${state.time}
       alert("Sharing not supported on this device");
     }
   };
+
+  const handleHome = () => {
+    if (state?.source === "bills") {
+      navigate("/dashboard/bills");
+    } else if (state?.source === "send-money") {
+      navigate("/dashboard/send-money");
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
 
   return (
     <>
@@ -134,7 +145,7 @@ Time: ${state.time}
           </div>
 
           <button
-            onClick={() => navigate("/dashboard/transfers")}
+            onClick={handleHome}
             className="w-full bg-indigo-600 text-white py-3 rounded-lg"
           >
             Done
