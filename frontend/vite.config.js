@@ -19,5 +19,15 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://modern-digital-banking-backend.onrender.com",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 });
+
 
