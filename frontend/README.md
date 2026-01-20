@@ -17,7 +17,7 @@ If you are developing a production application, we recommend using TypeScript wi
 
 
 
-# 🏦 Modern Digital Banking Dashboard – Frontend
+# 🏦 Aureus – Modern Digital Banking Dashboard – Frontend
 
 This repository contains the **frontend implementation** of the Modern Digital Banking Dashboard.  
 The application focuses on **secure digital payments**, **account management**, and a **realistic banking user experience**, similar to real-world banking apps.
