@@ -1,8 +1,10 @@
-# 🏦 Modern Digital Banking Dashboard
+# 🏦 Aureus – Modern Digital Banking Dashboard
 
-A **full-stack digital banking application** built to simulate real-world banking systems such as UPI payments, account management, KYC flow, admin controls, and transaction analytics.
+**Aureus** is a full-stack digital banking application developed as part of the  
+**Infosys Springboard – Modern Digital Banking Dashboard internship project**.
 
-This project follows **industry-style architecture** with a clear separation of **frontend** and **backend**, secure authentication, and scalable design.
+It simulates real-world banking systems such as UPI payments, account management,
+KYC workflows, admin controls, and transaction analytics.
 
 ---
 
