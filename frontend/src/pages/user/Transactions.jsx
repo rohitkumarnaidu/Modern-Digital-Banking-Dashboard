@@ -17,12 +17,14 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import AddTransactionModal from "@/components/user/transactions/AddTransactionalModal";
 import api from "@/services/api";
+import useResponsive from "@/hooks/useResponsive";
 
 import TransactionSearch from "@/components/user/transactions/TransactionSearch";
 import TransactionFilter from "@/components/user/transactions/TransactionFilter";
 import TransactionRow from "@/components/user/transactions/TransactionRow";
 
 const Transactions = () => {
+  const { isMobile, isTablet } = useResponsive();
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -137,14 +139,30 @@ const Transactions = () => {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ 
+      padding: isMobile ? "16px" : isTablet ? "18px" : "20px" 
+    }}>
       {/* HEADER + IMPORT / EXPORT */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "space-between", 
+        alignItems: isMobile ? "flex-start" : "center",
+        flexDirection: isMobile ? "column" : "row",
+        gap: isMobile ? "16px" : "0"
+      }}>
         <div>
-          <h1 style={{ fontSize: "24px", fontWeight: "600" }}>
+          <h1 style={{ 
+            fontSize: isMobile ? "20px" : isTablet ? "22px" : "24px", 
+            fontWeight: "600",
+            marginBottom: isMobile ? "8px" : "0"
+          }}>
             Transactions
           </h1>
-          <p style={{ color: "#64748b", marginBottom: "20px" }}>
+          <p style={{ 
+            color: "#64748b", 
+            marginBottom: isMobile ? "0" : "20px",
+            fontSize: isMobile ? "13px" : "14px"
+          }}>
             View and manage your transaction history
           </p>
         </div>

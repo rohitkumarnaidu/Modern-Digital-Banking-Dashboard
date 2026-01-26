@@ -62,34 +62,35 @@ const AdminKYCApproval = () => {
   };
 
   return (
-    <div>
+    <div className="admin-kyc">
       {/* HEADER */}
-      <h1 style={{ fontSize: "28px", marginBottom: "6px" }}>
-        KYC Approval
-      </h1>
-      <p style={{ color: "#64748b", marginBottom: "24px" }}>
-        Review and verify customer identity details.
-      </p>
-
+      <div className="page-header">
+        <h1 className="page-title">
+          KYC Approval
+        </h1>
+        <p className="page-subtitle">
+          Review and verify customer identity details.
+        </p>
+      </div>
 
       {/* FILTER BAR */}
-      <div style={filters}>
-        <div style={inputWrap}>
-          <Search size={16} style={inputIcon} />
+      <div className="filters-container">
+        <div className="filter-input">
+          <Search size={16} className="input-icon" />
           <input
             placeholder="Search by name or email"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={searchInput}
+            className="search-input"
           />
         </div>
 
-        <div style={selectWrap}>
-          <ShieldCheck size={16} style={inputIcon} />
+        <div className="filter-select">
+          <ShieldCheck size={16} className="input-icon" />
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            style={select}
+            className="select-input"
           >
             <option value="ALL">All KYC Status</option>
             <option value="PENDING">Pending</option>
@@ -99,60 +100,96 @@ const AdminKYCApproval = () => {
         </div>
       </div>
 
-
       {/* TABLE */}
-      <div style={card}>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead style={{ background: "#f8fafc" }}>
-            <tr>
-              <th style={th}>Name</th>
-              <th style={th}>Email</th>
-              <th style={th}>Phone</th>
-              <th style={th}>KYC Status</th>
-              <th style={th}>Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {users.length === 0 ? (
+      <div className="table-container">
+        <div className="table-wrapper">
+          <table className="kyc-table">
+            <thead className="table-header">
               <tr>
-                <td colSpan="5" style={empty}>
-                  <div style={emptyWrap}>
-                    <ShieldCheck size={34} />
-                    <div style={{ fontWeight: 500 }}>
-                      No KYC requests found
-                    </div>
-                    <div style={subText}>
-                      Pending KYC requests will appear here
-                    </div>
-                  </div>
-                </td>
+                <th className="table-th">Name</th>
+                <th className="table-th hidden-mobile">Email</th>
+                <th className="table-th hidden-mobile">Phone</th>
+                <th className="table-th">KYC Status</th>
+                <th className="table-th">Action</th>
               </tr>
-            ) : (
-              users.map((u) => (
-                <tr key={u.id} style={row}>
-                  <td style={td}>{u.name}</td>
-                  <td style={td}>{u.email}</td>
-                  <td style={td}>{u.phone}</td>
-                  <td style={td}>
-                    <StatusBadge status={u.kycStatus} />
-                  </td>
-                  <td style={td}>
-                    {u.kycStatus === "PENDING" && (
-                      <button
-                        style={reviewBtn}
-                        onClick={() => setSelectedUser(u)}
-                      >
-                        Review
-                      </button>
-                    )}
+            </thead>
+
+            <tbody>
+              {users.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="empty-cell">
+                    <div className="empty-state">
+                      <ShieldCheck size={34} />
+                      <div className="empty-title">
+                        No KYC requests found
+                      </div>
+                      <div className="empty-subtitle">
+                        Pending KYC requests will appear here
+                      </div>
+                    </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                users.map((u) => (
+                  <tr key={u.id} className="table-row">
+                    <td className="table-td">
+                      <div className="user-info">
+                        <div className="user-name">{u.name}</div>
+                        <div className="user-details-mobile">
+                          <div className="user-email">{u.email}</div>
+                          <div className="user-phone">{u.phone}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="table-td hidden-mobile">{u.email}</td>
+                    <td className="table-td hidden-mobile">{u.phone}</td>
+                    <td className="table-td">
+                      <StatusBadge status={u.kycStatus} />
+                    </td>
+                    <td className="table-td">
+                      {u.kycStatus === "PENDING" && (
+                        <button
+                          className="review-btn"
+                          onClick={() => setSelectedUser(u)}
+                        >
+                          Review
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      {/* MOBILE CARD VIEW */}
+      <div className="mobile-kyc-list">
+        {users.map((u) => (
+          <div key={u.id} className="mobile-kyc-card">
+            <div className="card-top">
+              <div className="card-name">{u.name}</div>
+              <StatusBadge status={u.kycStatus} />
+            </div>
+
+            <div className="card-meta">
+              <div>{u.email}</div>
+              <div>{u.phone}</div>
+            </div>
+
+            {u.kycStatus === "PENDING" && (
+              <button
+                className="review-btn mobile-full"
+                onClick={() => setSelectedUser(u)}
+              >
+                Review
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+
 
       {/* MODAL */}
       {selectedUser && (
@@ -167,6 +204,283 @@ const AdminKYCApproval = () => {
           onClose={() => setSelectedUser(null)}
         />
       )}
+
+      {/* RESPONSIVE STYLES */}
+      <style>{`
+        .admin-kyc {
+          padding: 1rem;
+          max-width: 100%;
+        }       
+
+        .page-header {
+          margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .page-header {
+            padding-left: 3rem; /* same as md:pl-12 */
+          }
+        }
+
+        .page-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #1f2937;
+          margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+          color: #6b7280;
+          font-size: 0.875rem;
+        }
+
+        .filters-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          background: white;
+          padding: 1rem;
+          border-radius: 0.75rem;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          margin-bottom: 1.5rem;
+        }
+
+        .filter-input, .filter-select {
+          position: relative;
+          flex: 1;
+        }
+
+        .filter-select {
+          max-width: none;
+        }
+
+        .input-icon {
+          position: absolute;
+          left: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #6b7280;
+          z-index: 1;
+        }
+
+        .search-input, .select-input {
+          width: 100%;
+          padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+          border-radius: 0.5rem;
+          border: 1px solid #d1d5db;
+          font-size: 0.875rem;
+          background: white;
+        }
+
+        .select-input {
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+          background-position: right 0.5rem center;
+          background-repeat: no-repeat;
+          background-size: 1.5em 1.5em;
+          padding-right: 2.5rem;
+        }
+
+        .table-container {
+          background: white;
+          border-radius: 1rem;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+          overflow: hidden;
+        }
+
+        .table-wrapper {
+          overflow-x: auto;
+        }
+
+        .kyc-table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+
+        .table-header {
+          background: #f8fafc;
+        }
+
+        .table-th {
+          padding: 1rem;
+          font-size: 0.875rem;
+          text-align: left;
+          color: #475569;
+          font-weight: 600;
+          white-space: nowrap;
+        }
+
+        .table-td {
+          padding: 1rem;
+          font-size: 0.875rem;
+          color: #1f2937;
+          border-bottom: 1px solid #f1f5f9;
+        }
+
+        .table-row {
+          transition: all 0.2s ease;
+        }
+
+        .table-row:hover {
+          background: #f8fafc;
+        }
+
+        .user-info {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .user-name {
+          font-weight: 500;
+          color: #1f2937;
+        }
+
+        .user-details-mobile {
+          margin-top: 0.25rem;
+          display: block;
+        }
+
+        .user-email, .user-phone {
+          font-size: 0.75rem;
+          color: #6b7280;
+        }
+
+        .review-btn {
+          background: #2563eb;
+          color: white;
+          border: none;
+          padding: 0.5rem 0.875rem;
+          border-radius: 0.5rem;
+          font-size: 0.75rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          white-space: nowrap;
+        }
+
+        .review-btn:hover {
+          background: #1d4ed8;
+        }
+
+        .empty-cell {
+          padding: 3rem 1rem;
+          text-align: center;
+          color: #6b7280;
+        }
+
+        .empty-state {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .empty-title {
+          font-weight: 500;
+          font-size: 1rem;
+        }
+
+        .empty-subtitle {
+          font-size: 0.875rem;
+          color: #6b7280;
+        }
+
+        @media (max-width: 639px) {
+          .hidden-mobile {
+            display: none;
+          }
+        }
+
+        @media (min-width: 640px) {
+          .hidden-mobile {
+            display: table-cell;
+          }
+        }
+
+
+        @media (min-width: 640px) {
+          .admin-kyc {
+            padding: 1.5rem;
+          }
+
+          .page-title {
+            font-size: 1.75rem;
+          }
+
+          .filters-container {
+            flex-direction: row;
+          }
+
+          .review-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+          }
+
+          .user-details-mobile {
+            display: none;
+          }
+        }
+
+        @media (min-width: 1024px) {
+          .admin-kyc {
+            padding: 2rem;
+          }
+
+          .page-title {
+            font-size: 2rem;
+          }
+        }
+
+        /* MOBILE CARD VIEW */
+        .mobile-kyc-list {
+          display: none;
+        }
+
+        @media (max-width: 639px) {
+          /* hide table on mobile */
+          .table-container {
+            display: none;
+          }
+
+          .mobile-kyc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+          }
+
+          .mobile-kyc-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+          }
+
+          .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+          }
+
+          .card-name {
+            font-weight: 600;
+            color: #1f2937;
+          }
+
+          .card-meta {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 0.75rem;
+          }
+
+          .mobile-full {
+            width: 100%;
+          }
+        }
+
+
+      `}</style>
     </div>
   );
 };
@@ -176,31 +490,143 @@ export default AdminKYCApproval;
 /* ---------------- MODAL ---------------- */
 
 const KYCModal = ({ user, onApprove, onReject, onClose }) => (
-  <div style={overlay}>
-    <div style={modal}>
-      <h2 style={{ marginBottom: "8px" }}>KYC Review</h2>
-      <p style={{ color: "#64748b", marginBottom: "16px" }}>
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <h2 className="modal-title">KYC Review</h2>
+      <p className="modal-subtitle">
         Verify submitted user details
       </p>
 
-      <div style={detail}><b>Name:</b> {user.name}</div>
-      <div style={detail}><b>Email:</b> {user.email}</div>
-      <div style={detail}><b>Phone:</b> {user.phone}</div>
-      <div style={detail}><b>Document:</b> Aadhaar / PAN</div>
+      <div className="user-details">
+        <div className="detail-item"><b>Name:</b> {user.name}</div>
+        <div className="detail-item"><b>Email:</b> {user.email}</div>
+        <div className="detail-item"><b>Phone:</b> {user.phone}</div>
+        <div className="detail-item"><b>Document:</b> Aadhaar / PAN</div>
+      </div>
 
-      <div style={actions}>
-        <button style={approveBtn} onClick={onApprove}>
+      <div className="modal-actions">
+        <button className="approve-btn" onClick={onApprove}>
           <CheckCircle size={16} /> Approve
         </button>
-        <button style={rejectBtn} onClick={onReject}>
+        <button className="reject-btn" onClick={onReject}>
           <XCircle size={16} /> Reject
         </button>
       </div>
 
-      <button style={closeBtn} onClick={onClose}>
+      <button className="close-btn" onClick={onClose}>
         Close
       </button>
     </div>
+
+    <style>{`
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        padding: 1rem;
+      }
+
+      .modal-content {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        width: 100%;
+        max-width: 420px;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1f2937;
+      }
+
+      .modal-subtitle {
+        color: #6b7280;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+      }
+
+      .user-details {
+        margin-bottom: 1.5rem;
+      }
+
+      .detail-item {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        color: #374151;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .approve-btn, .reject-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+      }
+
+      .approve-btn {
+        background: #22c55e;
+        color: white;
+      }
+
+      .approve-btn:hover {
+        background: #16a34a;
+      }
+
+      .reject-btn {
+        background: #ef4444;
+        color: white;
+      }
+
+      .reject-btn:hover {
+        background: #dc2626;
+      }
+
+      .close-btn {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        border: 1px solid #d1d5db;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+      }
+
+      .close-btn:hover {
+        background: #f9fafb;
+      }
+
+      @media (min-width: 640px) {
+        .modal-content {
+          padding: 2rem;
+        }
+
+        .modal-title {
+          font-size: 1.5rem;
+        }
+      }
+    `}</style>
   </div>
 );
 
@@ -226,160 +652,4 @@ const StatusBadge = ({ status }) => {
       {status}
     </span>
   );
-};
-
-/* ---------------- STYLES ---------------- */
-
-const select = {
-  width: "100%",
-  padding: "10px 10px 10px 36px", // 👈 THIS IS THE FIX
-  borderRadius: "10px",
-  border: "1px solid #cbd5f5",
-  background: "#fff",
-};
-
-
-const card = {
-  background: "#fff",
-  borderRadius: "16px",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
-  overflow: "hidden",
-};
-
-const th = {
-  padding: "16px",
-  textAlign: "left",
-  fontSize: "14px",
-  color: "#475569",
-};
-
-const td = {
-  padding: "16px",
-  fontSize: "14px",
-};
-
-const row = {
-  borderBottom: "1px solid #f1f5f9",
-};
-
-const empty = {
-  padding: "48px",
-  textAlign: "center",
-  color: "#64748b",
-};
-
-const emptyWrap = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: "8px",
-};
-
-const subText = {
-  fontSize: "13px",
-  color: "#64748b",
-};
-
-/* MODAL STYLES */
-
-const overlay = {
-  position: "fixed",
-  inset: 0,
-  background: "rgba(0,0,0,0.35)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-};
-
-const modal = {
-  background: "#fff",
-  borderRadius: "16px",
-  padding: "24px",
-  width: "420px",
-};
-
-const detail = {
-  marginBottom: "8px",
-  fontSize: "14px",
-};
-
-const actions = {
-  display: "flex",
-  gap: "12px",
-  marginTop: "20px",
-};
-
-const approveBtn = {
-  flex: 1,
-  background: "#22c55e",
-  color: "#fff",
-  border: "none",
-  padding: "10px",
-  borderRadius: "10px",
-  cursor: "pointer",
-};
-
-const rejectBtn = {
-  flex: 1,
-  background: "#ef4444",
-  color: "#fff",
-  border: "none",
-  padding: "10px",
-  borderRadius: "10px",
-  cursor: "pointer",
-};
-
-const closeBtn = {
-  marginTop: "14px",
-  width: "100%",
-  padding: "8px",
-  borderRadius: "10px",
-  border: "1px solid #cbd5f5",
-};
-
-const reviewBtn = {
-  background: "#2563eb",
-  color: "#fff",
-  border: "none",
-  padding: "8px 14px",
-  borderRadius: "8px",
-  fontSize: "13px",
-  fontWeight: 600,
-  cursor: "pointer",
-};
-
-const filters = {
-  display: "flex",
-  gap: "10px",
-  background: "#ffffff",
-  padding: "14px",
-  borderRadius: "14px",
-  boxShadow: "0 6px 20px rgba(0,0,0,0.06)",
-  marginBottom: "20px",
-};
-
-
-const inputWrap = {
-  position: "relative",
-  flex: 1,
-};
-
-const inputIcon = {
-  position: "absolute",
-  left: "10px",
-  top: "50%",
-  transform: "translateY(-50%)",
-  color: "#64748b",
-};
-
-const searchInput = {
-  width: "100%",
-  padding: "10px 10px 10px 36px",
-  borderRadius: "10px",
-  border: "1px solid #cbd5f5",
-};
-
-const selectWrap = {
-  position: "relative",
-  width: "220px",
 };

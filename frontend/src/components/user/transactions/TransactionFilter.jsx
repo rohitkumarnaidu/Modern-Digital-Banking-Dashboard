@@ -22,16 +22,36 @@
 
 
 
+import useResponsive from "@/hooks/useResponsive";
+
 const TransactionFilter = ({
   accounts = [],
   filters,
   onChange,
 }) => {
+  const { isMobile, isTablet } = useResponsive();
+
   return (
-    <div style={wrapper}>
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: isMobile 
+        ? "1fr" 
+        : isTablet 
+          ? "repeat(2, 1fr)" 
+          : "repeat(auto-fit, minmax(160px, 1fr))",
+      gap: isMobile ? "10px" : "12px",
+      marginBottom: isMobile ? "16px" : "20px",
+    }}>
       {/* ACCOUNT FILTER */}
       <select
-        style={input}
+        style={{
+          padding: isMobile ? "8px 10px" : "10px",
+          borderRadius: "10px",
+          border: "1px solid #d1d5db",
+          fontSize: isMobile ? "13px" : "14px",
+          width: "100%",
+          boxSizing: "border-box",
+        }}
         value={filters.account_id || ""}
         onChange={(e) =>
           onChange({ ...filters, account_id: e.target.value })
@@ -47,7 +67,14 @@ const TransactionFilter = ({
 
       {/* TYPE FILTER */}
       <select
-        style={input}
+        style={{
+          padding: isMobile ? "8px 10px" : "10px",
+          borderRadius: "10px",
+          border: "1px solid #d1d5db",
+          fontSize: isMobile ? "13px" : "14px",
+          width: "100%",
+          boxSizing: "border-box",
+        }}
         value={filters.txn_type || ""}
         onChange={(e) =>
           onChange({ ...filters, txn_type: e.target.value })
@@ -61,7 +88,14 @@ const TransactionFilter = ({
       {/* FROM DATE */}
       <input
         type="date"
-        style={input}
+        style={{
+          padding: isMobile ? "8px 10px" : "10px",
+          borderRadius: "10px",
+          border: "1px solid #d1d5db",
+          fontSize: isMobile ? "13px" : "14px",
+          width: "100%",
+          boxSizing: "border-box",
+        }}
         value={filters.from || ""}
         onChange={(e) =>
           onChange({ ...filters, from: e.target.value })
@@ -71,7 +105,14 @@ const TransactionFilter = ({
       {/* TO DATE */}
       <input
         type="date"
-        style={input}
+        style={{
+          padding: isMobile ? "8px 10px" : "10px",
+          borderRadius: "10px",
+          border: "1px solid #d1d5db",
+          fontSize: isMobile ? "13px" : "14px",
+          width: "100%",
+          boxSizing: "border-box",
+        }}
         value={filters.to || ""}
         onChange={(e) =>
           onChange({ ...filters, to: e.target.value })
@@ -82,19 +123,3 @@ const TransactionFilter = ({
 };
 
 export default TransactionFilter;
-
-/* ---------- STYLES ---------- */
-
-const wrapper = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-  gap: "12px",
-  marginBottom: "20px",
-};
-
-const input = {
-  padding: "10px",
-  borderRadius: "10px",
-  border: "1px solid #d1d5db",
-  fontSize: "14px",
-};

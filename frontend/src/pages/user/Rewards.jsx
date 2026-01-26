@@ -11,9 +11,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RewardsModal from "@/components/user/rewards/RewardsModal";
 import api from "@/services/api";
+import useResponsive from "@/hooks/useResponsive";
 
 const Rewards = () => {
   const navigate = useNavigate();
+  const { isMobile, isTablet } = useResponsive();
 
   const [activeTab, setActiveTab] = useState("AVAILABLE");
   const [search, setSearch] = useState("");
@@ -71,10 +73,18 @@ const Rewards = () => {
 
   return (
     <div>
-      <h2 style={title}>Rewards</h2>
+      <h2 style={{
+        fontSize: isMobile ? "20px" : "22px",
+        marginBottom: "16px",
+      }}>Rewards</h2>
 
       {/* SUMMARY ROW */}
-      <div style={summaryRow}>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+        gap: isMobile ? "12px" : "16px",
+        marginBottom: "22px",
+      }}>
         <SummaryCard
           label="Total Earned"
           value={totalEarned}
@@ -93,20 +103,36 @@ const Rewards = () => {
 
       {/* SEARCH */}
       <input
-        style={searchStyle}
+        style={{
+          width: "100%",
+          padding: isMobile ? "12px 14px" : "14px 16px",
+          borderRadius: "12px",
+          border: "1px solid #CBD5F5",
+          marginBottom: "18px",
+          fontSize: isMobile ? "14px" : "16px",
+        }}
         placeholder="Search rewards..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
       {/* TABS */}
-      <div style={tabsRow}>
+      <div style={{
+        display: "flex",
+        gap: isMobile ? "6px" : "8px",
+        marginBottom: "22px",
+        flexWrap: isMobile ? "wrap" : "nowrap",
+      }}>
         {["AVAILABLE", "COMPLETED"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             style={{
-              ...tabBtn,
+              padding: isMobile ? "8px 12px" : "6px 14px",
+              borderRadius: "18px",
+              border: "none",
+              cursor: "pointer",
+              fontSize: isMobile ? "13px" : "14px",
               background: activeTab === tab ? "#2E5A88" : "#E5E7EB",
               color: activeTab === tab ? "#fff" : "#111",
             }}
@@ -117,7 +143,11 @@ const Rewards = () => {
       </div>
 
       {/* CARDS */}
-      <div style={cardsRow}>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+        gap: isMobile ? "14px" : "18px",
+      }}>
         {filteredRewards.length === 0 && (
           <p style={{ color: "#64748b" }}>No rewards found</p>
         )}
@@ -125,27 +155,61 @@ const Rewards = () => {
         {filteredRewards.map((reward) => (
           <div
             key={reward.id}
-            style={card}
+            style={{
+              background: "#fff",
+              padding: isMobile ? "16px" : "18px",
+              borderRadius: "18px",
+              boxShadow: "0 10px 28px rgba(0,0,0,0.08)",
+              cursor: "pointer",
+            }}
             onClick={() => {
               if (reward.title === "Refer & Earn") {
                 setSelectedReward(reward);
               }
             }}
           >
-            <h4>{reward.title}</h4>
-            <p style={desc}>{reward.description}</p>
+            <h4 style={{
+              fontSize: isMobile ? "16px" : "18px",
+              marginBottom: "8px",
+            }}>{reward.title}</h4>
+            <p style={{
+              color: "#64748b",
+              fontSize: isMobile ? "13px" : "14px",
+            }}>{reward.description}</p>
 
-            <div style={cardFooter}>
-              <strong>+{reward.points}</strong>
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: "16px",
+              flexDirection: isMobile ? "column" : "row",
+              gap: isMobile ? "8px" : "0",
+            }}>
+              <strong style={{
+                fontSize: isMobile ? "14px" : "16px",
+              }}>+{reward.points}</strong>
 
               {reward.status === "AVAILABLE" && (
-                <span style={{ ...viewBtn, opacity: 0.6 }}>
+                <span style={{
+                  background: "#2E5A88",
+                  color: "#fff",
+                  padding: isMobile ? "8px 12px" : "6px 16px",
+                  borderRadius: "20px",
+                  fontSize: isMobile ? "12px" : "13px",
+                  opacity: 0.6,
+                }}>
                   View Details
                 </span>
               )}
 
               {reward.status === "COMPLETED" && (
-                <span style={completedBadge}>Completed</span>
+                <span style={{
+                  background: "#22c55e",
+                  color: "#fff",
+                  padding: isMobile ? "8px 12px" : "6px 16px",
+                  borderRadius: "20px",
+                  fontSize: isMobile ? "12px" : "13px",
+                }}>Completed</span>
               )}
             </div>
           </div>
@@ -166,107 +230,41 @@ const Rewards = () => {
 export default Rewards;
 
 /* ---------- SMALL COMPONENT ---------- */
-const SummaryCard = ({ label, value, bg, accent, onClick }) => (
-  <div
-    style={{
-      ...summaryCard,
-      background: bg,
-      cursor: onClick ? "pointer" : "default",
-    }}
-    onClick={onClick}
-  >
-    <div style={{ ...accentBar, background: accent }} />
-    <p style={{ color: "#64748b", fontSize: "13px" }}>{label}</p>
-    <h3 style={{ color: "#0f172a", marginTop: "4px" }}>{value}</h3>
-  </div>
-);
-
-/* ---------- STYLES ---------- */
-
-const title = { fontSize: "22px", marginBottom: "16px" };
-
-const summaryRow = {
-  display: "grid",
-  gridTemplateColumns: "repeat(2, 1fr)",
-  gap: "16px",
-  marginBottom: "22px",
+const SummaryCard = ({ label, value, bg, accent, onClick }) => {
+  const { isMobile } = useResponsive();
+  
+  return (
+    <div
+      style={{
+        position: "relative",
+        padding: isMobile ? "16px" : "18px",
+        borderRadius: "16px",
+        boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+        overflow: "hidden",
+        background: bg,
+        cursor: onClick ? "pointer" : "default",
+      }}
+      onClick={onClick}
+    >
+      <div style={{
+        position: "absolute",
+        left: 0,
+        top: 0,
+        height: "100%",
+        width: "6px",
+        background: accent,
+      }} />
+      <p style={{
+        color: "#64748b",
+        fontSize: isMobile ? "12px" : "13px",
+      }}>{label}</p>
+      <h3 style={{
+        color: "#0f172a",
+        marginTop: "4px",
+        fontSize: isMobile ? "18px" : "20px",
+      }}>{value}</h3>
+    </div>
+  );
 };
 
-const summaryCard = {
-  position: "relative",
-  padding: "18px",
-  borderRadius: "16px",
-  boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
-  overflow: "hidden",
-};
 
-const accentBar = {
-  position: "absolute",
-  left: 0,
-  top: 0,
-  height: "100%",
-  width: "6px",
-};
-
-const searchStyle = {
-  width: "100%",
-  padding: "14px 16px",
-  borderRadius: "12px",
-  border: "1px solid #CBD5F5",
-  marginBottom: "18px",
-};
-
-const tabsRow = {
-  display: "flex",
-  gap: "8px",
-  marginBottom: "22px",
-};
-
-const tabBtn = {
-  padding: "6px 14px",
-  borderRadius: "18px",
-  border: "none",
-  cursor: "pointer",
-};
-
-const cardsRow = {
-  display: "grid",
-  gridTemplateColumns: "repeat(3, 1fr)",
-  gap: "18px",
-};
-
-const card = {
-  background: "#fff",
-  padding: "18px",
-  borderRadius: "18px",
-  boxShadow: "0 10px 28px rgba(0,0,0,0.08)",
-  cursor: "pointer",
-};
-
-const desc = {
-  color: "#64748b",
-  fontSize: "14px",
-};
-
-const cardFooter = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginTop: "16px",
-};
-
-const viewBtn = {
-  background: "#2E5A88",
-  color: "#fff",
-  padding: "6px 16px",
-  borderRadius: "20px",
-  fontSize: "13px",
-};
-
-const completedBadge = {
-  background: "#22c55e",
-  color: "#fff",
-  padding: "6px 16px",
-  borderRadius: "20px",
-  fontSize: "13px",
-};

@@ -1,10 +1,24 @@
 import { useEffect, useState } from "react";
 import { Search, Gift, Calendar, Coins, Check, Trash2 } from "lucide-react";
 import api from "@/services/api";
+import "./AdminRewards.css";
 
 const AdminRewards = () => {
   const [rewards, setRewards] = useState([]);
   const [showAddReward, setShowAddReward] = useState(false);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+  const isMobile = screenWidth <= 768;
+  const isTablet = screenWidth > 768 && screenWidth <= 1024;
+  const isDesktop = screenWidth > 1024;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const [newReward, setNewReward] = useState({
     name: "",
@@ -91,22 +105,94 @@ const AdminRewards = () => {
   };
 
   return (
-    <div>
-      <h1 style={{ fontSize: "28px", marginBottom: "6px" }}>Rewards</h1>
-      <p style={{ color: "#64748b", marginBottom: "24px" }}>
+    <div
+      style={{
+        padding: isMobile ? "1rem" : "2rem",
+        paddingTop: isTablet ? "4.5rem" : isMobile ? "3.5rem" : "2rem", // ✅ KEY FIX
+        maxWidth: "100%",
+        overflowX: "hidden",
+      }}
+    >
+
+      <h1 style={{
+        fontSize: isMobile ? "1.5rem" : isTablet ? "1.75rem" : "2rem",
+        fontWeight: 600,
+        color: "#1f2937",
+        marginBottom: "0.5rem"
+      }}>Rewards</h1>
+      <p style={{
+        color: "#64748b",
+        marginBottom: isMobile ? "1rem" : "1.5rem",
+        fontSize: "0.875rem"
+      }}>
         Monitor and manage user reward activities
       </p>
 
-      <div style={{ ...filters, justifyContent: "space-between" }}>
-        <div style={{ display: "flex", gap: "10px", flex: 1 }}>
-          <div style={inputWrap}>
-            <Search size={16} style={inputIcon} />
-            <input placeholder="Search rewards..." style={search} />
+      <div style={{
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        gap: isMobile ? "0.75rem" : "0.625rem",
+        background: "#fff",
+        padding: isMobile ? "1rem" : "0.875rem",
+        borderRadius: "0.875rem",
+        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+        marginBottom: "1.25rem",
+        justifyContent: "space-between"
+      }}>
+        <div style={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: "0.625rem",
+          flex: 1
+        }}>
+          <div style={{
+            position: "relative",
+            flex: 1
+          }}>
+            <Search size={16} style={{
+              position: "absolute",
+              left: "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              color: "#64748b"
+            }} />
+            <input
+              placeholder="Search rewards..."
+              style={{
+                width: "100%",
+                padding: "10px 10px 10px 36px",
+                borderRadius: "10px",
+                border: "1px solid #cbd5f5",
+                fontSize: isMobile ? "0.875rem" : "1rem"
+              }}
+            />
           </div>
 
-          <div style={selectWrap}>
-            <Gift size={16} style={inputIcon} />
-            <select style={filterSelect}>
+          <div style={{
+            position: "relative",
+            width: isMobile ? "100%" : "auto",
+            minWidth: isMobile ? "auto" : "12rem"
+          }}>
+            <Gift size={16} style={{
+              position: "absolute",
+              left: "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              color: "#64748b"
+            }} />
+            <select style={{
+              width: "100%",
+              padding: "10px 10px 10px 36px",
+              borderRadius: "10px",
+              border: "1px solid #cbd5f5",
+              fontSize: isMobile ? "0.875rem" : "1rem",
+              appearance: "none",
+              backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e\")",
+              backgroundPosition: "right 0.5rem center",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "1.5em 1.5em",
+              paddingRight: "2.5rem"
+            }}>
               <option>All Rewards</option>
               <option>Cashback</option>
               <option>Offer</option>
@@ -114,86 +200,306 @@ const AdminRewards = () => {
             </select>
           </div>
 
-
-          <div style={dateWrap}>
-            <Calendar size={16} style={inputIcon} />
-            <input type="date" style={date} />
+          <div style={{
+            position: "relative",
+            width: isMobile ? "100%" : "auto",
+            minWidth: isMobile ? "auto" : "10rem"
+          }}>
+            <Calendar size={16} style={{
+              position: "absolute",
+              left: "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              color: "#64748b"
+            }} />
+            <input
+              type="date"
+              style={{
+                width: "100%",
+                padding: "10px 10px 10px 36px",
+                borderRadius: "10px",
+                border: "1px solid #cbd5f5",
+                fontSize: isMobile ? "0.875rem" : "1rem"
+              }}
+            />
           </div>
         </div>
 
-        <button onClick={() => setShowAddReward(true)} style={addBtn}>
+        <button
+          onClick={() => setShowAddReward(true)}
+          style={{
+            padding: isMobile ? "0.75rem 1rem" : "0.625rem 1rem",
+            background: "#2E5A88",
+            color: "#fff",
+            borderRadius: "0.625rem",
+            border: "none",
+            fontWeight: 600,
+            fontSize: isMobile ? "0.875rem" : "1rem",
+            cursor: "pointer",
+            width: isMobile ? "100%" : "auto",
+            whiteSpace: "nowrap"
+          }}
+        >
           + Add Reward
         </button>
       </div>
 
-      <div style={card}>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead style={{ background: "#f8fafc" }}>
-            <tr>
-              <th style={th}>Reward</th>
-              <th style={th}>Type</th>
-              <th style={th}>Applies To</th>
-              <th style={th}>Points</th>
-              <th style={th}>Status</th>
-              <th style={th}>Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {rewards.length === 0 ? (
+      <div style={{
+        background: "#fff",
+        borderRadius: "1rem",
+        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+        overflow: "hidden"
+      }}>
+        <div style={{
+          overflowX: isMobile || isTablet ? "auto" : "visible",
+          WebkitOverflowScrolling: "touch"
+        }}>
+          <table style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            minWidth: isMobile ? "40rem" : "auto"
+          }}>
+            <thead style={{
+              background: "#f8fafc"
+            }}>
               <tr>
-                <td colSpan="6">
-                  <div style={emptyState}>
-                    <Coins size={32} />
-                    <div>No rewards created</div>
-                  </div>
-                </td>
+                <th style={{
+                  padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+                  textAlign: "left",
+                  color: "#475569",
+                  fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  fontWeight: 600
+                }}>Reward</th>
+                <th style={{
+                  padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+                  textAlign: "left",
+                  color: "#475569",
+                  fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  fontWeight: 600
+                }}>Type</th>
+                <th style={{
+                  padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+                  textAlign: "left",
+                  color: "#475569",
+                  fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  fontWeight: 600
+                }}>Applies To</th>
+                <th style={{
+                  padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+                  textAlign: "left",
+                  color: "#475569",
+                  fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  fontWeight: 600
+                }}>Points</th>
+                <th style={{
+                  padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+                  textAlign: "left",
+                  color: "#475569",
+                  fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  fontWeight: 600
+                }}>Status</th>
+                <th style={{
+                  padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+                  textAlign: "left",
+                  color: "#475569",
+                  fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  fontWeight: 600
+                }}>Action</th>
               </tr>
-            ) : (
-              rewards.map((r) => (
-                <tr key={r.id} style={row}>
-                  <td style={td}>{r.name}</td>
-                  <td style={td}>{r.reward_type}</td>
-                  <td style={td}>{r.applies_to.join(", ")}</td>
-                  <td style={td}>{r.value}</td>
-                  <td style={td}>{r.status}</td>
-                  <td style={td}>
-                    {r.status === "Pending" && (
-                      <button
-                        onClick={() => approveReward(r.id)}
-                        style={approveBtn}
-                      >
-                        <Check size={14} /> Approve
-                      </button>
-                    )}
-                    <button
-                      onClick={() => removeReward(r.id)}
-                      style={removeBtn}
-                    >
-                      <Trash2 size={14} />
-                    </button>
+            </thead>
+
+            <tbody>
+              {rewards.length === 0 ? (
+                <tr>
+                  <td colSpan="6">
+                    <div style={{
+                      padding: isMobile ? "2rem 1rem" : "3rem",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      color: "#64748b",
+                      gap: "0.5rem"
+                    }}>
+                      <Coins size={isMobile ? 28 : 32} />
+                      <div style={{
+                        fontSize: isMobile ? "0.875rem" : "1rem",
+                        fontWeight: 500
+                      }}>No rewards created</div>
+                    </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                rewards.map((r) => (
+                  <tr
+                    key={r.id}
+                    style={{
+                      borderBottom: "1px solid #f1f5f9",
+                      transition: "background-color 0.2s"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                  >
+                    <td style={{
+                      padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+                      fontSize: isMobile ? "0.75rem" : "0.875rem"
+                    }}>{r.name}</td>
+                    <td style={{
+                      padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+                      fontSize: isMobile ? "0.75rem" : "0.875rem"
+                    }}>{r.reward_type}</td>
+                    <td style={{
+                      padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+                      fontSize: isMobile ? "0.75rem" : "0.875rem"
+                    }}>{r.applies_to.join(", ")}</td>
+                    <td style={{
+                      padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+                      fontSize: isMobile ? "0.75rem" : "0.875rem"
+                    }}>{r.value}</td>
+                    <td style={{
+                      padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+                      fontSize: isMobile ? "0.75rem" : "0.875rem"
+                    }}>{r.status}</td>
+                    <td style={{
+                      padding: isMobile ? "0.75rem 0.5rem" : "1rem",
+                      fontSize: isMobile ? "0.75rem" : "0.875rem"
+                    }}>
+                      <div style={{
+                        display: "flex",
+                        gap: "0.375rem",
+                        flexDirection: isMobile ? "column" : "row"
+                      }}>
+                        {r.status === "Pending" && (
+                          <button
+                            onClick={() => approveReward(r.id)}
+                            style={{
+                              background: "#22c55e",
+                              color: "#fff",
+                              border: "none",
+                              borderRadius: "0.375rem",
+                              padding: isMobile ? "0.5rem" : "0.375rem 0.625rem",
+                              fontSize: isMobile ? "0.75rem" : "0.875rem",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.25rem",
+                              justifyContent: "center"
+                            }}
+                          >
+                            <Check size={14} /> {!isMobile && "Approve"}
+                          </button>
+                        )}
+                        <button
+                          onClick={() => removeReward(r.id)}
+                          style={{
+                            background: "#ef4444",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "0.375rem",
+                            padding: isMobile ? "0.5rem" : "0.375rem 0.5rem",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center"
+                          }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+
+      {/* MOBILE CARD VIEW */}
+      <div className="mobile-rewards-list">
+        {rewards.map((r) => (
+          <div key={r.id} className="mobile-reward-card">
+            <div className="card-top">
+              <div className="card-title">{r.name}</div>
+              <span className={`status ${r.status.toLowerCase()}`}>
+                {r.status}
+              </span>
+            </div>
+
+            <div className="card-meta">
+              <div><strong>Type:</strong> {r.reward_type}</div>
+              <div><strong>Applies:</strong> {r.applies_to.join(", ")}</div>
+              <div><strong>Value:</strong> {r.value}</div>
+            </div>
+
+            <div className="card-actions">
+              {r.status === "Pending" && (
+                <button
+                  className="approve-btn"
+                  onClick={() => approveReward(r.id)}
+                >
+                  <Check size={14} /> Approve
+                </button>
+              )}
+              <button
+                className="delete-btn"
+                onClick={() => removeReward(r.id)}
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
 
       {/* ADD MODAL */}
       {showAddReward && (
-        <div style={modalOverlay}>
-          <div style={{ ...modal, width: "420px" }}>
-            <h3 style={{ fontSize: "18px", marginBottom: "4px", fontWeight: 600 }}>
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(15,23,42,0.25)",
+          backdropFilter: "blur(4px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: isMobile ? "1rem" : "0",
+          zIndex: 50
+        }}>
+          <div style={{
+            background: "#fff",
+            padding: isMobile ? "1.5rem" : "1.5rem",
+            borderRadius: "1rem",
+            width: isMobile ? "100%" : "26.25rem",
+            maxWidth: "100%",
+            maxHeight: isMobile ? "90vh" : "auto",
+            overflowY: isMobile ? "auto" : "visible"
+          }}>
+            <h3 style={{
+              fontSize: isMobile ? "1rem" : "1.125rem",
+              marginBottom: "0.25rem",
+              fontWeight: 600
+            }}>
               Add Reward
             </h3>
-            <p style={{ marginBottom: "18px", fontSize: "13px", color: "#64748b" }}>
+            <p style={{
+              marginBottom: "1.125rem",
+              fontSize: "0.8125rem",
+              color: "#64748b"
+            }}>
               Create reward rule (approval required)
             </p>
 
             <input
               placeholder="Reward Name"
-              style={modalInput}
+              style={{
+                width: "100%",
+                padding: "0.625rem",
+                marginBottom: "0.75rem",
+                borderRadius: "0.5rem",
+                border: "1px solid #cbd5f5",
+                fontSize: isMobile ? "0.875rem" : "1rem"
+              }}
               value={newReward.name}
               onChange={(e) =>
                 setNewReward({ ...newReward, name: e.target.value })
@@ -202,7 +508,16 @@ const AdminRewards = () => {
 
             <textarea
               placeholder="Reward Description"
-              style={{ ...modalInput, height: "60px" }}
+              style={{
+                width: "100%",
+                padding: "0.625rem",
+                marginBottom: "0.75rem",
+                borderRadius: "0.5rem",
+                border: "1px solid #cbd5f5",
+                height: "3.75rem",
+                fontSize: isMobile ? "0.875rem" : "1rem",
+                resize: "vertical"
+              }}
               value={newReward.description}
               onChange={(e) =>
                 setNewReward({ ...newReward, description: e.target.value })
@@ -210,7 +525,14 @@ const AdminRewards = () => {
             />
 
             <select
-              style={modalInput}
+              style={{
+                width: "100%",
+                padding: "0.625rem",
+                marginBottom: "0.75rem",
+                borderRadius: "0.5rem",
+                border: "1px solid #cbd5f5",
+                fontSize: isMobile ? "0.875rem" : "1rem"
+              }}
               value={newReward.type}
               onChange={(e) =>
                 setNewReward({ ...newReward, type: e.target.value })
@@ -221,16 +543,15 @@ const AdminRewards = () => {
               <option>Referral</option>
             </select>
 
-            {/* ✅ ONLY UI FIX HERE */}
             <div
               style={{
-                marginBottom: "14px",
-                padding: "10px 12px",
+                marginBottom: "0.875rem",
+                padding: "0.625rem 0.75rem",
                 border: "1px solid #cbd5f5",
-                borderRadius: "10px",
+                borderRadius: "0.625rem",
                 display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: "8px",
+                gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+                gap: "0.5rem",
                 background: "#f8fafc",
               }}
             >
@@ -240,8 +561,8 @@ const AdminRewards = () => {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "8px",
-                    fontSize: "13px",
+                    gap: "0.5rem",
+                    fontSize: "0.8125rem",
                     cursor: "pointer",
                   }}
                 >
@@ -257,20 +578,51 @@ const AdminRewards = () => {
 
             <input
               placeholder="Points / % / ₹"
-              style={modalInput}
+              style={{
+                width: "100%",
+                padding: "0.625rem",
+                marginBottom: "0.75rem",
+                borderRadius: "0.5rem",
+                border: "1px solid #cbd5f5",
+                fontSize: isMobile ? "0.875rem" : "1rem"
+              }}
               value={newReward.value}
               onChange={(e) =>
                 setNewReward({ ...newReward, value: e.target.value })
               }
             />
 
-            <div style={{ display: "flex", gap: "10px" }}>
-              <button onClick={handleAddReward} style={primaryBtn}>
+            <div style={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              gap: "0.625rem"
+            }}>
+              <button
+                onClick={handleAddReward}
+                style={{
+                  flex: 1,
+                  background: "#2E5A88",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "0.5rem",
+                  padding: "0.625rem",
+                  fontSize: isMobile ? "0.875rem" : "1rem",
+                  cursor: "pointer"
+                }}
+              >
                 Save
               </button>
               <button
                 onClick={() => setShowAddReward(false)}
-                style={secondaryBtn}
+                style={{
+                  flex: 1,
+                  background: "#e5e7eb",
+                  border: "none",
+                  borderRadius: "0.5rem",
+                  padding: "0.625rem",
+                  fontSize: isMobile ? "0.875rem" : "1rem",
+                  cursor: "pointer"
+                }}
               >
                 Cancel
               </button>
@@ -282,123 +634,7 @@ const AdminRewards = () => {
   );
 };
 
+
 export default AdminRewards;
 
-/* ================= STYLES ================= */
 
-const filters = {
-  display: "flex",
-  gap: "10px",
-  background: "#fff",
-  padding: "14px",
-  borderRadius: "14px",
-  boxShadow: "0 6px 20px rgba(0,0,0,0.06)",
-  marginBottom: "20px",
-};
-
-const inputWrap = { position: "relative", flex: 1 };
-const selectWrap = { position: "relative" };
-const dateWrap = { position: "relative" };
-
-const inputIcon = {
-  position: "absolute",
-  left: "10px",
-  top: "50%",
-  transform: "translateY(-50%)",
-  color: "#64748b",
-};
-
-const search = {
-  width: "100%",
-  padding: "10px 10px 10px 36px",
-  borderRadius: "10px",
-  border: "1px solid #cbd5f5",
-};
-
-const filterSelect = search;
-const date = search;
-
-const addBtn = {
-  padding: "10px 16px",
-  background: "#2E5A88",
-  color: "#fff",
-  borderRadius: "10px",
-  border: "none",
-  fontWeight: 600,
-};
-
-const card = {
-  background: "#fff",
-  borderRadius: "16px",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
-};
-
-const th = { padding: "16px", textAlign: "left", color: "#475569" };
-const td = { padding: "16px" };
-const row = { borderBottom: "1px solid #f1f5f9" };
-
-const emptyState = {
-  padding: "48px",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  color: "#64748b",
-};
-
-const approveBtn = {
-  marginRight: "6px",
-  background: "#22c55e",
-  color: "#fff",
-  border: "none",
-  borderRadius: "6px",
-  padding: "6px 10px",
-};
-
-const removeBtn = {
-  background: "#ef4444",
-  color: "#fff",
-  border: "none",
-  borderRadius: "6px",
-  padding: "6px 8px",
-};
-
-const modalOverlay = {
-  position: "fixed",
-  inset: 0,
-  background: "rgba(15,23,42,0.25)",
-  backdropFilter: "blur(4px)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-};
-
-const modal = {
-  background: "#fff",
-  padding: "24px",
-  borderRadius: "16px",
-};
-
-const modalInput = {
-  width: "100%",
-  padding: "10px",
-  marginBottom: "12px",
-  borderRadius: "8px",
-  border: "1px solid #cbd5f5",
-};
-
-const primaryBtn = {
-  flex: 1,
-  background: "#2E5A88",
-  color: "#fff",
-  border: "none",
-  borderRadius: "8px",
-  padding: "10px",
-};
-
-const secondaryBtn = {
-  flex: 1,
-  background: "#e5e7eb",
-  border: "none",
-  borderRadius: "8px",
-  padding: "10px",
-};

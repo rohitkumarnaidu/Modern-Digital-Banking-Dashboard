@@ -49,7 +49,14 @@ const Dashboard = () => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [screenWidth, setScreenWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1024
+  );
+
+
+  const isMobile = screenWidth < 768;
+  const isTablet = screenWidth >= 768 && screenWidth < 1024;
+  const isDesktop = screenWidth >= 1024;
 
 
   const isActive = (path) =>{
@@ -87,13 +94,23 @@ const Dashboard = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
+      const width = window.innerWidth;
+      setScreenWidth(width);
+
+      // ✅ Close mobile sidebar when leaving mobile
+      if (width >= 1024) {
         setIsMobileMenuOpen(false);
       }
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    handleResize(); // initial sync
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
   }, []);
 
 
@@ -115,7 +132,7 @@ const Dashboard = () => {
   return (
     <div style={{ minHeight: "100vh", display: "flex", background: "#eaf1f8" }}>
       {/* MOBILE MENU BUTTON */}
-      {isMobile && (
+      {(isMobile || isTablet) && (
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           style={{
@@ -140,7 +157,7 @@ const Dashboard = () => {
       )}
 
       {/* MOBILE OVERLAY */}
-      {isMobile && isMobileMenuOpen && (
+      {(isMobile || isTablet) && isMobileMenuOpen && (
         <div
           onClick={() => setIsMobileMenuOpen(false)}
           style={{
@@ -156,7 +173,9 @@ const Dashboard = () => {
       )}
 
       {/* SIDEBAR */}
-      <aside className={`sidebar ${isMobile ? 'mobile' : ''} ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+      <aside
+        className={`sidebar ${(isMobile || isTablet) ? 'mobile' : ''} ${isMobileMenuOpen ? 'mobile-open' : ''}`}
+      >
 
         {/* LOGO */}
         <div className="sidebar-logo">
@@ -173,7 +192,7 @@ const Dashboard = () => {
               key={item.path}
               to={item.path}
               className={`sidebar-item ${isActive(item.path) ? "active" : ""}`}
-              onClick={() => isMobile && setIsMobileMenuOpen(false)}
+              onClick={() => (isMobile || isTablet) && setIsMobileMenuOpen(false)}
             >
               <item.icon size={20} />
               <span className="sidebar-text">{item.label}</span>
@@ -284,12 +303,8 @@ const Dashboard = () => {
           </div>
  
 
-        <main className="dashboard-main" style={{ 
-          padding: isMobile ? "60px 16px 16px" : "40px", 
-          background: "#eaf1f8", 
-          minHeight: "100vh"
-        }}>
-          <Outlet />
+        <main className="dashboard-main">
+          <Outlet/>
         </main>
       </div>
 
@@ -360,6 +375,17 @@ const Dashboard = () => {
         transition: opacity 0.25s ease;
         }
 
+
+        /* Desktop hover ONLY */
+        @media (min-width: 1024px) {
+          .sidebar:hover {
+            width: 220px;
+          }
+
+          .sidebar:hover ~ div .dashboard-main {
+            margin-left: 220px;
+          }
+        }
 
         .sidebar:hover:not(.mobile) {
           width: 220px;
@@ -459,10 +485,6 @@ const Dashboard = () => {
          transition: margin-left 0.25s ease;
         }
 
-        .sidebar:hover:not(.mobile) ~ div .dashboard-main {
-        margin-left: 220px;
-        }
-
         /* Mobile responsive styles */
         @media (max-width: 767px) {
           .dashboard-main {
@@ -479,22 +501,14 @@ const Dashboard = () => {
           }
         }
 
-        /* Tablet responsive styles */
-        @media (min-width: 768px) and (max-width: 1023px) {
-          .sidebar {
-            width: 64px;
-          }
-          
-          .sidebar:hover {
-            width: 200px;
-          }
-          
+        .dashboard-main {
+          padding: 40px;
+        }
+
+        /* Mobile */
+        @media (max-width: 767px) {
           .dashboard-main {
-            margin-left: 64px;
-          }
-          
-          .sidebar:hover ~ div .dashboard-main {
-            margin-left: 200px;
+            padding: 64px 16px 16px;
           }
         }
 

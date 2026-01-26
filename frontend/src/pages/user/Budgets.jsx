@@ -65,24 +65,24 @@ const Budgets = () => {
   };
 
   return (
-    <div className="p-6 pt-10 space-y-6">
+    <div className="p-4 sm:p-6 pt-6 sm:pt-10 space-y-4 sm:space-y-6">
       
       {/* HEADER */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
         <div>
-          <h1 className="text-2xl font-semibold">Monthly Budgets</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">Monthly Budgets</h1>
           <p className="text-sm text-gray-500">
             Track your category-wise monthly spending
           </p>
         </div>
 
         {/* ✅ ADDED SUMMARY BUTTON (NO EXISTING CODE CHANGED) */}
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
           <Link
             to="/dashboard/budgets/summary"
             className="border border-blue-600 text-blue-600
-                       px-5 py-2.5 rounded-full font-medium
-                       hover:bg-blue-50"
+                       px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-medium
+                       hover:bg-blue-50 text-center text-sm sm:text-base"
           >
             View Summary
           </Link>
@@ -92,7 +92,7 @@ const Budgets = () => {
       </div>
 
       {/* SUMMARY */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         <SummaryCard
           title="Total Budget"
           value={`₹${Number(totalBudget).toLocaleString("en-IN")}`}
@@ -109,19 +109,19 @@ const Budgets = () => {
 
       {/* SEARCH & FILTER */}
       {showFilters && (
-        <div className="flex flex-col md:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             placeholder="Search category..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border rounded-md px-3 py-2 w-full md:w-64"
+            className="border rounded-md px-3 py-2 w-full sm:w-64 text-sm sm:text-base"
           />
 
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="border rounded-md px-3 py-2 w-full md:w-48"
+            className="border rounded-md px-3 py-2 w-full sm:w-48 text-sm sm:text-base"
           >
             <option value="">All Categories</option>
             <option value="Food">Food</option>
@@ -144,11 +144,11 @@ const Budgets = () => {
 
       {/* BUDGET LIST */}
       {budgets.length === 0 ? (
-        <div className="bg-white rounded-xl p-10 text-center border border-dashed">
-          <h3 className="text-lg font-medium mb-2">
+        <div className="bg-white rounded-xl p-6 sm:p-10 text-center border border-dashed">
+          <h3 className="text-base sm:text-lg font-medium mb-2">
             No budgets created yet
           </h3>
-          <p className="text-gray-500 mb-4">
+          <p className="text-sm sm:text-base text-gray-500 mb-4">
             Start by creating a monthly budget for your spending categories.
           </p>
 
@@ -181,9 +181,9 @@ const Budgets = () => {
 };
 
 const SummaryCard = ({ title, value }) => (
-  <div className="bg-white rounded-xl p-4 shadow-sm">
+  <div className="bg-white rounded-xl p-3 sm:p-4 shadow-sm">
     <p className="text-sm text-gray-500">{title}</p>
-    <p className="text-xl font-semibold">{value}</p>
+    <p className="text-lg sm:text-xl font-semibold">{value}</p>
   </div>
 );
 

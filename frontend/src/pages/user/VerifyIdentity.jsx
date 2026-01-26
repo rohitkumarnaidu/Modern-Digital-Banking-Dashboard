@@ -27,7 +27,7 @@ const VerifyIdentity = () => {
       await api.post("/auth/forgot-password", { email });
 
       navigate("/dashboard/accounts/verify-otp", {
-        state: { email, accountID },
+        state: { email, accountID, mode: "change_pin" },
       });
     } catch (err) {
       setError("Invalid email address");

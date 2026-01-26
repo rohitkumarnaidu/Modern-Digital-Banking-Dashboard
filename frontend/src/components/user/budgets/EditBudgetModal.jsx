@@ -32,45 +32,45 @@ const EditBudgetModal = ({ open, onClose, budget, onSave }) => {
       />
 
       {/* MODAL */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-lg">
-          <h2 className="text-lg font-semibold mb-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl w-full max-w-md p-4 sm:p-6 shadow-lg">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
             Edit Budget
           </h2>
 
           {/* CATEGORY */}
-          <div className="mb-4">
-            <label className="text-sm font-medium">Category</label>
+          <div className="mb-3 sm:mb-4">
+            <label className="text-xs sm:text-sm font-medium">Category</label>
             <input
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 mt-1"
+              className="w-full border rounded-lg px-3 py-2 mt-1 text-sm"
             />
           </div>
 
           {/* LIMIT */}
-          <div className="mb-6">
-            <label className="text-sm font-medium">Budget Limit</label>
+          <div className="mb-4 sm:mb-6">
+            <label className="text-xs sm:text-sm font-medium">Budget Limit</label>
             <input
               type="number"
               value={limit}
               onChange={(e) => setLimit(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 mt-1"
+              className="w-full border rounded-lg px-3 py-2 mt-1 text-sm"
             />
           </div>
 
           {/* ACTIONS */}
-          <div className="flex justify-end gap-3">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
             <button
               onClick={onClose}
-              className="text-gray-500"
+              className="text-gray-500 py-2 sm:py-0 text-sm"
             >
               Cancel
             </button>
 
             <button
               onClick={handleSave}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-full text-sm"
             >
               Save Changes
             </button>

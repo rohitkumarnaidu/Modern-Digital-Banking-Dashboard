@@ -10,9 +10,9 @@ const BaseBillModal = ({ title, children, confirmData, onClose }) => {
     <>
       {/* MAIN MODAL */}
       {!showPin && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6">
-            <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{title}</h3>
             {children({ openPin: () => setShowPin(true) })}
           </div>
         </div>

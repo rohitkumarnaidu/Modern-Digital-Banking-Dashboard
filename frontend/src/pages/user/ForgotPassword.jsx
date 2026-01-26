@@ -29,7 +29,11 @@ const ForgotPassword = () => {
       await api.post("/auth/forgot-password", { email });
 
       navigate("/verify-otp", {
-        state: { email },
+        state: { 
+          email,
+          mode: "reset_password",
+
+         },
       });
     } catch (err) {
       setError(err.response?.data?.detail || "Email not found");

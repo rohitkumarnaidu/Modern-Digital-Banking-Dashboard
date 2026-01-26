@@ -19,9 +19,20 @@ const Settings = () => {
   const navigate = useNavigate();
   const [showPinModal, setShowPinModal] = useState(false);
   const [pin, setPin] = useState(["", "", "", ""]);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+  const isMobile = screenWidth < 768;
+  const isTablet = screenWidth >= 768 && screenWidth < 1024;
+  const isDesktop = screenWidth >= 1024;
 
   const [loginAlerts, setLoginAlerts] = useState(true);
   const [settings, setSettings] = useState(null);
+
+  useEffect(() => {
+    const handleResize = () => setScreenWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handlePinChange = (value, index) => {
     if (!/^\d?$/.test(value)) return;
@@ -58,8 +69,8 @@ const Settings = () => {
       <div style={{ display: "flex", justifyContent: "center" }}>
         <div style={{ width: "100%", maxWidth: "900px" }}>
           {/* ================= PREFERENCES ================= */}
-          <SectionCard title="⚙️ Preferences">
-            <ToggleItem
+          <SectionCard title="⚙️ Preferences" isMobile={isMobile}>
+            <ToggleItem isMobile={isMobile}
               icon="🔔"
               title="Push Notifications"
               desc="Receive app notifications"
@@ -69,7 +80,7 @@ const Settings = () => {
               }
             />
 
-            <ToggleItem
+            <ToggleItem isMobile={isMobile}
               icon="📧"
               title="Email Alerts"
               desc="Get transaction alerts via email"
@@ -79,7 +90,7 @@ const Settings = () => {
               }
             />
 
-            <ToggleItem
+            <ToggleItem isMobile={isMobile}
               icon="🔐"
               title="Two-Factor Authentication"
               desc="Requires OTP during login (setup required)"
@@ -89,14 +100,14 @@ const Settings = () => {
               }
             />
 
-            <StaticItem
+            <StaticItem isMobile={isMobile}
               icon="💱"
               title="Currency"
               desc="Display currency across dashboard"
               value="INR (₹)"
             />
 
-            <StaticItem
+            <StaticItem isMobile={isMobile}
               icon="🌐"
               title="Language"
               desc="Interface language (coming soon)"
@@ -105,8 +116,8 @@ const Settings = () => {
           </SectionCard>
 
           {/* ================= SECURITY ================= */}
-          <SectionCard title="🛡 Security">
-            <ToggleItem
+          <SectionCard title="🛡 Security" isMobile={isMobile}>
+            <ToggleItem isMobile={isMobile}
               icon="🔔"
               title="Login Alerts"
               desc="Notify when a new device logs in"
@@ -116,7 +127,7 @@ const Settings = () => {
               }
             />
 
-            <ActionItem
+            <ActionItem isMobile={isMobile}
               icon="🔑"
               title="Change Password"
               desc="Update your account password"
@@ -124,7 +135,7 @@ const Settings = () => {
               onClick={() => navigate("/forgot-password")}
             />
 
-            <ActionItem
+            <ActionItem isMobile={isMobile}
               icon="🔢"
               title="Change PIN"
               desc="Update your account PIN"
@@ -134,8 +145,8 @@ const Settings = () => {
           </SectionCard>
 
           {/* ================= BALANCE ================= */}
-          <SectionCard title="🔒 Balance">
-            <ActionItem
+          <SectionCard title="🔒 Balance" isMobile={isMobile}>
+            <ActionItem isMobile={isMobile}
               icon="👁"
               title="Check Balance"
               desc="Verify using PIN to view balance"
@@ -148,14 +159,14 @@ const Settings = () => {
           <div style={{ marginTop: "30px", textAlign: "center" }}>
             <button
               style={{
-                padding: "14px 32px",
+                padding: isMobile ? "12px 24px" : "14px 32px",
                 borderRadius: "14px",
                 border: "none",
                 background: "#2563eb",
                 color: "#fff",
                 fontWeight: "600",
                 cursor: "pointer",
-                fontSize: "16px",
+                fontSize: isMobile ? "14px" : "16px",
               }}
             >
               Save Settings
@@ -171,37 +182,48 @@ export default Settings;
 
 /* ================= COMPONENTS ================= */
 
-const SectionCard = ({ title, children }) => (
-  <div
-    style={{
-      background: "#fff",
-      padding: "26px",
-      borderRadius: "22px",
-      boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
-      marginBottom: "30px",
-    }}
-  >
-    <h2 style={{ marginBottom: "20px", fontWeight: "700", fontSize: "18px" }}>{title}</h2>
-    {children}
-  </div>
-);
-
-const ToggleItem = ({ icon, title, desc, value, onChange }) => {
+const SectionCard = ({ title, children, isMobile }) => {
 
   return (
-    <div style={itemRow}>
-      <div style={{ display: "flex", gap: "14px" }}>
-        <span style={{ fontSize: "20px" }}>{icon}</span>
-        <div>
-          <div style={{ fontWeight: 600 }}>{title}</div>
-          <div style={{ fontSize: "14px", color: "#64748b" }}>{desc}</div>
+    <div
+      style={{
+        background: "#fff",
+        padding: isMobile ? "20px" : "26px",
+        borderRadius: isMobile ? "16px" : "22px",
+        boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
+        marginBottom: "30px",
+      }}
+    >
+      <h2 style={{ marginBottom: "20px", fontWeight: "700", fontSize: isMobile ? "16px" : "18px" }}>{title}</h2>
+      {children}
+    </div>
+  );
+};
+
+const ToggleItem = ({ icon, title, desc, value, onChange, isMobile }) => {
+
+  return (
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "16px 0",
+      borderBottom: "1px solid #e5e7eb",
+      flexDirection: isMobile ? "column" : "row",
+      gap: isMobile ? "12px" : "0",
+    }}>
+      <div style={{ display: "flex", gap: "14px", alignItems: isMobile ? "center" : "flex-start" }}>
+        <span style={{ fontSize: isMobile ? "18px" : "20px" }}>{icon}</span>
+        <div style={{ textAlign: isMobile ? "center" : "left" }}>
+          <div style={{ fontWeight: 600, fontSize: isMobile ? "14px" : "16px" }}>{title}</div>
+          <div style={{ fontSize: isMobile ? "12px" : "14px", color: "#64748b" }}>{desc}</div>
         </div>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         <span
           style={{
-            fontSize: "14px",
+            fontSize: isMobile ? "12px" : "14px",
             fontWeight: "600",
             color: value ? "#1d4ed8" : "#94a3b8",
           }}
@@ -218,69 +240,80 @@ const ToggleItem = ({ icon, title, desc, value, onChange }) => {
   );
 };
 
-const StaticItem = ({ icon, title, desc, value }) => (
-  <div style={itemRow}>
-    <div style={{ display: "flex", gap: "14px" }}>
-      <span style={{ fontSize: "20px" }}>{icon}</span>
-      <div>
-        <div style={{ fontWeight: 600 }}>{title}</div>
-        <div style={{ fontSize: "14px", color: "#64748b" }}>{desc}</div>
+const StaticItem = ({ icon, title, desc, value, isMobile }) => {
+  return (
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "16px 0",
+      borderBottom: "1px solid #e5e7eb",
+      flexDirection: isMobile ? "column" : "row",
+      gap: isMobile ? "12px" : "0",
+    }}>
+      <div style={{ display: "flex", gap: "14px", alignItems: isMobile ? "center" : "flex-start" }}>
+        <span style={{ fontSize: isMobile ? "18px" : "20px" }}>{icon}</span>
+        <div style={{ textAlign: isMobile ? "center" : "left" }}>
+          <div style={{ fontWeight: 600, fontSize: isMobile ? "14px" : "16px" }}>{title}</div>
+          <div style={{ fontSize: isMobile ? "12px" : "14px", color: "#64748b" }}>{desc}</div>
+        </div>
       </div>
-    </div>
 
-    <span
-      style={{
-        fontSize: "14px",
-        fontWeight: "600",
-        color: "#000",
-      }}
-    >
-      {value}
-    </span>
-  </div>
-);
-
-const ActionItem = ({ icon, title, desc, actionLabel, onClick }) => (
-  <div style={itemRow}>
-    <div style={{ display: "flex", gap: "14px" }}>
-      <span style={{ fontSize: "20px" }}>{icon}</span>
-      <div>
-        <div style={{ fontWeight: 600 }}>{title}</div>
-        <div style={{ fontSize: "14px", color: "#64748b" }}>{desc}</div>
-      </div>
-    </div>
-    <button 
-      style={actionBtn} onClick={onClick}
+      <span
+        style={{
+          fontSize: isMobile ? "12px" : "14px",
+          fontWeight: "600",
+          color: "#000",
+        }}
       >
-      {actionLabel}
-    </button>
-  </div>
-);
+        {value}
+      </span>
+    </div>
+  );
+};
+
+const ActionItem = ({ icon, title, desc, actionLabel, onClick, isMobile }) => {
+  return (
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "16px 0",
+      borderBottom: "1px solid #e5e7eb",
+      flexDirection: isMobile ? "column" : "row",
+      gap: isMobile ? "12px" : "0",
+    }}>
+      <div style={{ display: "flex", gap: "14px", alignItems: isMobile ? "center" : "flex-start" }}>
+        <span style={{ fontSize: isMobile ? "18px" : "20px" }}>{icon}</span>
+        <div style={{ textAlign: isMobile ? "center" : "left" }}>
+          <div style={{ fontWeight: 600, fontSize: isMobile ? "14px" : "16px" }}>{title}</div>
+          <div style={{ fontSize: isMobile ? "12px" : "14px", color: "#64748b" }}>{desc}</div>
+        </div>
+      </div>
+      <button 
+        style={{
+          padding: isMobile ? "6px 14px" : "8px 18px",
+          borderRadius: "10px",
+          border: "1px solid #93c5fd",
+          background: "#f8fafc",
+          color: "#000",
+          cursor: "pointer",
+          fontWeight: "600",
+          fontSize: isMobile ? "12px" : "14px",
+        }} onClick={onClick}
+        >
+        {actionLabel}
+      </button>
+    </div>
+  );
+};
 
 /* ================= STYLES ================= */
-
-const itemRow = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  padding: "16px 0",
-  borderBottom: "1px solid #e5e7eb",
-};
 
 const selectStyle = {
   padding: "8px 12px",
   borderRadius: "8px",
   border: "1px solid #cbd5f5",
-};
-
-const actionBtn = {
-  padding: "8px 18px",
-  borderRadius: "10px",
-  border: "1px solid #93c5fd",
-  background: "#f8fafc",
-  color: "#000",
-  cursor: "pointer",
-  fontWeight: "600",
 };
 
 const modalOverlay = {

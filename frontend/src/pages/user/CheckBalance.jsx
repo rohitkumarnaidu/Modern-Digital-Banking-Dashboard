@@ -52,8 +52,13 @@ const CheckBalance = () => {
   };
 
   return (
-    <div style={{ padding: "24px 32px" }}>
-      <h2 style={{ fontSize: "22px", marginBottom: "28px" }}>
+    <div style={{
+      padding: window.innerWidth <= 480 ? "16px" : window.innerWidth <= 768 ? "20px 24px" : "24px 32px"
+    }}>
+      <h2 style={{ 
+        fontSize: window.innerWidth <= 480 ? "18px" : window.innerWidth <= 768 ? "20px" : "22px", 
+        marginBottom: window.innerWidth <= 480 ? "20px" : "28px"
+      }}>
         Check Balance
       </h2>
 
@@ -63,25 +68,34 @@ const CheckBalance = () => {
           style={{
             display: "flex",
             justifyContent: "center",
-            marginTop: 80,
+            marginTop: window.innerWidth <= 480 ? 40 : 80,
+            padding: window.innerWidth <= 480 ? "0 16px" : "0",
           }}
         >
           <div
             style={{
               background: "#ffffff",
-              borderRadius: 22,
-              padding: "72px",
+              borderRadius: window.innerWidth <= 480 ? 16 : 22,
+              padding: window.innerWidth <= 480 ? "40px 24px" : window.innerWidth <= 768 ? "56px 40px" : "72px",
               width: "100%",
               maxWidth: 820,
               boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
               textAlign: "center",
             }}
           >
-            <h3 style={{ fontSize: 22, fontWeight: 700 }}>
+            <h3 style={{ 
+              fontSize: window.innerWidth <= 480 ? 18 : window.innerWidth <= 768 ? 20 : 22, 
+              fontWeight: 700 
+            }}>
               Get Started with Your First Account
             </h3>
 
-            <p style={{ color: "#64748b", margin: "12px 0 28px" }}>
+            <p style={{ 
+              color: "#64748b", 
+              margin: "12px 0 28px",
+              fontSize: window.innerWidth <= 480 ? 13 : 14,
+              lineHeight: "1.5"
+            }}>
               Add a bank account to view balances securely.
             </p>
 
@@ -92,10 +106,10 @@ const CheckBalance = () => {
                 background: "#2563eb",
                 color: "#fff",
                 border: "none",
-                padding: "14px",
+                padding: window.innerWidth <= 480 ? "12px" : "14px",
                 borderRadius: 12,
                 fontWeight: 600,
-                fontSize: 15,
+                fontSize: window.innerWidth <= 480 ? 14 : 15,
                 cursor: "pointer",
               }}
             >
@@ -110,8 +124,12 @@ const CheckBalance = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
-            gap: "22px",
+            gridTemplateColumns: window.innerWidth <= 480 
+              ? "1fr" 
+              : window.innerWidth <= 768 
+                ? "repeat(auto-fit, minmax(280px, 1fr))" 
+                : "repeat(auto-fit, minmax(360px, 1fr))",
+            gap: window.innerWidth <= 480 ? "16px" : "22px",
           }}
         >
           {accounts.map((acc) => (
@@ -119,22 +137,35 @@ const CheckBalance = () => {
               key={acc.id}
               style={{
                 background: "#ffffff",
-                padding: "26px",
-                borderRadius: "18px",
+                padding: window.innerWidth <= 480 ? "20px" : window.innerWidth <= 768 ? "22px" : "26px",
+                borderRadius: window.innerWidth <= 480 ? "14px" : "18px",
                 boxShadow: "0 12px 32px rgba(0,0,0,0.08)",
               }}
             >
-              <h3 style={{ fontWeight: 700 }}>{acc.bank_name}</h3>
-              <p style={{ color: "#64748b", marginBottom: 18 }}>
+              <h3 style={{ 
+                fontWeight: 700,
+                fontSize: window.innerWidth <= 480 ? "16px" : "18px"
+              }}>{acc.bank_name}</h3>
+              <p style={{ 
+                color: "#64748b", 
+                marginBottom: window.innerWidth <= 480 ? 14 : 18,
+                fontSize: window.innerWidth <= 480 ? "13px" : "14px"
+              }}>
                 •••• {acc.masked_account.slice(-4)}
               </p>
 
               {verifiedAccountId === acc.id ? (
                 <>
-                  <p style={{ color: "#64748b", fontSize: 13 }}>
+                  <p style={{ 
+                    color: "#64748b", 
+                    fontSize: window.innerWidth <= 480 ? 12 : 13 
+                  }}>
                     Available Balance
                   </p>
-                  <h1 style={{ marginTop: 4 }}>
+                  <h1 style={{ 
+                    marginTop: 4,
+                    fontSize: window.innerWidth <= 480 ? "24px" : window.innerWidth <= 768 ? "28px" : "32px"
+                  }}>
                     ₹{acc.balance}
                   </h1>
                 </>
@@ -145,10 +176,11 @@ const CheckBalance = () => {
                     background: "#2563eb",
                     color: "#fff",
                     border: "none",
-                    padding: "10px 22px",
+                    padding: window.innerWidth <= 480 ? "8px 18px" : "10px 22px",
                     borderRadius: "24px",
                     fontWeight: 600,
                     cursor: "pointer",
+                    fontSize: window.innerWidth <= 480 ? "13px" : "14px",
                   }}
                 >
                   🔒 Check Balance
@@ -163,7 +195,11 @@ const CheckBalance = () => {
       {showPin && (
         <div style={overlay}>
           <div style={modal}>
-            <h3 style={{ textAlign: "center", marginBottom: 18 }}>
+            <h3 style={{ 
+              textAlign: "center", 
+              marginBottom: 18,
+              fontSize: window.innerWidth <= 480 ? "16px" : "18px"
+            }}>
               Enter PIN
             </h3>
 
@@ -196,7 +232,12 @@ const CheckBalance = () => {
             </div>
 
             {error && (
-              <p style={{ color: "#dc2626", textAlign: "center" }}>
+              <p style={{ 
+                color: "#dc2626", 
+                textAlign: "center",
+                fontSize: window.innerWidth <= 480 ? "12px" : "14px",
+                marginBottom: "12px"
+              }}>
                 {error}
               </p>
             )}
@@ -235,7 +276,7 @@ const CheckBalance = () => {
 
 export default CheckBalance;
 
-/* ================= STYLES ================= */
+/* ================= RESPONSIVE STYLES ================= */
 
 const overlay = {
   position: "fixed",
@@ -245,27 +286,29 @@ const overlay = {
   justifyContent: "center",
   alignItems: "center",
   zIndex: 1000,
+  padding: "16px",
 };
 
 const modal = {
   background: "#fff",
-  padding: 28,
+  padding: window.innerWidth <= 480 ? 20 : 28,
   borderRadius: 18,
-  width: 360,
+  width: "100%",
+  maxWidth: window.innerWidth <= 480 ? "320px" : "360px",
 };
 
 const pinRow = {
   display: "flex",
-  gap: 12,
+  gap: window.innerWidth <= 480 ? 8 : 12,
   justifyContent: "center",
   marginBottom: 16,
 };
 
 const pinBox = {
-  width: 48,
-  height: 48,
+  width: window.innerWidth <= 480 ? 40 : 48,
+  height: window.innerWidth <= 480 ? 40 : 48,
   textAlign: "center",
-  fontSize: 20,
+  fontSize: window.innerWidth <= 480 ? 16 : 20,
   borderRadius: 10,
   border: "1px solid #d1d5db",
 };
@@ -273,21 +316,24 @@ const pinBox = {
 const btnRow = {
   display: "flex",
   gap: 12,
+  flexDirection: window.innerWidth <= 480 ? "column" : "row",
 };
 
 const cancelBtn = {
-  flex: 1,
-  padding: 12,
+  flex: window.innerWidth <= 480 ? "none" : 1,
+  padding: window.innerWidth <= 480 ? 14 : 12,
   borderRadius: 10,
   background: "#e5e7eb",
   border: "none",
+  cursor: "pointer",
 };
 
 const submitBtn = {
-  flex: 1,
-  padding: 12,
+  flex: window.innerWidth <= 480 ? "none" : 1,
+  padding: window.innerWidth <= 480 ? 14 : 12,
   borderRadius: 10,
   background: "#2563eb",
   color: "#fff",
   border: "none",
+  cursor: "pointer",
 };

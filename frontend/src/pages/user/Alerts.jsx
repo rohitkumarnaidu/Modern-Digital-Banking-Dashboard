@@ -20,6 +20,17 @@ import api from "@/services/api";
 const Alerts = () => {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  const isMobile = windowWidth < 768;
+  const isTablet = windowWidth >= 768 && windowWidth < 1024;
+  const isLaptop = windowWidth >= 1024;
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const fetchAlerts = async () => {
     try {
@@ -42,7 +53,7 @@ const Alerts = () => {
 
   return (
     <div>
-      <h2 style={{ fontSize: "22px", marginBottom: "16px" }}>Alerts</h2>
+      <h2 style={{ fontSize: isMobile ? "18px" : "22px", marginBottom: "16px" }}>Alerts</h2>
 
       {loading && <p>Loading alerts...</p>}
 
@@ -56,7 +67,7 @@ const Alerts = () => {
             key={alert.id}
             style={{
               background: "#ffffff",
-              padding: "14px 16px",
+              padding: isMobile ? "12px 14px" : "14px 16px",
               borderRadius: "10px",
               boxShadow: "0 2px 10px rgba(0,0,0,0.06)",
             }}

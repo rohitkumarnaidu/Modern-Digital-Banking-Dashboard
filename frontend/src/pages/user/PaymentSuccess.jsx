@@ -77,8 +77,8 @@ const PaymentSuccess = () => {
       <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40" />
 
       {/* CARD */}
-      <div className="fixed inset-0 z-50 flex justify-center items-center">
-        <div className="bg-white rounded-xl shadow-xl p-8 w-full max-w-md text-center">
+      <div className="fixed inset-0 z-50 flex justify-center items-center px-4">
+        <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md text-center">
 
           {/* ✅ SUCCESS TICK ANIMATION */}
           <div className="flex justify-center mb-3">

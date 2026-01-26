@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "@/services/api";
+import useResponsive from "@/hooks/useResponsive";
 
 const OTP_LENGTH = 6;
 const RESEND_TIME = 60;
 
 const VerifyOtp = () => {
+  const { isMobile, isTablet } = useResponsive();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -154,13 +156,13 @@ const VerifyOtp = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "24px",
+        padding: isMobile ? "16px" : "24px",
       }}
     >
       <div
         style={{
           backgroundColor: "#ffffff",
-          padding: "42px",
+          padding: isMobile ? "24px" : "42px",
           borderRadius: "18px",
           width: "100%",
           maxWidth: "420px",
@@ -182,7 +184,7 @@ const VerifyOtp = () => {
           style={{
             display: "flex",
             justifyContent: "center",
-            gap: "10px",
+            gap: isMobile ? "6px" : "10px",
             marginBottom: "20px",
           }}
         >
@@ -195,10 +197,10 @@ const VerifyOtp = () => {
               onChange={(e) => handleChange(e.target.value, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               style={{
-                width: "46px",
-                height: "52px",
+                width: isMobile ? "40px" : "46px",
+                height: isMobile ? "46px" : "52px",
                 textAlign: "center",
-                fontSize: "20px",
+                fontSize: isMobile ? "18px" : "20px",
                 borderRadius: "10px",
                 border: "1px solid #e5e7eb",
               }}

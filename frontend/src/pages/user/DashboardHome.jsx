@@ -22,6 +22,14 @@ const DashboardHome = () => {
   const [transactions, setTransactions] = useState([]);
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const [mounted, setMounted] = useState(false);
+
+  const isMobile = screenWidth <= 480;
+  const isTablet = screenWidth > 480 && screenWidth <= 768;
+  const isLaptop = screenWidth > 768 && screenWidth <= 1024;
+  const isDesktop = screenWidth > 1024;
+
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -45,6 +53,26 @@ const DashboardHome = () => {
     loadDashboard();
   }, []);
 
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    handleResize(); // sync immediately
+    setMounted(true);
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+}, []);
+
+
+
   const income = summary?.total_income || 0;
   const expense = summary?.total_expense || 0;
   const savings = summary?.savings || 0;
@@ -60,8 +88,13 @@ const DashboardHome = () => {
   return (
     <div>
       {/* HEADER */}
-      <div style={header}>
-        <h1 style={title}>Welcome, {username} 👋</h1>
+      <div style={{
+        ...header,
+        marginBottom: isMobile ? 24 : 36,}}>
+        <h1 style={{
+          ...title,
+          fontSize: isMobile ? 22 : 28,
+          }}>Welcome, {username} 👋</h1>
         <p style={subtitle}>
           Here’s a snapshot of your financial health today.
         </p>
@@ -93,11 +126,9 @@ export default DashboardHome;
 
 const header = {
   textAlign: "center",
-  marginBottom: 36,
 };
 
 const title = {
-  fontSize: 28,
   fontWeight: 600,
   marginBottom: 6,
 };
