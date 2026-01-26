@@ -33,18 +33,24 @@ const AddTransactionModal = ({ onClose, onAdd }) => {
         alignItems: "center",
         justifyContent: "center",
         zIndex: 9999,
+        padding: "16px",
       }}
     >
       <div
         style={{
           background: "#fff",
-          width: "420px",
+          width: "100%",
+          maxWidth: window.innerWidth <= 480 ? "340px" : "420px",
           borderRadius: "14px",
-          padding: "20px",
+          padding: window.innerWidth <= 480 ? "16px" : "20px",
           boxShadow: "0 20px 40px rgba(0,0,0,0.25)",
         }}
       >
-        <h2 style={{ fontSize: "18px", fontWeight: "600", marginBottom: "14px" }}>
+        <h2 style={{ 
+          fontSize: window.innerWidth <= 480 ? "16px" : "18px", 
+          fontWeight: "600", 
+          marginBottom: "14px" 
+        }}>
           Add Transaction
         </h2>
 
@@ -80,7 +86,13 @@ const AddTransactionModal = ({ onClose, onAdd }) => {
           style={inputStyle}
         />
 
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "16px" }}>
+        <div style={{ 
+          display: "flex", 
+          justifyContent: "flex-end", 
+          gap: "10px", 
+          marginTop: "16px",
+          flexDirection: window.innerWidth <= 480 ? "column" : "row"
+        }}>
           <button onClick={onClose} style={cancelBtn}>
             Cancel
           </button>
@@ -95,26 +107,31 @@ const AddTransactionModal = ({ onClose, onAdd }) => {
 
 const inputStyle = {
   width: "100%",
-  padding: "10px 12px",
+  padding: window.innerWidth <= 480 ? "8px 10px" : "10px 12px",
   marginBottom: "12px",
   borderRadius: "10px",
   border: "1px solid #cbd5f5",
-  fontSize: "14px",
+  fontSize: window.innerWidth <= 480 ? "13px" : "14px",
+  boxSizing: "border-box",
 };
 
 const cancelBtn = {
-  padding: "8px 14px",
+  padding: window.innerWidth <= 480 ? "10px 14px" : "8px 14px",
   borderRadius: "10px",
   border: "1px solid #cbd5e1",
   background: "#fff",
+  cursor: "pointer",
+  fontSize: window.innerWidth <= 480 ? "13px" : "14px",
 };
 
 const addBtn = {
-  padding: "8px 16px",
+  padding: window.innerWidth <= 480 ? "10px 16px" : "8px 16px",
   borderRadius: "10px",
   border: "none",
   background: "#2563eb",
   color: "#fff",
+  cursor: "pointer",
+  fontSize: window.innerWidth <= 480 ? "13px" : "14px",
 };
 
 export default AddTransactionModal;

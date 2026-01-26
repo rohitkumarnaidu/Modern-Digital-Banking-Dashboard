@@ -63,31 +63,44 @@ const AdminUsers = () => {
   };
 
   return (
-    <div>
+    <div className="px-4 sm:px-6 lg:px-8 py-4 w-full lg:max-w-7xl lg:mx-auto">
       {/* HEADER */}
-      <h1 style={{ fontSize: "28px", marginBottom: "6px" }}>Users</h1>
-      <p style={{ color: "#64748b", marginBottom: "24px" }}>
+      <h1
+        className="
+          text-xl sm:text-2xl lg:text-3xl
+          font-semibold text-gray-800 mb-1
+          md:pl-12 lg:pl-0
+          leading-tight break-words
+        "
+      >
+        Users
+      </h1>
+      <p className="text-sm sm:text-base text-gray-500 mb-6 md:pl-12 lg:pl-0">
         View and monitor registered platform users.
       </p>
 
       {/* FILTER BAR */}
-      <div style={filters}>
-        <div style={inputWrap}>
-          <Search size={16} style={inputIcon} />
+      <div className="bg-white rounded-2xl shadow-md p-4 sm:p-5 mb-6
+        flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input
-            placeholder="Search by name or email"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={searchInput}
+            placeholder="Search by name or email"
+            className="w-full pl-9 pr-3 py-2 sm:py-2.5
+              border rounded-xl text-sm sm:text-base
+              focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        <div style={selectWrap}>
-          <ShieldCheck size={16} style={inputIcon} />
+        <div className="relative w-full sm:w-64">
+          <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <select
             value={kycFilter}
             onChange={(e) => setKycFilter(e.target.value)}
-            style={filterSelect}
+            className="w-full pl-9 pr-3 py-2 sm:py-2.5
+              border rounded-xl text-sm sm:text-base bg-white cursor-pointer"
           >
             <option value="ALL">All KYC Status</option>
             <option value="PENDING">Pending</option>
@@ -98,84 +111,129 @@ const AdminUsers = () => {
       </div>
 
       {/* TABLE */}
-      <div style={card}>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead style={{ background: "#f8fafc" }}>
-            <tr>
-              <th style={th}>ID</th>
-              <th style={th}>Name</th>
-              <th style={th}>Email</th>
-              <th style={th}>Phone</th>
-              <th style={th}>KYC Status</th>
-            </tr>
-          </thead>
+      <div className="hidden sm:block bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead style={{ 
+              background: "linear-gradient(to right, #f8fafc, #f1f5f9)",
+              borderBottom: "2px solid #e5e7eb"
+            }}>
+              <tr>
+                <th className="px-2 py-3 text-xs font-semibold text-left text-gray-700 uppercase">
+                  ID
+                </th>
 
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="6" style={{ padding: "24px", textAlign: "center" }}>
-                  Loading users...
-                </td>
+                <th className="px-2 py-3 text-xs font-semibold text-left text-gray-700 uppercase">
+                  Name
+                </th>
+
+                <th className="hidden sm:table-cell px-2 py-3 text-xs font-semibold text-left text-gray-700 uppercase">
+                  Email
+                </th>
+
+                <th className="hidden md:table-cell px-2 py-3 text-xs font-semibold text-left text-gray-700 uppercase">
+                  Phone
+                </th>
+
+                <th className="px-2 py-3 text-xs font-semibold text-left text-gray-700 uppercase">
+                  KYC Status
+                </th>
               </tr>
-            ) : users.length === 0 ? (
-              <tr>
-                <td colSpan="6">
-                  <div
+            </thead>
+
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="5" className="px-4 py-8 md:px-8 md:py-12 text-center text-gray-500 text-sm md:text-base">
+                    Loading users...
+                  </td>
+                </tr>
+              ) : users.length === 0 ? (
+                <tr>
+                  <td colSpan="5">
+                    <div className="px-4 py-8 md:px-8 md:py-12 flex flex-col items-center justify-center text-center text-gray-500">
+                      <User size={32} className="md:w-10 md:h-10 mb-4 opacity-60" />
+                      <div className="text-base md:text-lg font-semibold mb-2">
+                        No users found
+                      </div>
+                      <div className="text-sm md:text-base">
+                        Try adjusting search or filter criteria
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                users.map((u) => (
+                  <tr
+                    key={u.id}
                     style={{
-                      padding: "48px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      textAlign: "center",
-                      color: "#64748b",
+                      borderBottom: "1px solid #f3f4f6",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#f8fafc";
+                      e.currentTarget.style.boxShadow = "inset 4px 0 0 #3b82f6";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "transparent";
+                      e.currentTarget.style.boxShadow = "none";
                     }}
                   >
-                    <User size={36} style={{ marginBottom: "10px", opacity: 0.8 }} />
-                    <div style={{ fontSize: "16px", fontWeight: 600 }}>
-                      No users found
-                    </div>
-                    <div style={{ fontSize: "13px", marginTop: "4px" }}>
-                      Try adjusting search or filter criteria
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              users.map((u) => (
-                <tr
-                  key={u.id}
-                  style={row}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#f8fafc";
-                    e.currentTarget.style.boxShadow = "inset 4px 0 0 #2563eb";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
-                >
-                  <td style={td}>{u.id}</td>
-                  <td style={td}>{u.name}</td>
-                  <td style={td}>{u.email}</td>
-                  <td style={td}>{u.phone || "-"}</td>
+                    <td className="px-2 py-3 text-xs font-medium text-gray-900">
+                      {u.id}
+                    </td>
 
-                  <td style={td}>
-                    <KycBadge status={u.kycStatus} />
-                  </td>
+                    <td className="px-2 py-3 text-xs font-medium text-gray-900">
+                      {u.name}
+                    </td>
 
+                    <td className="hidden sm:table-cell px-2 py-3 text-xs text-gray-900">
+                      {u.email}
+                    </td>
 
-                  
-                 
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                    <td className="hidden md:table-cell px-2 py-3 text-xs text-gray-900">
+                      {u.phone || "-"}
+                    </td>
+
+                    <td className="px-2 py-3 text-xs text-gray-900">
+                      <KycBadge status={u.kycStatus} />
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+          {/* MOBILE CARD VIEW */}
+    <div className="sm:hidden space-y-4 mt-4">
+      {users.map((u) => (
+        <div
+          key={u.id}
+          className="bg-white rounded-xl p-4 shadow border"
+        >
+          <div className="flex justify-between items-center mb-2">
+            <div className="font-semibold text-gray-800">
+              {u.name}
+            </div>
+            <KycBadge status={u.kycStatus} />
+          </div>
+
+          <div className="text-sm text-gray-600 space-y-1">
+            <div><strong>ID:</strong> {u.id}</div>
+            <div><strong>Email:</strong> {u.email}</div>
+            <div><strong>Phone:</strong> {u.phone || "-"}</div>
+          </div>
+        </div>
+      ))}
+    </div>
     </div>
   );
 };
+
+
 
 export default AdminUsers;
 
@@ -184,114 +242,18 @@ export default AdminUsers;
 const KycBadge = ({ status }) => {
   const colors = {
     APPROVED: "#22c55e",
-    PENDING: "#facc15",
+    PENDING: "#f59e0b",
     REJECTED: "#ef4444",
   };
 
   return (
     <span
+      className="px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold text-white inline-block text-center min-w-16 md:min-w-20"
       style={{
-        padding: "6px 12px",
-        borderRadius: "999px",
-        fontSize: "12px",
-        fontWeight: 600,
-        color: "#fff",
-        background: colors[status] || "#64748b",
+        background: colors[status] || "#6b7280",
       }}
     >
       {status}
     </span>
   );
-};
-
-/* ---------------- STYLES ---------------- */
-
-const filters = {
-  display: "flex",
-  gap: "10px",
-  background: "#ffffff",
-  padding: "14px",
-  borderRadius: "14px",
-  boxShadow: "0 6px 20px rgba(0,0,0,0.06)",
-  marginBottom: "20px",
-};
-
-const inputWrap = {
-  position: "relative",
-  flex: 1,
-};
-
-const selectWrap = {
-  position: "relative",
-  width: "220px",
-};
-
-const inputIcon = {
-  position: "absolute",
-  left: "10px",
-  top: "50%",
-  transform: "translateY(-50%)",
-  color: "#64748b",
-};
-
-const searchInput = {
-  width: "100%",
-  padding: "10px 10px 10px 36px",
-  borderRadius: "10px",
-  border: "1px solid #cbd5f5",
-};
-
-const filterSelect = {
-  width: "100%",
-  padding: "10px 10px 10px 36px",
-  borderRadius: "10px",
-  border: "1px solid #cbd5f5",
-  background: "#fff",
-};
-
-const card = {
-  background: "#ffffff",
-  borderRadius: "16px",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
-  overflow: "hidden",
-};
-
-const th = {
-  padding: "16px",
-  fontSize: "14px",
-  textAlign: "left",
-  color: "#475569",
-};
-
-const td = {
-  padding: "16px",
-  fontSize: "14px",
-  color: "#0f172a",
-};
-
-const row = {
-  borderBottom: "1px solid #f1f5f9",
-  cursor: "pointer",
-  transition: "all 0.2s ease",
-};
-
-
-const approveBtn = {
-  padding: "6px 12px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#22c55e",
-  color: "#fff",
-  fontWeight: 600,
-  cursor: "pointer",
-};
-
-const rejectBtn = {
-  padding: "6px 12px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#ef4444",
-  color: "#fff",
-  fontWeight: 600,
-  cursor: "pointer",
 };

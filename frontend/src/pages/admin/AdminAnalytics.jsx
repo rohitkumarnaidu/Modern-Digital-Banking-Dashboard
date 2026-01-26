@@ -11,6 +11,19 @@ import api from "@/services/api";
 
 const AdminAnalytics = () => {
   const [loading, setLoading] = useState(true);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+  const isMobile = screenWidth <= 768;
+  const isTablet = screenWidth > 768 && screenWidth <= 1024;
+  const isDesktop = screenWidth > 1024;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const [summary, setSummary] = useState({
     totalUsers: 0,
@@ -46,19 +59,40 @@ const AdminAnalytics = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div
+      style={{
+        padding: isMobile ? "1rem" : "2rem",
+        paddingTop: isTablet ? "4.5rem" : isMobile ? "3.5rem" : "2rem", // ✅ KEY FIX
+        maxWidth: "100%",
+        overflowX: "hidden",
+      }}
+    >
+
       {/* HEADER */}
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-800">
+      <div style={{ marginBottom: "1.5rem" }}>
+        <h1 style={{
+          fontSize: isMobile ? "1.5rem" : isTablet ? "1.75rem" : "2rem",
+          fontWeight: 600,
+          color: "#1f2937",
+          marginBottom: "0.5rem"
+        }}>
           Admin Analytics
         </h1>
-        <p className="text-sm text-gray-500">
+        <p style={{
+          fontSize: "0.875rem",
+          color: "#6b7280"
+        }}>
           System-wide insights and compliance overview
         </p>
       </div>
 
       {loading && (
-        <div className="py-10 text-center text-gray-500">
+        <div style={{
+          padding: isMobile ? "2rem 1rem" : "2.5rem 2rem",
+          textAlign: "center",
+          color: "#6b7280",
+          fontSize: isMobile ? "0.875rem" : "1rem"
+        }}>
           Loading analytics…
         </div>
       )}
@@ -66,79 +100,126 @@ const AdminAnalytics = () => {
       {!loading && (
           <>
         {/* KPI CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+          gap: isMobile ? "1rem" : "1.25rem",
+          marginBottom: "1.5rem"
+        }}>
           <AnalyticsCard
             title="Total Users"
             value={summary.totalUsers}
-            icon={<Users className="text-blue-600" />}
+            icon={<Users style={{ color: "#2563eb" }} />}
+            isMobile={isMobile}
           />
           <AnalyticsCard
             title="KYC Approved"
             value={summary.kycApproved}
-            icon={<ShieldCheck className="text-green-600" />}
+            icon={<ShieldCheck style={{ color: "#16a34a" }} />}
+            isMobile={isMobile}
           />
           <AnalyticsCard
             title="KYC Pending"
             value={summary.kycPending}
-            icon={<ShieldAlert className="text-yellow-600" />}
+            icon={<ShieldAlert style={{ color: "#ca8a04" }} />}
+            isMobile={isMobile}
           />
           <AnalyticsCard
             title="KYC Rejected"
             value={summary.kycRejected}
-            icon={<ShieldX className="text-red-600" />}
+            icon={<ShieldX style={{ color: "#dc2626" }} />}
+            isMobile={isMobile}
           />
           <AnalyticsCard
             title="Total Transactions"
             value={summary.totalTransactions}
-            icon={<ArrowUpRight className="text-indigo-600" />}
+            icon={<ArrowUpRight style={{ color: "#4f46e5" }} />}
+            isMobile={isMobile}
           />
           <AnalyticsCard
             title="Rewards Issued"
             value={summary.rewardsIssued}
-            icon={<Gift className="text-purple-600" />}
+            icon={<Gift style={{ color: "#9333ea" }} />}
+            isMobile={isMobile}
           />
         </div>
 
         {/* ANALYTICS BLOCKS */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+          gap: isMobile ? "1rem" : "1.5rem",
+          marginBottom: "1.5rem"
+        }}>
           {/* KYC OVERVIEW */}
-          <div className="bg-white rounded-lg shadow p-5">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">
+          <div style={{
+            background: "white",
+            borderRadius: "0.5rem",
+            boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+            padding: isMobile ? "1rem" : "1.25rem"
+          }}>
+            <h3 style={{
+              fontSize: isMobile ? "1rem" : "1.125rem",
+              fontWeight: 500,
+              color: "#1f2937",
+              marginBottom: "1rem"
+            }}>
               KYC Status Overview
             </h3>
 
-            <div className="space-y-3 text-sm">
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.75rem",
+              fontSize: "0.875rem"
+            }}>
               <StatusRow
                 label="Approved"
                 value={summary.kycApproved}
-                color="bg-green-500"
+                color="#10b981"
               />
               <StatusRow
                 label="Pending"
                 value={summary.kycPending}
-                color="bg-yellow-500"
+                color="#f59e0b"
               />
               <StatusRow
                 label="Rejected"
                 value={summary.kycRejected}
-                color="bg-red-500"
+                color="#ef4444"
               />
             </div>
           </div>
 
           {/* TRANSACTION OVERVIEW */}
-          <div className="bg-white rounded-lg shadow p-5">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">
+          <div style={{
+            background: "white",
+            borderRadius: "0.5rem",
+            boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+            padding: isMobile ? "1rem" : "1.25rem"
+          }}>
+            <h3 style={{
+              fontSize: isMobile ? "1rem" : "1.125rem",
+              fontWeight: 500,
+              color: "#1f2937",
+              marginBottom: "1rem"
+            }}>
               Transaction Overview
             </h3>
 
-            <div className="text-sm text-gray-600 space-y-2">
+            <div style={{
+              fontSize: "0.875rem",
+              color: "#4b5563",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.5rem"
+            }}>
               <p>
-                <span className="font-medium">Total Transactions:</span>{" "}
+                <span style={{ fontWeight: 500 }}>Total Transactions:</span>{" "}
                 {summary.totalTransactions}
               </p>
               <p>
-                <span className="font-medium">Average per User:</span>{" "}
+                <span style={{ fontWeight: 500 }}>Average per User:</span>{" "}
                 {summary.totalUsers > 0
                   ? Math.round(
                       summary.totalTransactions / summary.totalUsers
@@ -146,8 +227,11 @@ const AdminAnalytics = () => {
                   : 0}
               </p>
               <p>
-                <span className="font-medium">System Status:</span>{" "}
-                <span className="text-green-600 font-medium">
+                <span style={{ fontWeight: 500 }}>System Status:</span>{" "}
+                <span style={{
+                  color: "#16a34a",
+                  fontWeight: 500
+                }}>
                   Normal Operation
                 </span>
               </p>
@@ -156,21 +240,59 @@ const AdminAnalytics = () => {
         </div>
 
         {/* TOP USERS TABLE */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-4 border-b">
-            <h3 className="text-lg font-medium text-gray-800">
+        <div style={{
+          background: "white",
+          borderRadius: "0.5rem",
+          boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+          overflow: "hidden"
+        }}>
+          <div style={{
+            padding: isMobile ? "1rem" : "1.25rem",
+            borderBottom: "1px solid #e5e7eb"
+          }}>
+            <h3 style={{
+              fontSize: isMobile ? "1rem" : "1.125rem",
+              fontWeight: 500,
+              color: "#1f2937"
+            }}>
               Top Users by Activity
             </h3>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-gray-600">
+          <div style={{
+            overflowX: "auto",
+            WebkitOverflowScrolling: "touch"
+          }}>
+            <table style={{
+              width: "100%",
+              fontSize: isMobile ? "0.75rem" : "0.875rem",
+              minWidth: isMobile ? "30rem" : "auto"
+            }}>
+              <thead style={{
+                background: "#f9fafb",
+                color: "#4b5563"
+              }}>
                 <tr>
-                  <th className="px-4 py-3 text-left">User</th>
-                  <th className="px-4 py-3 text-left">Transactions</th>
-                  <th className="px-4 py-3 text-left">Total Amount</th>
-                  <th className="px-4 py-3 text-left">KYC Status</th>
+                  <th style={{
+                    padding: isMobile ? "0.75rem 0.5rem" : "0.75rem 1rem",
+                    textAlign: "left",
+                    fontWeight: 500
+                  }}>User</th>
+                  <th style={{
+                    padding: isMobile ? "0.75rem 0.5rem" : "0.75rem 1rem",
+                    textAlign: "left",
+                    fontWeight: 500
+                  }}>Transactions</th>
+                  <th style={{
+                    padding: isMobile ? "0.75rem 0.5rem" : "0.75rem 1rem",
+                    textAlign: "left",
+                    fontWeight: 500
+                  }}>Total Amount</th>
+                  <th style={{
+                    padding: isMobile ? "0.75rem 0.5rem" : "0.75rem 1rem",
+                    textAlign: "left",
+                    fontWeight: 500
+                  }}>KYC Status</th>
                 </tr>
               </thead>
 
@@ -179,7 +301,11 @@ const AdminAnalytics = () => {
                   <tr>
                     <td
                       colSpan="4"
-                      className="px-4 py-6 text-center text-gray-500"
+                      style={{
+                        padding: isMobile ? "1.5rem 1rem" : "1.5rem 1rem",
+                        textAlign: "center",
+                        color: "#6b7280"
+                      }}
                     >
                       No analytics data available
                     </td>
@@ -189,20 +315,42 @@ const AdminAnalytics = () => {
                 {topUsers.map((u, i) => (
                   <tr
                     key={i}
-                    className="border-t hover:bg-gray-50 transition"
+                    style={{
+                      borderTop: "1px solid #f3f4f6",
+                      transition: "background-color 0.2s"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f9fafb"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                   >
-                    <td className="px-4 py-3">{u.name}</td>
-                    <td className="px-4 py-3">{u.transaction_count}</td>
-                    <td className="px-4 py-3">₹{u.total_amount}</td>
-                    <td className="px-4 py-3">
+                    <td style={{
+                      padding: isMobile ? "0.75rem 0.5rem" : "0.75rem 1rem"
+                    }}>{u.name}</td>
+                    <td style={{
+                      padding: isMobile ? "0.75rem 0.5rem" : "0.75rem 1rem"
+                    }}>{u.transaction_count}</td>
+                    <td style={{
+                      padding: isMobile ? "0.75rem 0.5rem" : "0.75rem 1rem"
+                    }}>₹{u.total_amount}</td>
+                    <td style={{
+                      padding: isMobile ? "0.75rem 0.5rem" : "0.75rem 1rem"
+                    }}>
                       <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${
-                          u.kyc_status === "approved"
-                            ? "bg-green-100 text-green-700"
+                        style={{
+                          padding: "0.25rem 0.5rem",
+                          borderRadius: "0.25rem",
+                          fontSize: "0.75rem",
+                          fontWeight: 500,
+                          backgroundColor: u.kyc_status === "approved"
+                            ? "#dcfce7"
                             : u.kyc_status === "pending"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
+                            ? "#fef3c7"
+                            : "#fee2e2",
+                          color: u.kyc_status === "approved"
+                            ? "#166534"
+                            : u.kyc_status === "pending"
+                            ? "#92400e"
+                            : "#991b1b"
+                        }}
                       >
                         {u.kyc_status}
                       </span>
@@ -221,23 +369,59 @@ const AdminAnalytics = () => {
 
 /* ---------- COMPONENTS ---------- */
 
-const AnalyticsCard = ({ title, value, icon }) => (
-  <div className="bg-white rounded-lg shadow p-5 flex items-center justify-between">
+const AnalyticsCard = ({ title, value, icon, isMobile }) => (
+  <div style={{
+    background: "white",
+    borderRadius: "0.5rem",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    padding: isMobile ? "1rem" : "1.25rem",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between"
+  }}>
     <div>
-      <p className="text-sm text-gray-500">{title}</p>
-      <p className="text-2xl font-semibold text-gray-800">{value}</p>
+      <p style={{
+        fontSize: "0.875rem",
+        color: "#6b7280",
+        marginBottom: "0.25rem"
+      }}>{title}</p>
+      <p style={{
+        fontSize: isMobile ? "1.5rem" : "2rem",
+        fontWeight: 600,
+        color: "#1f2937"
+      }}>{value}</p>
     </div>
-    <div className="p-3 bg-gray-100 rounded-full">{icon}</div>
+    <div style={{
+      padding: "0.75rem",
+      background: "#f3f4f6",
+      borderRadius: "9999px"
+    }}>{icon}</div>
   </div>
 );
 
 const StatusRow = ({ label, value, color }) => (
-  <div className="flex items-center justify-between">
-    <div className="flex items-center gap-2">
-      <span className={`w-3 h-3 rounded-full ${color}`} />
-      <span className="text-gray-700">{label}</span>
+  <div style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between"
+  }}>
+    <div style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5rem"
+    }}>
+      <span style={{
+        width: "0.75rem",
+        height: "0.75rem",
+        borderRadius: "9999px",
+        backgroundColor: color
+      }} />
+      <span style={{ color: "#374151" }}>{label}</span>
     </div>
-    <span className="font-medium text-gray-800">{value}</span>
+    <span style={{
+      fontWeight: 500,
+      color: "#1f2937"
+    }}>{value}</span>
   </div>
 );
 

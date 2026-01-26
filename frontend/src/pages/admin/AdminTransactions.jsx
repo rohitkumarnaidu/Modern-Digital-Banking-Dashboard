@@ -18,7 +18,6 @@ const AdminTransactions = () => {
   const [dateFilter, setDateFilter] = useState("");
   const [search, setSearch] = useState("");
 
-
   useEffect(() => {
     fetchTransactions();
   }, []);
@@ -93,137 +92,589 @@ const AdminTransactions = () => {
 
 
   return (
-    <div>
-      <div style={{ marginTop: "24px" }}>
-        <div style={headerRow}>
-          <div>
-            <h1 style={title}>Transactions</h1>
-            <p style={subtitle}>
+    <div className="admin-transactions">
+      <div className="page-header">
+        <div className="header-content">
+          <div className="header-text">
+            <h1 className="page-title">Transactions</h1>
+            <p className="page-subtitle">
               View and monitor all user transactions
             </p>
           </div>
 
-          <div style={{ display: "flex", gap: "10px" }}>
-            <label style={secondaryBtn}>
-              <Upload size={16} /> Import CSV
+          <div className="header-actions">
+            <label className="action-btn secondary-btn">
+              <Upload size={16} /> 
+              <span className="btn-text">Import CSV</span>
               <input hidden type="file" accept=".csv" onChange={importCSV} />
             </label>
 
-            <button style={primaryBtn} onClick={exportData}>
-              <Download size={16} /> Export
+            <button className="action-btn primary-btn" onClick={exportData}>
+              <Download size={16} /> 
+              <span className="btn-text">Export</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* FILTER BAR */}
-      <div style={filters}>
-        <div style={selectWrap}>
-          <Layers size={16} style={inputIcon} />
-          <select 
-            style={filterSelect}
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">All Categories</option>
-            <option value="food">Food & Dining</option>
-            <option value="shopping">Shopping</option>
-            <option value="bills">Bills & Utilities</option>
-            <option value="transfers">Transfers</option>
-          </select>
+      <div className="filters-container">
+        <div className="filter-row">
+          <div className="filter-group">
+            <Layers size={16} className="filter-icon" />
+            <select 
+              className="filter-select"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="">All Categories</option>
+              <option value="food">Food & Dining</option>
+              <option value="shopping">Shopping</option>
+              <option value="bills">Bills & Utilities</option>
+              <option value="transfers">Transfers</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <ArrowLeftRight size={16} className="filter-icon" />
+            <select className="filter-select"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+            >
+              <option value="">All Types</option>
+              <option value="debit">Debit</option>
+              <option value="credit">Credit</option>
+              <option value="upi">UPI</option>
+              <option value="bank">Bank Transfer</option>
+            </select>
+          </div>
         </div>
 
-        <div style={selectWrap}>
-          <ArrowLeftRight size={16} style={inputIcon} />
-          <select style={filterSelect}
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-          >
-            <option value="">All Types</option>
-            <option value="debit">Debit</option>
-            <option value="credit">Credit</option>
-            <option value="upi">UPI</option>
-            <option value="bank">Bank Transfer</option>
-          </select>
-        </div>
+        <div className="filter-row">
+          <div className="filter-group search-group">
+            <Search size={16} className="filter-icon" />
+            <input
+              type="text"
+              placeholder="Search user or email"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="search-input"
+            />
+          </div>
 
-        <div style={selectWrap}>
-          <Search size={16} style={inputIcon} />
-          <input
-            type="text"
-            placeholder="Search user or email"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{
-              padding: "10px 14px 10px 36px",
-              borderRadius: "10px",
-              border: "1.5px solid #CBD5E1",
-              background: "#FFFFFF",
-              outline: "none",
-              width: "450px",
-            }}
-          />
-        </div>
+          <div className="filter-group date-group">
+            <Calendar size={16} className="filter-icon" />
+            <input 
+              type="date" 
+              className="date-input"
+              onChange={(e) => setDateFilter(e.target.value)}
+            />
+          </div>
 
-        <div style={dateWrap}>
-          <Calendar size={16} style={inputIcon} />
-          <input type="date" style={date} 
-          onChange={(e) => setDateFilter(e.target.value)}
-          />
+          <button className="apply-btn" onClick={fetchTransactions}>
+            Apply
+          </button>
         </div>
-
-        <button 
-          style={applyBtn}>
-              Apply
-            </button>
       </div>
 
       {/* TABLE */}
-      <div style={card}>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead style={thead}>
-            <tr>
-              <th style={th}>User</th>
-              <th style={th}>Email</th>
-              <th style={th}>Type</th>
-              <th style={th}>Amount</th>
-              <th style={th}>Status</th>
-              <th style={th}>Date</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {loading ? (
+      <div className="table-container">
+        <div className="table-wrapper">
+          <table className="transactions-table">
+            <thead className="table-header">
               <tr>
-                 <td colSpan="6" style={{ textAlign: "center", padding: "40px" }}>
-                  Loading transactions…
-                  </td>
-                  </tr>
-            ) : transactions.length === 0 ? (
-              <tr>
-                <td colSpan="6">
-                  <div style={emptyState}>
-                    <FileText size={32} />
-                    <div>No transactions recorded</div>
-                    <small>User activity will appear once transactions occur</small>
-                  </div>
-                </td>
+                <th className="table-th">User</th>
+                <th className="table-th hidden-mobile">Email</th>
+                <th className="table-th">Type</th>
+                <th className="table-th">Amount</th>
+                <th className="table-th hidden-mobile">Status</th>
+                <th className="table-th hidden-mobile">Date</th>
               </tr>
-            ) : (
-              filteredTransactions.map((tx) => (
-                <tr key={tx.id} style={row}>
-                  <td style={td}>{tx.user_name}</td>
-                  <td style={td}>{tx.email}</td>
-                  <td style={td}>{tx.txn_type}</td>
-                  <td style={td}>₹{tx.amount}</td>
-                  <td style={td}><StatusBadge status="SUCCESS" /></td>
-                  <td style={td}>{tx.txn_date}</td>
+            </thead>
+
+            <tbody>
+              {loading ? (
+                <tr>
+                   <td colSpan="6" className="loading-cell">
+                    Loading transactions…
+                    </td>
+                    </tr>
+              ) : transactions.length === 0 ? (
+                <tr>
+                  <td colSpan="6">
+                    <div className="empty-state">
+                      <FileText size={32} />
+                      <div>No transactions recorded</div>
+                      <small>User activity will appear once transactions occur</small>
+                    </div>
+                  </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                filteredTransactions.map((tx) => (
+                  <tr key={tx.id} className="table-row">
+                    <td className="table-td">
+                      <div className="user-info">
+                        <div className="user-name">{tx.user_name}</div>
+                        <div className="user-details-mobile">
+                          <div className="user-email">{tx.email}</div>
+                          <div className="transaction-meta">
+                            <StatusBadge status="SUCCESS" /> • {tx.txn_date}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="table-td hidden-mobile">{tx.email}</td>
+                    <td className="table-td">{tx.txn_type}</td>
+                    <td className="table-td amount-cell">₹{tx.amount}</td>
+                    <td className="table-td hidden-mobile"><StatusBadge status="SUCCESS" /></td>
+                    <td className="table-td hidden-mobile">{tx.txn_date}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+
+      {/* MOBILE CARD VIEW */}
+      <div className="mobile-transactions-list">
+        {filteredTransactions.map((tx) => (
+          <div key={tx.id} className="mobile-transaction-card">
+            
+            <div className="card-top">
+              <div className="card-user">{tx.user_name}</div>
+              <StatusBadge status="SUCCESS" />
+            </div>
+
+            <div className="card-meta">
+              <div className="card-email">{tx.email}</div>
+              <div className="card-date">{tx.txn_date}</div>
+            </div>
+
+            <div className="card-bottom">
+              <div className="card-type">{tx.txn_type}</div>
+              <div className="card-amount">₹{tx.amount}</div>
+            </div>
+
+          </div>
+        ))}
+      </div>
+
+
+      {/* RESPONSIVE STYLES */}
+      <style>{`
+        .admin-transactions {
+          padding: 2rem;
+          max-width: 100%;
+        }
+
+        @media (max-width: 1023px) {
+          .admin-transactions {
+            padding: 1.5rem;
+          }
+        }
+
+        @media (max-width: 639px) {
+          .admin-transactions {
+            padding: 1rem;
+          }
+        }
+
+        .page-header {
+          margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .page-header {
+            padding-left: 3rem; /* same as md:pl-12 */
+          }
+        }
+
+        .header-content {
+          display: flex;
+          flex-direction: row;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        @media (max-width: 639px) {
+          .header-content {
+            flex-direction: column;
+            align-items: stretch;
+          }
+        }
+
+        .header-text {
+          flex: 1;
+        }
+
+        .page-title {
+          font-size: 2rem;
+        }
+
+        @media (max-width: 1023px) {
+          .page-title {
+            font-size: 1.75rem;
+          }
+        }
+
+        @media (max-width: 639px) {
+          .page-title {
+            font-size: 1.5rem;
+          }
+        }
+
+        .page-subtitle {
+          color: #6b7280;
+          font-size: 0.875rem;
+        }
+
+        .header-actions {
+          display: flex;
+          flex-direction: row;
+          gap: 0.75rem;
+        }
+
+        @media (max-width: 639px) {
+          .header-actions {
+            flex-direction: column;
+          }
+        }
+
+        .action-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          border-radius: 0.5rem;
+          border: none;
+          cursor: pointer;
+          font-weight: 600;
+          font-size: 0.875rem;
+          transition: all 0.2s ease;
+          justify-content: center;
+        }
+
+        .primary-btn {
+          background: #1e40af;
+          color: white;
+        }
+
+        .primary-btn:hover {
+          background: #1d4ed8;
+        }
+
+        .secondary-btn {
+          background: #f0f7ff;
+          color: #1e40af;
+          border: 1.5px solid #93c5fd;
+        }
+
+        .secondary-btn:hover {
+          background: #dbeafe;
+        }
+
+        .btn-text {
+          display: inline;
+        }
+
+        @media (max-width: 639px) {
+          .btn-text {
+            display: none;
+          }
+        }
+
+        .filters-container {
+          background: white;
+          padding: 1.5rem;
+          border-radius: 0.75rem;
+          border: 1.5px solid #cbd5e1;
+          margin-bottom: 1.5rem;
+        }
+
+        .filter-row {
+          display: flex;
+          gap: 1rem;
+        }
+
+        @media (max-width: 639px) {
+          .filters-container {
+            padding: 0.75rem;
+          }
+
+          .filter-row {
+            flex-direction: column;
+            gap: 0.75rem;
+          }
+        }
+
+
+        .filter-row:last-child {
+          margin-bottom: 0;
+        }
+
+        .filter-group {
+          position: relative;
+          flex: 1;
+        }
+
+        .search-group {
+          flex: 2;
+        }
+
+        .filter-icon {
+          position: absolute;
+          left: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #6b7280;
+          z-index: 1;
+        }
+
+        .filter-select, .search-input, .date-input {
+          width: 100%;
+          padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+          border-radius: 0.5rem;
+          border: 1px solid #cbd5e1;
+          background: white;
+          font-size: 0.875rem;
+        }
+
+        .filter-select {
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+          background-position: right 0.5rem center;
+          background-repeat: no-repeat;
+          background-size: 1.5em 1.5em;
+          padding-right: 2.5rem;
+        }
+
+        .apply-btn {
+          background: #0f172a;
+          color: white;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.5rem;
+          border: none;
+          cursor: pointer;
+          font-weight: 600;
+          font-size: 0.875rem;
+          transition: all 0.2s ease;
+        }
+
+        .apply-btn:hover {
+          background: #1e293b;
+        }
+
+        .table-container {
+          background: white;
+          border-radius: 1rem;
+          border: 1px solid #d6e0f0;
+          box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+          overflow: hidden;
+        }
+
+        .table-wrapper {
+          overflow-x: auto;
+        }
+
+        .transactions-table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 600px;
+        }
+
+        .table-header {
+          background: #f1f6fd;
+        }
+
+        .table-th {
+          padding: 1rem;
+          font-size: 0.875rem;
+          text-align: left;
+          color: #475569;
+          font-weight: 600;
+          white-space: nowrap;
+        }
+
+        .table-td {
+          padding: 1rem;
+          font-size: 0.875rem;
+          color: #1f2937;
+          border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table-row {
+          transition: all 0.2s ease;
+        }
+
+        .table-row:hover {
+          background: #f8fafc;
+        }
+
+        .user-info {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .user-name {
+          font-weight: 500;
+          color: #1f2937;
+        }
+
+        .user-details-mobile {
+          margin-top: 0.25rem;
+          display: none;
+        }
+
+        @media (max-width: 639px) {
+        .user-details-mobile {
+          display: block;
+        }
+      }
+
+        .user-email {
+          font-size: 0.75rem;
+          color: #6b7280;
+        }
+
+        .transaction-meta {
+          font-size: 0.75rem;
+          color: #6b7280;
+          margin-top: 0.25rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .amount-cell {
+          font-weight: 600;
+          color: #059669;
+        }
+
+        .loading-cell {
+          text-align: center;
+          padding: 2rem;
+          color: #6b7280;
+        }
+
+        .empty-state {
+          padding: 3rem 1rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.75rem;
+          color: #475569;
+          text-align: center;
+        }
+
+        .hidden-mobile {
+          display: table-cell;
+        }
+
+        @media (max-width: 639px) {
+          .hidden-mobile {
+            display: none;
+          }
+        }
+
+
+       .transactions-table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 600px;
+        }
+
+        @media (max-width: 1023px) {
+          .transactions-table {
+            min-width: 600px;
+          }
+        }
+
+        /* ================= MOBILE TRANSACTION CARDS ================= */
+
+        .mobile-transactions-list {
+          display: none;
+        }
+
+        .mobile-transaction-card {
+          background: white;
+          border-radius: 0.75rem;
+          padding: 1rem;
+          margin-bottom: 1rem;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .card-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .card-user {
+          font-weight: 600;
+          color: #1f2937;
+        }
+
+        .card-meta {
+          margin-top: 0.5rem;
+          font-size: 0.75rem;
+          color: #64748b;
+        }
+
+        .card-bottom {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 0.75rem;
+        }
+
+        .card-type {
+          font-size: 0.75rem;
+          text-transform: capitalize;
+          color: #475569;
+        }
+
+        .card-amount {
+          font-weight: 700;
+          color: #059669;
+        }
+
+        /* SHOW CARDS ON MOBILE */
+        @media (max-width: 639px) {
+          .table-container {
+            display: none;
+          }
+
+          .mobile-transactions-list {
+            display: block;
+          }
+        }
+
+        @media (max-width: 639px) {
+        .filters-container {
+          padding: 0.75rem;
+        }
+
+        .filter-row {
+          gap: 0.75rem;
+        }
+
+        .apply-btn {
+          width: 100%;
+        }
+
+        .header-actions {
+          width: 100%;
+        }
+
+        .action-btn {
+          width: 100%;
+        }
+      }
+
+      `}</style>
     </div>
   );
 };
@@ -251,146 +702,4 @@ const StatusBadge = ({ status }) => {
       {status}
     </span>
   );
-};
-
-/* ---------- STYLES ---------- */
-
-const headerRow = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: "20px",
-};
-
-const title = { fontSize: "28px", marginBottom: "6px" };
-const subtitle = { color: "#64748b" };
-
-const primaryBtn = {
-  display: "flex",
-  gap: "6px",
-  alignItems: "center",
-  background: "#1E40AF",
-  color: "#fff",
-  padding: "10px 14px",
-  borderRadius: "10px",
-  border: "none",
-  cursor: "pointer",
-  fontWeight: 600,
-};
-
-const secondaryBtn = {
-  display: "flex",
-  gap: "6px",
-  alignItems: "center",
-  background: "#F0F7FF",
-  color: "#1E40AF",
-  padding: "10px 14px",
-  borderRadius: "10px",
-  cursor: "pointer",
-  fontWeight: 600,
-  border: "1.5px solid #93C5FD", // 🔥 clearly visible blue
-};
-
-const applyBtn = {
-  display: "flex",
-  alignItems: "center",
-  gap: "6px",
-  background: "#0f172a",
-  color: "#ffffff",
-  padding: "10px 16px",
-  borderRadius: "10px",
-  border: "none",
-  cursor: "pointer",
-  fontWeight: 600,
-  marginLeft: "auto",
-};
-
-
-const filters = {
-  display: "flex",
-  gap: "10px",
-  background: "#FFFFFF",
-  padding: "16px",
-  borderRadius: "14px",
-  border: "1.5px solid #CBD5E1",
-  boxShadow: "0 12px 24px rgba(15,23,42,0.06)",
-  backgroundClip: "padding-box", // ✅ FIXES THE LINE
-  marginBottom: "20px",
-};
-
-
-const selectWrap = { position: "relative" };
-const dateWrap = { position: "relative" };
-
-const inputIcon = {
-  position: "absolute",
-  left: "10px",
-  top: "50%",
-  transform: "translateY(-50%)",
-  color: "#64748b",
-};
-
-/* 🔥 FIXED HERE */
-const filterSelect = {
-  padding: "10px 36px 10px 36px",
-  borderRadius: "10px",
-  border: "1px solid #cbd5f5",
-  appearance: "none",
-  WebkitAppearance: "none",
-  MozAppearance: "none",
-  backgroundColor: "#FFFFFF",
-  backgroundImage:
-    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E\")",
-  backgroundRepeat: "no-repeat",
-  backgroundPosition: "right 10px center",
-  backgroundSize: "16px",
-};
-
-
-const date = {
-  padding: "10px 14px 10px 36px",
-  borderRadius: "10px",
-  border: "1.5px solid #CBD5E1",
-  background: "#FFFFFF",
-  outline: "none",
-};
-
-const card = {
-  background: "#FFFFFF",
-  borderRadius: "18px",
-  border: "1px solid #D6E0F0",
-  boxShadow: "0 30px 60px rgba(15, 23, 42, 0.12)",
-  overflow: "hidden",
-};
-
-const thead = {
-  background: "#F1F6FD",
-  boxShadow: "inset 0 -1px 0 #CBD5E1",
-};
-
-const th = {
-  padding: "16px",
-  fontSize: "14px",
-  textAlign: "left",
-  color: "#475569",
-};
-
-const td = {
-  padding: "16px",
-  fontSize: "14px",
-  color: "#0f172a",
-};
-
-const row = {
-  borderBottom: "1px solid #E2E8F0",
-};
-
-const emptyState = {
-  padding: "56px",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: "10px",
-  color: "#475569",
-  background: "#F8FAFF",
 };

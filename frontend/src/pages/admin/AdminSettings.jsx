@@ -6,6 +6,11 @@ const AdminSettings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+  const isMobile = screenWidth < 768;
+  const isTablet = screenWidth >= 768 && screenWidth < 1024;
+  const isLaptop = screenWidth >= 1024;
 
   const [passwords, setPasswords] = useState({
     current: "",
@@ -18,6 +23,15 @@ const AdminSettings = () => {
     email: "",
     phone: "",
   });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     loadAdminProfile();
@@ -59,11 +73,27 @@ const AdminSettings = () => {
   }
 
   return (
-    <div className="p-6 space-y-8">
+    <div style={{
+      padding: isMobile
+        ? "1rem"
+        : isTablet
+        ? "1.5rem 1.5rem 1.5rem 3rem"  // ✅ tablet left offset
+        : "1.5rem",
+      maxWidth: "100%",
+      overflow: "hidden"
+    }}>
       {/* HEADER */}
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-800">Settings</h1>
-        <p className="text-sm text-gray-500">
+      <div style={{ marginBottom: "2rem" }}>
+        <h1 style={{
+          fontSize: isMobile ? "1.5rem" : "2rem",
+          fontWeight: 600,
+          color: "#1f2937",
+          marginBottom: "0.5rem"
+        }}>Settings</h1>
+        <p style={{
+          fontSize: "0.875rem",
+          color: "#6b7280"
+        }}>
           Administrative configuration and preferences
         </p>
       </div>
@@ -73,8 +103,13 @@ const AdminSettings = () => {
         icon={<User />}
         title="Admin Profile"
         description="Your administrator account information"
+        isMobile={isMobile}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+          gap: "1rem"
+        }}>
           <Field label="Name">
             <input
               className="input"
@@ -113,11 +148,25 @@ const AdminSettings = () => {
       </Section>
 
       {/* SAVE */}
-      <div className="flex justify-end">
+      <div style={{
+        display: "flex",
+        justifyContent: isMobile ? "stretch" : "flex-end",
+        marginTop: "2rem"
+      }}>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-gray-900 text-white px-6 py-2 rounded-md text-sm hover:bg-black disabled:opacity-50"
+          style={{
+            backgroundColor: "#111827",
+            color: "white",
+            padding: "0.5rem 1.5rem",
+            borderRadius: "0.375rem",
+            fontSize: "0.875rem",
+            border: "none",
+            cursor: saving ? "not-allowed" : "pointer",
+            opacity: saving ? 0.5 : 1,
+            width: isMobile ? "100%" : "auto"
+          }}
         >
           {saving ? "Saving…" : "Save Changes"}
         </button>
@@ -125,10 +174,34 @@ const AdminSettings = () => {
 
       {/* CHANGE PASSWORD MODAL */}
       {showPasswordModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-md rounded-xl p-6 shadow-xl">
-            <h2 className="text-lg font-semibold mb-1">Change Password</h2>
-            <p className="text-sm text-gray-500 mb-4">
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          backgroundColor: "rgba(0,0,0,0.4)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 50,
+          padding: isMobile ? "1rem" : "0"
+        }}>
+          <div style={{
+            backgroundColor: "white",
+            width: "100%",
+            maxWidth: isMobile ? "100%" : "28rem",
+            borderRadius: "0.75rem",
+            padding: "1.5rem",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+          }}>
+            <h2 style={{
+              fontSize: "1.125rem",
+              fontWeight: 600,
+              marginBottom: "0.25rem"
+            }}>Change Password</h2>
+            <p style={{
+              fontSize: "0.875rem",
+              color: "#6b7280",
+              marginBottom: "1rem"
+            }}>
               Update your administrator password
             </p>
 
@@ -156,16 +229,37 @@ const AdminSettings = () => {
               }
             />
 
-            <div className="flex justify-end gap-3 mt-6">
+            <div style={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              justifyContent: "flex-end",
+              gap: "0.75rem",
+              marginTop: "1.5rem"
+            }}>
               <button
-                className="border px-4 py-2 rounded-md"
+                style={{
+                  border: "1px solid #d1d5db",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "0.375rem",
+                  backgroundColor: "white",
+                  cursor: "pointer",
+                  width: isMobile ? "100%" : "auto"
+                }}
                 onClick={() => setShowPasswordModal(false)}
               >
                 Cancel
               </button>
 
               <button
-                className="bg-gray-900 text-white px-4 py-2 rounded-md"
+                style={{
+                  backgroundColor: "#111827",
+                  color: "white",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "0.375rem",
+                  border: "none",
+                  cursor: "pointer",
+                  width: isMobile ? "100%" : "auto"
+                }}
                 onClick={async () => {
                   if (passwords.new !== passwords.confirm) {
                     alert("Passwords do not match");
@@ -210,13 +304,37 @@ export default AdminSettings;
 
 /* ---------- UI HELPERS ---------- */
 
-const Section = ({ icon, title, description, children }) => (
-  <div className="bg-white rounded-xl border shadow-sm p-6 space-y-5">
-    <div className="flex gap-3">
-      <div className="p-2 bg-gray-100 rounded-lg">{icon}</div>
+const Section = ({ icon, title, description, children, isMobile }) => (
+  <div style={{
+    backgroundColor: "white",
+    borderRadius: "0.75rem",
+    border: "1px solid #e5e7eb",
+    boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+    padding: isMobile ? "1rem" : "1.5rem",
+    marginBottom: "2rem"
+  }}>
+    <div style={{
+      display: "flex",
+      flexDirection: isMobile ? "column" : "row",
+      gap: "0.75rem",
+      marginBottom: "1.25rem"
+    }}>
+      <div style={{
+        padding: "0.5rem",
+        backgroundColor: "#f3f4f6",
+        borderRadius: "0.5rem",
+        width: "fit-content"
+      }}>{icon}</div>
       <div>
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-sm text-gray-500">{description}</p>
+        <h3 style={{
+          fontSize: "1.125rem",
+          fontWeight: 600,
+          marginBottom: "0.25rem"
+        }}>{title}</h3>
+        <p style={{
+          fontSize: "0.875rem",
+          color: "#6b7280"
+        }}>{description}</p>
       </div>
     </div>
     {children}
@@ -224,8 +342,14 @@ const Section = ({ icon, title, description, children }) => (
 );
 
 const Field = ({ label, children }) => (
-  <div className="space-y-1">
-    <label className="text-sm font-medium text-gray-700">{label}</label>
+  <div style={{ marginBottom: "0.25rem" }}>
+    <label style={{
+      fontSize: "0.875rem",
+      fontWeight: 500,
+      color: "#374151",
+      display: "block",
+      marginBottom: "0.25rem"
+    }}>{label}</label>
     {children}
   </div>
 );
@@ -244,15 +368,28 @@ style.innerHTML = `
 document.head.appendChild(style);
 
 const PasswordField = ({ label, value, onChange }) => (
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">
+  <div style={{ marginBottom: "1rem" }}>
+    <label style={{
+      display: "block",
+      fontSize: "0.875rem",
+      fontWeight: 500,
+      color: "#374151",
+      marginBottom: "0.25rem"
+    }}>
       {label}
     </label>
     <input
       type="password"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      style={{
+        width: "100%",
+        padding: "0.5rem 0.75rem",
+        border: "1px solid #d1d5db",
+        borderRadius: "0.375rem",
+        fontSize: "0.875rem",
+        outline: "none"
+      }}
     />
   </div>
 );

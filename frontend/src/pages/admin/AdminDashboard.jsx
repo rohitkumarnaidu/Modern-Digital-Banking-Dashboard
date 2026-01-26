@@ -8,7 +8,6 @@ import {
 import api from "@/services/api";
 import { useNavigate } from "react-router-dom";
 
-
 const EMPTY_SUMMARY = {
   total_users: 0,
   kyc_pending: 0,
@@ -38,19 +37,26 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="px-4 sm:px-6 lg:px-8 xl:px-10 max-w-7xl mx-auto">
       {/* HEADER */}
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-800">
+      <div className="mb-6 sm:mb-8 flex flex-col gap-1">
+        <h1
+          className="
+            text-xl sm:text-2xl lg:text-3xl
+            font-semibold text-gray-800 mb-1
+            leading-tight break-words
+            md:pl-12 lg:pl-0
+          "
+        >
           Admin Dashboard
         </h1>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 md:pl-12 lg:pl-0">
           System overview and operational status
         </p>
       </div>
 
       {/* SUMMARY CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mb-10">
         <StatCard
           title="Total Users"
           value={summary.total_users}
@@ -85,12 +91,12 @@ const AdminDashboard = () => {
       </div>
 
       {/* QUICK ADMIN ACTIONS */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-800">
+      <div className="mb-10">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">
           Quick Actions
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <ActionCard
             title="Review KYC"
             description="Verify pending customer identities"
@@ -129,44 +135,42 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-  {/* SYSTEM HEALTH & STATUS */}
-<div className="space-y-5">
-  <h2 className="text-lg font-semibold text-gray-800">
-    System Health & Status
-  </h2>
+      {/* SYSTEM HEALTH & STATUS */}
+      <div className="mb-10">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">
+          System Health & Status
+        </h2>
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <SystemHealthCard
-      title="Payment Gateway"
-      status="Operational"
-      description="All payment rails functioning normally"
-      state="success"
-    />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <SystemHealthCard
+            title="Payment Gateway"
+            status="Operational"
+            description="All payment rails functioning normally"
+            state="success"
+          />
 
-    <SystemHealthCard
-      title="KYC Service"
-      status="Active"
-      description="Identity verification service online"
-      state="success"
-    />
+          <SystemHealthCard
+            title="KYC Service"
+            status="Active"
+            description="Identity verification service online"
+            state="success"
+          />
 
-    <SystemHealthCard
-      title="Fraud Detection"
-      status="Running"
-      description="Real-time risk monitoring enabled"
-      state="success"
-    />
+          <SystemHealthCard
+            title="Fraud Detection"
+            status="Running"
+            description="Real-time risk monitoring enabled"
+            state="success"
+          />
 
-    <SystemHealthCard
-      title="Data Synchronization"
-      status="Last sync 2 mins ago"
-      description="Core banking data synced"
-      state="info"
-    />
-  </div>
-</div>
-
-
+          <SystemHealthCard
+            title="Data Synchronization"
+            status="Last sync 2 mins ago"
+            description="Core banking data synced"
+            state="info"
+          />
+        </div>
+      </div>
     </div>
   );
 };
@@ -174,81 +178,64 @@ const AdminDashboard = () => {
 /* ---------- UI COMPONENTS ---------- */
 
 const StatCard = ({ title, value, icon, bg, iconColor }) => (
-  <div
-    className={`
-      relative overflow-hidden rounded-xl p-5 text-white
-      bg-gradient-to-br ${bg}
-      shadow-md hover:shadow-xl transition-all
-    `}
-  >
+  <div className={`relative overflow-hidden rounded-xl p-5 text-white bg-gradient-to-br ${bg} shadow-md hover:shadow-xl transition-all`}>
     <div className="flex justify-between items-center">
       <div>
         <p className="text-sm opacity-90">{title}</p>
-        <p className="text-3xl font-semibold mt-1">
-          {value ?? 0}
+        <p className="text-2xl sm:text-3xl font-semibold mt-1 break-words">
+        {value ?? 0}
         </p>
       </div>
 
-      <div className="p-3 rounded-full bg-white shadow-lg">
-        <div className={`text-xl ${iconColor}`}>
-          {icon}
-        </div>
+      <div className="p-2.5 sm:p-3 rounded-full bg-white shadow-lg">
+        <div className={`text-lg sm:text-xl ${iconColor}`}>{icon}</div>
       </div>
     </div>
   </div>
 );
 
 const ActionCard = ({ title, description, icon, bg, iconColor, onClick }) => (
-  <div onClick={onClick} className="bg-white rounded-xl p-5 shadow-md hover:shadow-lg transition-all cursor-pointer">
-    <div className="flex items-center gap-4">
-      <div className={`p-3 rounded-full ${bg}`}>
-        <div className={`text-xl ${iconColor}`}>
-          {icon}
-        </div>
+  <div
+    onClick={onClick}
+    className="
+      bg-white rounded-xl p-5
+      shadow-md hover:shadow-lg
+      transition-all cursor-pointer
+      active:scale-[0.98]
+    "
+    >
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+      <div className={`p-2.5 sm:p-3 rounded-full ${bg}`}>
+        <div className={`text-xl ${iconColor}`}>{icon}</div>
       </div>
 
       <div>
-        <h3 className="font-semibold text-gray-800">
-          {title}
-        </h3>
-        <p className="text-sm text-gray-500">
-          {description}
-        </p>
+        <h3 className="font-semibold text-gray-800">{title}</h3>
+        <p className="text-sm text-gray-500">{description}</p>
       </div>
     </div>
   </div>
 );
 
-
-
-const SystemHealthCard = ({
-  title,
-  status,
-  description,
-  state,
-}) => {
+const SystemHealthCard = ({ title, status, description, state }) => {
   const stateStyles = {
     success: {
       border: "border-green-400",
-      bg: "bg-green-50",
       badge: "bg-green-600 text-white",
       dot: "bg-green-500",
     },
     info: {
       border: "border-blue-400",
-      bg: "bg-blue-50",
       badge: "bg-blue-600 text-white",
       dot: "bg-blue-500",
     },
     warning: {
       border: "border-amber-400",
-      bg: "bg-amber-50",
       badge: "bg-amber-600 text-white",
       dot: "bg-amber-500",
     },
     error: {
       border: "border-red-400",
-      bg: "bg-red-50",
       badge: "bg-red-600 text-white",
       dot: "bg-red-500",
     },
@@ -257,36 +244,18 @@ const SystemHealthCard = ({
   const s = stateStyles[state];
 
   return (
-    <div
-      className={`
-        relative rounded-2xl border-l-4 ${s.border}
-        bg-white shadow-md hover:shadow-lg transition-all
-        p-6 min-h-[140px]
-      `}
-    >
-      {/* STATUS DOT */}
-      <span
-        className={`absolute top-6 right-6 h-3 w-3 rounded-full ${s.dot}`}
-      />
+    <div className={`relative rounded-2xl border-l-4 ${s.border} bg-white shadow-md hover:shadow-lg transition-all p-5 sm:p-6 min-h-[120px] sm:min-h-[140px]`}>
+      <span className={`absolute top-6 right-6 h-3 w-3 rounded-full ${s.dot}`} />
 
       <div className="space-y-3">
-        <h3 className="text-base font-semibold text-gray-800">
-          {title}
-        </h3>
-
-        <p className="text-sm text-gray-600">
-          {description}
-        </p>
-
-        <span
-          className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${s.badge}`}
-        >
+        <h3 className="text-base font-semibold text-gray-800">{title}</h3>
+        <p className="text-sm text-gray-600">{description}</p>
+        <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${s.badge}`}>
           {status}
         </span>
       </div>
     </div>
   );
 };
-
 
 export default AdminDashboard;

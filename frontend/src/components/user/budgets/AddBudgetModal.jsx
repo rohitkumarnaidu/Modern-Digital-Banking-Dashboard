@@ -109,31 +109,32 @@ const AddBudgetModal = ({ onSave }) => {
       <button
         onClick={() => setOpen(true)}
         className="bg-blue-600 hover:bg-blue-700 
-                   text-white px-6 py-2.5 
+                   text-white px-4 sm:px-6 py-2 sm:py-2.5 
                    rounded-full font-medium shadow-sm
-                   flex items-center gap-2"
+                   flex items-center gap-2 text-sm sm:text-base"
       >
-        <span className="text-lg leading-none">+</span>
-        Add Budget
+        <span className="text-base sm:text-lg leading-none">+</span>
+        <span className="hidden sm:inline">Add Budget</span>
+        <span className="sm:hidden">Add</span>
       </button>
 
       {open && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl w-full max-w-[420px] px-6 py-5">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-[420px] px-4 sm:px-6 py-4 sm:py-5 max-h-[90vh] overflow-y-auto">
 
             {success ? (
-              <div className="text-center py-10 animate-fade-in">
-                <div className="text-green-600 text-3xl mb-2">✓</div>
-                <h3 className="text-lg font-semibold">Budget Added</h3>
-                <p className="text-sm text-gray-500 mt-1">
+              <div className="text-center py-8 sm:py-10 animate-fade-in">
+                <div className="text-green-600 text-2xl sm:text-3xl mb-2">✓</div>
+                <h3 className="text-base sm:text-lg font-semibold">Budget Added</h3>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">
                   {category} • {days} days
                 </p>
               </div>
             ) : (
               <>
                 {/* HEADER */}
-                <div className="mb-4">
-                  <h2 className="text-lg font-semibold">
+                <div className="mb-3 sm:mb-4">
+                  <h2 className="text-base sm:text-lg font-semibold">
                     {mode === "budget" ? "Add Budget" : "Set Monthly Budget"}
                   </h2>
                   <p className="text-xs text-gray-500">
@@ -144,10 +145,10 @@ const AddBudgetModal = ({ onSave }) => {
                 </div>
 
                 {/* TOGGLE */}
-                <div className="flex bg-gray-100 rounded-lg p-1 mb-4">
+                <div className="flex bg-gray-100 rounded-lg p-1 mb-3 sm:mb-4">
                   <button
                     onClick={() => setMode("budget")}
-                    className={`flex-1 py-1.5 rounded-md text-sm
+                    className={`flex-1 py-1.5 rounded-md text-xs sm:text-sm
                       ${
                         mode === "budget"
                           ? "bg-white shadow text-blue-600"
@@ -158,7 +159,7 @@ const AddBudgetModal = ({ onSave }) => {
                   </button>
                   <button
                     onClick={() => setMode("limit")}
-                    className={`flex-1 py-1.5 rounded-md text-sm
+                    className={`flex-1 py-1.5 rounded-md text-xs sm:text-sm
                       ${
                         mode === "limit"
                           ? "bg-white shadow text-blue-600"
@@ -170,7 +171,7 @@ const AddBudgetModal = ({ onSave }) => {
                 </div>
 
                 {/* FORM */}
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
 
                   {/* CATEGORY */}
                   <div className="relative" ref={dropdownRef}>
@@ -183,11 +184,11 @@ const AddBudgetModal = ({ onSave }) => {
                       }}
                       onFocus={() => setShowDropdown(true)}
                       placeholder="Search or type"
-                      className="w-full border-2 border-blue-500 rounded-lg px-3 py-2 text-sm"
+                      className="w-full border-2 border-blue-500 rounded-lg px-3 py-2 text-xs sm:text-sm"
                     />
 
                     {showDropdown && (
-                      <div className="absolute mt-1 w-full bg-white border border-blue-300 rounded-xl shadow">
+                      <div className="absolute mt-1 w-full bg-white border border-blue-300 rounded-xl shadow z-10">
                         {categories
                           .filter((c) =>
                             c.toLowerCase().includes(category.toLowerCase())
@@ -199,7 +200,7 @@ const AddBudgetModal = ({ onSave }) => {
                                 setCategory(c);
                                 setShowDropdown(false);
                               }}
-                              className="px-3 py-2 text-sm cursor-pointer hover:bg-blue-50"
+                              className="px-3 py-2 text-xs sm:text-sm cursor-pointer hover:bg-blue-50"
                             >
                               {c}
                             </div>
@@ -210,14 +211,14 @@ const AddBudgetModal = ({ onSave }) => {
 
                   {/* BUDGET INPUTS */}
                   {mode === "budget" && (
-                    <div className="grid grid-cols-2 gap-3">
-                      <input type="number" placeholder="Min Budget" value={minBudget} onChange={(e) => setMinBudget(e.target.value)} className="border rounded-lg px-3 py-2 text-sm" />
-                      <input type="number" placeholder="Max Budget" value={maxBudget} onChange={(e) => setMaxBudget(e.target.value)} className="border rounded-lg px-3 py-2 text-sm" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <input type="number" placeholder="Min Budget" value={minBudget} onChange={(e) => setMinBudget(e.target.value)} className="border rounded-lg px-3 py-2 text-xs sm:text-sm" />
+                      <input type="number" placeholder="Max Budget" value={maxBudget} onChange={(e) => setMaxBudget(e.target.value)} className="border rounded-lg px-3 py-2 text-xs sm:text-sm" />
                     </div>
                   )}
 
                   {mode === "limit" && (
-                    <input type="number" placeholder="Monthly Budget" value={monthlyLimit} onChange={(e) => setMonthlyLimit(e.target.value)} className="border rounded-lg px-3 py-2 text-sm w-full" />
+                    <input type="number" placeholder="Monthly Budget" value={monthlyLimit} onChange={(e) => setMonthlyLimit(e.target.value)} className="border rounded-lg px-3 py-2 text-xs sm:text-sm w-full" />
                   )}
 
                   {/* DURATION */}
@@ -225,9 +226,9 @@ const AddBudgetModal = ({ onSave }) => {
                     Choose duration (optional)
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="border rounded-lg px-3 py-2 text-sm" />
-                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="border rounded-lg px-3 py-2 text-sm" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="border rounded-lg px-3 py-2 text-xs sm:text-sm" />
+                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="border rounded-lg px-3 py-2 text-xs sm:text-sm" />
                   </div>
 
                   <div className="text-center text-xs text-gray-400">OR</div>
@@ -237,24 +238,24 @@ const AddBudgetModal = ({ onSave }) => {
                     value={days}
                     onChange={(e) => setDays(e.target.value)}
                     placeholder="Number of days"
-                    className="border rounded-lg px-3 py-2 text-sm w-full"
+                    className="border rounded-lg px-3 py-2 text-xs sm:text-sm w-full"
                   />
 
                   <textarea
                     rows="2"
                     placeholder="Optional note"
-                    className="border rounded-lg px-3 py-2 text-sm w-full"
+                    className="border rounded-lg px-3 py-2 text-xs sm:text-sm w-full"
                   />
                 </div>
 
                 {/* ACTIONS */}
-                <div className="flex justify-end gap-3 mt-5">
-                  <button onClick={() => setOpen(false)} className="text-gray-500 text-sm">
+                <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 mt-4 sm:mt-5">
+                  <button onClick={() => setOpen(false)} className="text-gray-500 text-xs sm:text-sm py-2 sm:py-0">
                     Cancel
                   </button>
                   <button
                     onClick={handleSave}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm"
                   >
                     Save
                   </button>

@@ -16,6 +16,7 @@ const Accounts = () => {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   const navigate = useNavigate();
   const pinRefs = useRef([]);
@@ -33,7 +34,28 @@ const Accounts = () => {
     ? accounts.filter(a => a.id === selectedId)
     : accounts;
 
+  // Responsive breakpoints
+  const isMobile = screenWidth <= 480;
+  const isTablet = screenWidth <= 768;
+  const isLaptop = screenWidth <= 1024;
 
+  useEffect(() => {
+    const handleResize = () => setScreenWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, []);
+  
+  // Helper function for responsive values
+  const getResponsiveValue = (mobile, tablet, desktop) => {
+    if (isMobile) return mobile;
+    if (isTablet) return tablet;
+    return desktop;
+  };
+  
   const fetchAccounts = async () => {
     try {
       const res = await api.get("/accounts");
@@ -81,13 +103,40 @@ const Accounts = () => {
   if (loading) return <p>Loading accounts...</p>;
 
   return (
-    <div style={page}>
+    <div style={{
+      padding: getResponsiveValue("16px", "20px 24px", "24px 32px")
+    }}>
       {/* HEADER */}
-      <div style={header}>
-        <h1 style={title}>Accounts</h1>
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: getResponsiveValue(20, 28, 28),
+        flexDirection: getResponsiveValue("column", "row", "row"),
+        gap: getResponsiveValue("12px", "0", "0")
+      }}>
+        <h1 style={{
+          fontSize: getResponsiveValue("20px", "22px", "26px"),
+          fontWeight: "700",
+          color: "#0f172a"
+        }}>Accounts</h1>
 
-        <div style={headerRight}>
-          <button style={addBtn} onClick={() => setShowAdd(true)}>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "16px",
+          paddingRight: getResponsiveValue("0", "12px", "12px")
+        }}>
+          <button style={{
+            background: "#2563eb",
+            color: "#fff",
+            border: "none",
+            padding: getResponsiveValue("12px 16px", "10px 18px", "10px 18px"),
+            borderRadius: 10,
+            fontWeight: 600,
+            fontSize: getResponsiveValue("14px", "16px", "16px"),
+            cursor: "pointer"
+          }} onClick={() => setShowAdd(true)}>
             + Add Account
           </button>
         </div>
@@ -95,16 +144,53 @@ const Accounts = () => {
 
       {/* EMPTY STATE */}
       {accounts.length === 0 && (
-        <div style={emptyWrap}>
-          <div style={emptyCard}>
-            <div style={emptyContent}>
-            <h3 style={emptyTitle}>
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: getResponsiveValue(40, 60, 60),
+          padding: getResponsiveValue("0 16px", "0", "0")
+        }}>
+          <div style={{
+            background: "#ffffff",
+            borderRadius: getResponsiveValue(16, 22, 22),
+            padding: getResponsiveValue("40px 24px", "56px 40px", "72px"),
+            width: "100%",
+            maxWidth: 820,
+            boxShadow: "0 18px 40px rgba(0,0,0,0.08)"
+          }}>
+            <div style={{
+              maxWidth: 560,
+              margin: "0 auto",
+              textAlign: "center"
+            }}>
+            <h3 style={{
+              fontSize: getResponsiveValue(18, 20, 24),
+              fontWeight: 700,
+              marginBottom: 10,
+              color: "#0f172a"
+            }}>
               Get Started with Your First Account
             </h3>
-            <p style={emptyText}>
+            <p style={{
+              color: "#64748b",
+              margin: "10px 0 24px",
+              fontSize: getResponsiveValue(13, 14, 14),
+              lineHeight: "1.5"
+            }}>
               Add a bank account to view balances, make transfers, pay bills, and manage your finances securely all in one place.
             </p>
-            <button style={emptyBtn} onClick={() => setShowAdd(true)}>
+            <button style={{
+              marginTop: 16,
+              width: "100%",
+              background: "#2563eb",
+              color: "#fff",
+              border: "none",
+              padding: getResponsiveValue("12px", "14px", "14px"),
+              borderRadius: 12,
+              fontWeight: 600,
+              fontSize: getResponsiveValue(14, 15, 15),
+              cursor: "pointer"
+            }} onClick={() => setShowAdd(true)}>
               + Add Account
             </button>
             </div>
@@ -114,26 +200,72 @@ const Accounts = () => {
 
       {/* ACCOUNT LIST */}
       {accounts.map((acc) => (
-        <div key={acc.id} style={card}>
+        <div key={acc.id} style={{
+          background: "#fff",
+          borderRadius: getResponsiveValue(12, 16, 16),
+          padding: getResponsiveValue("16px", "18px 22px", "18px 22px"),
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: getResponsiveValue("flex-start", "center", "center"),
+          marginBottom: 14,
+          boxShadow: "0 12px 28px rgba(0,0,0,0.08)",
+          flexDirection: getResponsiveValue("column", "row", "row"),
+          gap: getResponsiveValue("16px", "0", "0")
+        }}>
           {/* LEFT */}
           <div>
-            <div style={bankName}>{acc.bank_name}</div>
-            <div style={subText}>{acc.masked_account}</div>
-            <div style={accountType}>{acc.account_type.toUpperCase()}</div>
+            <div style={{
+              fontSize: getResponsiveValue(14, 16, 16),
+              fontWeight: 700
+            }}>{acc.bank_name}</div>
+            <div style={{
+              fontSize: getResponsiveValue(12, 13, 13),
+              color: "#64748b",
+              marginTop: 4
+            }}>{acc.masked_account}</div>
+            <div style={{
+              fontSize: getResponsiveValue(11, 12, 12),
+              color: "#475569"
+            }}>{acc.account_type.toUpperCase()}</div>
           </div>
 
           {/* RIGHT */}
-          <div style={rightCol}>
-            <div style={actionRow}>
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: getResponsiveValue("stretch", "flex-end", "flex-end"),
+            width: getResponsiveValue("100%", "auto", "auto")
+          }}>
+            <div style={{
+              display: "flex",
+              gap: getResponsiveValue(8, 10, 10),
+              marginBottom: 8,
+              flexDirection: getResponsiveValue("column", "row", "row")
+            }}>
               <button
-                style={checkBalanceBtn}
+                style={{
+                  background: "#2563eb",
+                  color: "#fff",
+                  border: "none",
+                  padding: getResponsiveValue("10px 12px", "7px 14px", "7px 14px"),
+                  borderRadius: 8,
+                  fontSize: getResponsiveValue(12, 13, 13),
+                  cursor: "pointer"
+                }}
                 onClick={() => openCheckBalance(acc.id)}
               >
                 Check Balance
               </button>
 
               <button
-                style={changePinBtn}
+                style={{
+                  background: "#f1f5f9",
+                  border: "1px solid #cbd5f5",
+                  padding: getResponsiveValue("10px 12px", "7px 14px", "7px 14px"),
+                  borderRadius: 8,
+                  fontSize: getResponsiveValue(12, 13, 13),
+                  cursor: "pointer"
+                }}
                 onClick={() => 
                   navigate("/dashboard/accounts/verify-identity", {
                     state: { accountId: acc.id },
@@ -145,7 +277,15 @@ const Accounts = () => {
             </div>
 
             <button
-              style={deleteBtn}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "#dc2626",
+                fontSize: getResponsiveValue(12, 13, 13),
+                cursor: "pointer",
+                textAlign: getResponsiveValue("center", "right", "right"),
+                padding: getResponsiveValue("8px", "0", "0")
+              }}
               onClick={() => handleDeleteClick(acc.id)}
             >
               Remove Account
@@ -167,13 +307,36 @@ const Accounts = () => {
 
       {/* DELETE PIN MODAL */}
       {showPinModal && (
-        <div style={overlay}>
-          <div style={modal}>
-            <h3 style={{ textAlign: "center", marginBottom: 16 }}>
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.45)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "16px"
+        }}>
+          <div style={{
+            background: "#fff",
+            padding: getResponsiveValue(20, 28, 28),
+            borderRadius: 16,
+            width: "100%",
+            maxWidth: getResponsiveValue("320px", "360px", "360px")
+          }}>
+            <h3 style={{ 
+              textAlign: "center", 
+              marginBottom: 16,
+              fontSize: isMobile ? "16px" : "18px"
+            }}>
               Enter PIN to Delete
             </h3>
 
-            <div style={pinRow}>
+            <div style={{
+              display: "flex",
+              gap: getResponsiveValue(8, 12, 12),
+              justifyContent: "center",
+              marginBottom: 16
+            }}>
               {pin.map((v, i) => (
                 <input
                   key={i}
@@ -197,26 +360,57 @@ const Accounts = () => {
                       pinRefs.current[i - 1]?.focus();
                     }
                   }}
-                  style={pinBox}
+                  style={{
+                    width: getResponsiveValue(40, 48, 48),
+                    height: getResponsiveValue(40, 48, 48),
+                    textAlign: "center",
+                    fontSize: getResponsiveValue(16, 20, 20),
+                    borderRadius: 10,
+                    border: "1px solid #d1d5db"
+                  }}
                 />
               ))}
             </div>
 
             {deleteError && (
-              <p style={{ color: "#dc2626", textAlign: "center" }}>
+              <p style={{ 
+                color: "#dc2626", 
+                textAlign: "center",
+                fontSize: isMobile ? "12px" : "14px",
+                marginBottom: "12px"
+              }}>
                 {deleteError}
               </p>
             )}
 
-            <div style={btnRow}>
+            <div style={{
+              display: "flex",
+              gap: 12,
+              flexDirection: getResponsiveValue("column", "row", "row")
+            }}>
               <button
-                style={cancelBtn}
+                style={{
+                  flex: getResponsiveValue("none", 1, 1),
+                  padding: getResponsiveValue(14, 12, 12),
+                  borderRadius: 10,
+                  background: "#e5e7eb",
+                  border: "none",
+                  cursor: "pointer"
+                }}
                 onClick={() => setShowPinModal(false)}
               >
                 Cancel
               </button>
               <button
-                style={submitBtn}
+                style={{
+                  flex: getResponsiveValue("none", 1, 1),
+                  padding: getResponsiveValue(14, 12, 12),
+                  borderRadius: 10,
+                  background: "#2563eb",
+                  color: "#fff",
+                  border: "none",
+                  cursor: "pointer"
+                }}
                 disabled={pin.join("").length !== 4}
                 onClick={handleConfirmDelete}
               >
@@ -232,203 +426,4 @@ const Accounts = () => {
 
 export default Accounts;
 
-/* ================= STYLES ================= */
 
-const page = {
-  padding: "24px 32px",
-};
-
-const header = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: 28,
-};
-
-const title = {
-  fontSize: "26px",
-  fontWeight: "700",
-  color: "#0f172a",
-};
-
-const headerRight = {
-  display: "flex",
-  alignItems: "center",
-  gap: "16px",
-  paddingRight: "12px",
-};
-
-const addBtn = {
-  background: "#2563eb",
-  color: "#fff",
-  border: "none",
-  padding: "10px 18px",
-  borderRadius: 10,
-  fontWeight: 600,
-};
-
-const emptyWrap = {
-  display: "flex",
-  justifyContent: "center",
-  marginTop: 60,
-};
-
-
-const emptyCard = {
-  background: "#ffffff",
-  borderRadius: 22,
-  padding: "72px",
-  width: "100%",
-  maxWidth: 820,
-  boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
-};
-
-const emptyText = {
-  color: "#64748b",
-  margin: "10px 0 24px",
-  fontSize: 14,
-};
-
-const card = {
-  background: "#fff",
-  borderRadius: 16,
-  padding: "18px 22px",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: 14,
-  boxShadow: "0 12px 28px rgba(0,0,0,0.08)",
-};
-
-const bankName = {
-  fontSize: 16,
-  fontWeight: 700,
-};
-
-const subText = {
-  fontSize: 13,
-  color: "#64748b",
-  marginTop: 4,
-};
-
-const accountType = {
-  fontSize: 12,
-  color: "#475569",
-};
-
-const rightCol = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "flex-end",
-};
-
-const actionRow = {
-  display: "flex",
-  gap: 10,
-  marginBottom: 8,
-};
-
-const checkBalanceBtn = {
-  background: "#2563eb",
-  color: "#fff",
-  border: "none",
-  padding: "7px 14px",
-  borderRadius: 8,
-  fontSize: 13,
-};
-
-const changePinBtn = {
-  background: "#f1f5f9",
-  border: "1px solid #cbd5f5",
-  padding: "7px 14px",
-  borderRadius: 8,
-  fontSize: 13,
-};
-
-const deleteBtn = {
-  background: "transparent",
-  border: "none",
-  color: "#dc2626",
-  fontSize: 13,
-  cursor: "pointer",
-};
-
-const overlay = {
-  position: "fixed",
-  inset: 0,
-  background: "rgba(0,0,0,0.45)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-};
-
-const modal = {
-  background: "#fff",
-  padding: 28,
-  borderRadius: 16,
-  width: 360,
-};
-
-const pinRow = {
-  display: "flex",
-  gap: 12,
-  justifyContent: "center",
-  marginBottom: 16,
-};
-
-const pinBox = {
-  width: 48,
-  height: 48,
-  textAlign: "center",
-  fontSize: 20,
-  borderRadius: 10,
-  border: "1px solid #d1d5db",
-};
-
-const btnRow = {
-  display: "flex",
-  gap: 12,
-};
-
-const cancelBtn = {
-  flex: 1,
-  padding: 12,
-  borderRadius: 10,
-  background: "#e5e7eb",
-  border: "none",
-};
-
-const submitBtn = {
-  flex: 1,
-  padding: 12,
-  borderRadius: 10,
-  background: "#2563eb",
-  color: "#fff",
-  border: "none",
-};
-
-
-const emptyContent = {
-  maxWidth: 560,
-  margin: "0 auto",
-  textAlign: "center",
-};
-
-const emptyBtn = {
-  marginTop: 16,
-  width: "100%",
-  background: "#2563eb",
-  color: "#fff",
-  border: "none",
-  padding: "14px",
-  borderRadius: 12,
-  fontWeight: 600,
-  fontSize: 15,
-};
-
-const emptyTitle = {
-  fontSize: 24,
-  fontWeight: 700,
-  marginBottom: 10,
-  color: "#0f172a",
-};

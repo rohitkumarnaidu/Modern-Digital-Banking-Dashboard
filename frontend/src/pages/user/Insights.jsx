@@ -37,6 +37,11 @@ const Insights = () => {
 
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+  const isMobile = screenWidth <= 480;
+  const isTablet = screenWidth <= 768;
+  const isLaptop = screenWidth <= 1024;
 
   const [loading, setLoading] = useState(true);
 
@@ -64,35 +69,88 @@ const Insights = () => {
   };
 
   useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    // 🔥 CRITICAL: force sync once on mount
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, []);
+
+
+  useEffect(() => {
     loadInsights();
   }, [month, year]);
 
   return (
     <div>
       {/* HEADER */}
-      <div style={headerWrap}>
-        <h1 style={pageTitle}>Insights</h1>
-        <p style={pageSub}>
+      <div style={{
+        textAlign: "center",
+        marginBottom: isMobile ? "20px" : "28px",
+      }}>
+        <h1 style={{
+          fontSize: isMobile ? "22px" : "26px",
+          marginBottom: "6px",
+        }}>Insights</h1>
+        <p style={{
+          color: "#64748b",
+          fontSize: isMobile ? "13px" : "14px",
+        }}>
           Analyze your income, expenses, and spending trends
         </p>
       </div>
 
       {/* FILTER BAR */}
-      <div style={filterBar}>
-        <div style={filterTitle}>
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        background: "#ffffff",
+        padding: isMobile ? "14px 16px" : "16px 22px",
+        borderRadius: "18px",
+        boxShadow: "0 10px 28px rgba(0,0,0,0.08)",
+        margin: isMobile ? "16px 0 24px" : "20px 0 32px",
+        flexDirection: isMobile ? "column" : "row",
+        gap: isMobile ? "12px" : "0",
+      }}>
+        <div style={{
+          fontSize: isMobile ? "16px" : "18px",
+          fontWeight: 600,
+          color: "#0f172a",
+        }}>
           {MONTHS[month - 1]} {year}
         </div>
 
-        <div style={filterControls}>
+        <div style={{
+          display: "flex",
+          gap: isMobile ? "8px" : "12px",
+        }}>
           {/* MONTH (numeric) */}
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            style={filterSelect}
+            style={{
+              border: "1px solid #e5e7eb",
+              borderRadius: "10px",
+              padding: isMobile ? "8px 12px" : "8px 14px",
+              justifyContent: isMobile ? "center" : "flex-end",
+              fontSize: isMobile ? "13px" : "14px",
+              cursor: "pointer",
+              background: "#fff",
+            }}
           >
             {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-              <option key={m} value={m}>
-                {m}
+              <option value={m}>
+                {MONTHS[m - 1]}
               </option>
             ))}
           </select>
@@ -101,7 +159,14 @@ const Insights = () => {
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            style={filterSelect}
+            style={{
+              border: "1px solid #e5e7eb",
+              borderRadius: "10px",
+              padding: isMobile ? "6px 10px" : "8px 14px",
+              fontSize: isMobile ? "13px" : "14px",
+              cursor: "pointer",
+              background: "#fff",
+            }}
           >
             {YEARS.map((y) => (
               <option key={y} value={y}>
@@ -113,28 +178,45 @@ const Insights = () => {
       </div>
 
       {/* SUMMARY */}
-      <div style={summaryRow}>
-        <InsightCard title="Total Income" value={income} accent="#2563EB" />
-        <InsightCard title="Total Expense" value={expense} accent="#DC2626" />
-        <InsightCard title="Savings" value={savings} accent="#16A34A" />
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+        gap: isMobile ? "16px" : "20px",
+        marginBottom: isMobile ? "28px" : "36px",
+      }}>
+        <InsightCard title="Total Income" value={income} accent="#2563EB" isMobile={isMobile}/>
+        <InsightCard title="Total Expense" value={expense} accent="#DC2626" isMobile={isMobile} />
+        <InsightCard title="Savings" value={savings} accent="#16A34A" isMobile={isMobile}/>
       </div>
 
       {/* CHARTS */}
-      <div style={chartsRow}>
-        <ChartCard title="Monthly Spending">
-          {loading ? "Loading…" : <MonthlySpendingChart data={monthlyData} />}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "1fr 1fr",
+        gap: isMobile ? "20px" : "28px",
+      }}>
+        <ChartCard title="Monthly Spending" isMobile={isMobile}>
+          {loading ? "Loading…" : <MonthlySpendingChart 
+          key={`${month}-${year}-${screenWidth}`}
+          data={monthlyData} />}
         </ChartCard>
 
         <ChartCard title="Category Breakdown">
           {loading ? "Loading…" : (
-            <CategoryBreakdownChart data={categoryData} />
+            <CategoryBreakdownChart 
+            key={`${month}-${year}-${screenWidth}`}
+            data={categoryData} />
           )}
         </ChartCard>
       </div>
 
       {/* EMPTY STATE */}
       {!loading && income === 0 && expense === 0 && (
-        <div style={emptyState}>
+        <div style={{
+          textAlign: "center",
+          marginTop: isMobile ? "30px" : "40px",
+          color: "#64748b",
+        }}>
           <h3>No Insights Yet</h3>
           <p>Start making transactions to see insights here.</p>
         </div>
@@ -145,115 +227,58 @@ const Insights = () => {
 
 export default Insights;
 
-/* ================= STYLES ================= */
-
-const headerWrap = {
-  textAlign: "center",
-  marginBottom: "28px",
-};
-
-const pageTitle = { fontSize: "26px", marginBottom: "6px" };
-const pageSub = { color: "#64748b", fontSize: "14px" };
-
-const filterBar = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  background: "#ffffff",
-  padding: "16px 22px",
-  borderRadius: "18px",
-  boxShadow: "0 10px 28px rgba(0,0,0,0.08)",
-  margin: "20px 0 32px",
-};
-
-const filterTitle = {
-  fontSize: "18px",
-  fontWeight: 600,
-  color: "#0f172a",
-};
-
-const filterControls = {
-  display: "flex",
-  gap: "12px",
-};
-
-const filterSelect = {
-  border: "1px solid #e5e7eb",
-  borderRadius: "10px",
-  padding: "8px 14px",
-  fontSize: "14px",
-  cursor: "pointer",
-  background: "#fff",
-};
-
-const summaryRow = {
-  display: "grid",
-  gridTemplateColumns: "repeat(3, 1fr)",
-  gap: "20px",
-  marginBottom: "36px",
-};
-
-const chartsRow = {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: "28px",
-};
-
-const emptyState = {
-  textAlign: "center",
-  marginTop: "40px",
-  color: "#64748b",
-};
-
 /* ========== COMPONENTS ========== */
 
-const InsightCard = ({ title, value, accent }) => (
-  <div style={card}>
-    <div style={{ ...accentBar, background: accent }} />
-    <p style={cardLabel}>{title}</p>
-    <h2>₹ {value.toLocaleString()}</h2>
-  </div>
-);
-
-const ChartCard = ({ title, children }) => (
-  <div style={chartCard}>
-    <h3 style={{ marginBottom: "14px" }}>{title}</h3>
-    <div style={chartBox}>{children}</div>
-  </div>
-);
-
-const card = {
-  position: "relative",
-  background: "#fff",
-  padding: "22px",
-  borderRadius: "18px",
-  boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+const InsightCard = ({ title, value, accent, isMobile }) => {
+  
+  return (
+    <div style={{
+      position: "relative",
+      background: "#fff",
+      padding: isMobile ? "18px" : "22px",
+      borderRadius: "18px",
+      boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+    }}>
+      <div style={{
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: "6px",
+        height: "100%",
+        borderRadius: "6px 0 0 6px",
+        background: accent,
+      }} />
+      <p style={{
+        color: "#64748b",
+        marginBottom: "6px",
+        fontSize: isMobile ? "13px" : "14px",
+      }}>{title}</p>
+      <h2 style={{
+        fontSize: isMobile ? "18px" : "20px",
+      }}>₹ {value.toLocaleString()}</h2>
+    </div>
+  );
 };
 
-const accentBar = {
-  position: "absolute",
-  left: 0,
-  top: 0,
-  width: "6px",
-  height: "100%",
-  borderRadius: "6px 0 0 6px",
-};
-
-const cardLabel = {
-  color: "#64748b",
-  marginBottom: "6px",
-};
-
-const chartCard = {
-  background: "#fff",
-  padding: "24px",
-  borderRadius: "18px",
-  boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
-};
-
-const chartBox = {
-  height: "260px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+const ChartCard = ({ title, children, isMobile }) => {
+  
+  return (
+    <div style={{
+      background: "#fff",
+      padding: isMobile ? "20px" : "24px",
+      borderRadius: "18px",
+      boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+    }}>
+      <h3 style={{
+        marginBottom: "14px",
+        fontSize: isMobile ? "16px" : "18px",
+      }}>{title}</h3>
+      <div style={{
+        height: isMobile ? "220px" : "260px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}>{children}</div>
+    </div>
+  );
 };
