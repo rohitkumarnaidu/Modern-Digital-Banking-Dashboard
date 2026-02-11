@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status, Request, Response
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
@@ -9,18 +9,15 @@ import traceback, logging
 from app.database import get_db
 from app.auth.schemas import (
     ForgotPasswordRequest,
-    ResetPasswordRequest,
     VerifyOtpSchema
 )
 from app.models.user import User
 from app.models.otp import OTP
 from app.schemas.user import UserCreate, UserResponse
-from app.schemas.token import TokenResponse
 from app.utils.hashing import Hash
 from app.utils.jwt import (
     create_access_token,
-    create_refresh_token,
-    decode_refresh_token
+    create_refresh_token
 )
 from app.auth.service import send_otp, authenticate_user
 

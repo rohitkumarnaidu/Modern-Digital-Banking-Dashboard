@@ -24,8 +24,6 @@ Frontend → api.js → FastAPI (main.py) → Router → Service → DB
 
 
 from fastapi import FastAPI
-from app.database import Base, engine
-from app.models import user, account
 from app.auth.router import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
 from app.accounts.router import router as accounts_router

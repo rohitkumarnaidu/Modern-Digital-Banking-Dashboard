@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status, Query
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
 from typing import List, Optional, Union, Any
 from decimal import Decimal
 from datetime import datetime

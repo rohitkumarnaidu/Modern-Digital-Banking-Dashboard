@@ -1,13 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.account import Account
 from app.models.transaction import Transaction
 from app.models.budget import Budget
 from app.models.user import User, UserRole
-from app.models.alert import Alert
 from datetime import date
 
 router = APIRouter()

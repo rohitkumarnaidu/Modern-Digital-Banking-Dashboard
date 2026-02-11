@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc
-from datetime import datetime, timedelta
 from app.database import get_db
-from app.models import User, Transaction, Budget
+from app.models import Transaction
 from app.dependencies import get_current_user
 
 router = APIRouter(tags=["Insights"])

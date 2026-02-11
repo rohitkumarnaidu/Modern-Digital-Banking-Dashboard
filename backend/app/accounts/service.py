@@ -22,7 +22,6 @@ from app.utils.hashing import Hash
 from app.models.account import Account
 from app.models.user import User
 from app.accounts.schemas import AccountCreate
-from app.models.transaction import Transaction, TransactionType
 
 def mask_account_number(account_number: str) -> str:
     """

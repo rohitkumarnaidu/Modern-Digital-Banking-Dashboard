@@ -28,7 +28,7 @@ from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.models.account import Account
-from app.models.transaction import Transaction, TransactionType
+from app.models.transaction import Transaction
 from fastapi import UploadFile, File
 from app.transactions.csv_import import import_transactions_from_csv
 

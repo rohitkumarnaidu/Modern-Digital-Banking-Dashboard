@@ -1,7 +1,7 @@
 # backend/app/schemas/admin.py
 
 from pydantic import BaseModel
-from typing import Optional, Literal
+from typing import Optional
 from app.schemas.kyc_schema import KYCStatusEnum
 
 

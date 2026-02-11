@@ -23,9 +23,7 @@ Frontend sends token → dependency validates → router executes
 
 
 from typing import Generator
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from app.config import settings
+from sqlalchemy.orm import Session
 from app.database import Base, SessionLocal  # ensure your database.py exports engine & Base
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer

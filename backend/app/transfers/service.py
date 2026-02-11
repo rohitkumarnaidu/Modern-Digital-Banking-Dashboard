@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
-from decimal import Decimal
+from fastapi import HTTPException
 from datetime import date
 
 from app.models.account import Account

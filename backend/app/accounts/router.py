@@ -30,8 +30,7 @@ from app.database import get_db
 from app.accounts.schemas import AccountCreate, AccountResponse
 from app.accounts.service import (
     create_account,
-    get_user_accounts,
-    delete_account
+    get_user_accounts
 )
 from app.dependencies import get_current_user
 from app.models.user import User

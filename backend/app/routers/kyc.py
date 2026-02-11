@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.dependencies import get_current_user
@@ -6,7 +6,7 @@ from app.models.user import User, UserRole, KYCStatus
 from app.models.kyc import KYCDocument, KYCVerificationLog, DocumentType
 from app.services.kyc_verification import KYCVerificationService
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 import os
 import uuid
 from datetime import datetime

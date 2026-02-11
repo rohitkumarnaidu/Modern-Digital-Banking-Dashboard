@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc, extract
-from typing import List, Optional, Dict
+from sqlalchemy import desc
+from typing import List, Optional
 from datetime import datetime, timedelta
 from app.models.expense import Expense
 from app.schemas.expense import ExpenseCreate, ExpenseUpdate, ExpenseAnalytics

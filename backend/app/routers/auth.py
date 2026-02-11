@@ -3,12 +3,6 @@ from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 import traceback
-import smtplib
-import os
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-import random
-import string
 
 # Internal Imports
 from app.database import get_db

@@ -1,9 +1,8 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from passlib.context import CryptContext
 import jwt
 from app.models.user import User
 from sqlalchemy.exc import IntegrityError
-import secrets
 from sqlalchemy.orm import Session
 from app.utils.hashing import Hash
 from app.utils.validators import is_strong_password
@@ -14,7 +13,7 @@ from app.models.user_settings import UserSettings
 from app.alerts.service import create_alert
 from app.models.user_device import UserDevice
 from app.firebase.firebase import send_push_notification
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 
 

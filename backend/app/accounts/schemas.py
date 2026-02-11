@@ -22,7 +22,6 @@ Why Needed:
 
 from pydantic import BaseModel, Field
 from decimal import Decimal
-from typing import Optional
 
 # -----------------------------
 # CREATE ACCOUNT (FROM FRONTEND)

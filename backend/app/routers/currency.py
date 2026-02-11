@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-import requests
 from datetime import datetime
 
 router = APIRouter(prefix="/currency", tags=["Currency"])

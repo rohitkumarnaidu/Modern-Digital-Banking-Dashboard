@@ -10,8 +10,6 @@ from app.schemas.expense import (
 )
 from app.services.expense_service import ExpenseService
 import base64
-import io
-from PIL import Image
 
 router = APIRouter(tags=["Expenses"])
 

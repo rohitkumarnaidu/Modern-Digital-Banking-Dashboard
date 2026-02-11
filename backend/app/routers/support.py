@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import Column, Integer, String, Text, DateTime, Enum as SQLEnum
+from sqlalchemy import Column, Integer, String, Text, DateTime
 from sqlalchemy.sql import func
 from app.database import get_db, Base
 from app.dependencies import get_current_user
 from app.models.user import User
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
 import enum
 
 router = APIRouter(prefix="/api/support", tags=["support"])

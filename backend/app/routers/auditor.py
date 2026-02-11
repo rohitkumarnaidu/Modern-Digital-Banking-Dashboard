@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc, and_, or_
+from sqlalchemy import func, desc, and_
 from app.database import get_db
-from app.models.user import User, KYCStatus, UserRole
+from app.models.user import User, KYCStatus
 from app.models.account import Account
 from app.models.transaction import Transaction
 from app.models.alert import Alert
 from app.dependencies import get_current_user
-from typing import List, Dict, Any, Optional
+from typing import Optional
 from datetime import datetime, timedelta
 
 router = APIRouter(prefix="/auditor", tags=["auditor"])

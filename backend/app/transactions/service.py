@@ -15,7 +15,7 @@ Backend Connections:
 """
 
 from sqlalchemy.orm import Session
-from datetime import datetime, date, timezone
+from datetime import datetime, timezone
 from fastapi import HTTPException
 
 from app.models.transaction import Transaction, TransactionType
@@ -23,11 +23,7 @@ from app.models.account import Account
 from app.budgets.models import Budget
 from app.transactions.schemas import TransactionCreate
 from app.models.user_settings import UserSettings
-from app.alerts.service import create_alert
 from app.alerts.utils import notify_transaction
-from app.utils.email_utils import send_email
-from app.models.user_device import UserDevice
-from app.firebase.firebase import send_push_notification
 
 
 def create_transaction(

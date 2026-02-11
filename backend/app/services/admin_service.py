@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 
 from app.models.user import User
 
