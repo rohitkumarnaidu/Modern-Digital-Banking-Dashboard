@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
         if (res?.data?.access_token) {
           setAuth({ user: res.data.user, accessToken: res.data.access_token });
         }
-      } catch (err) {
+      } catch {
         // no active session
       }
     };

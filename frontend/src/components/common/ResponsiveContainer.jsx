@@ -34,7 +34,6 @@ const ResponsiveContainer = ({
 
   const isMobile = screenSize.width < 640;
   const isTablet = screenSize.width >= 640 && screenSize.width < 1024;
-  const isDesktop = screenSize.width >= 1024;
 
   const getResponsivePadding = () => {
     if (!padding) return '0';

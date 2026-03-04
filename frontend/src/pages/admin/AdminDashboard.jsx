@@ -18,7 +18,6 @@ const EMPTY_SUMMARY = {
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [summary, setSummary] = useState(EMPTY_SUMMARY);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadDashboard();
@@ -26,13 +25,10 @@ const AdminDashboard = () => {
 
   const loadDashboard = async () => {
     try {
-      setLoading(true);
       const res = await api.get("/admin/dashboard/summary");
       setSummary(res.data);
     } catch (e) {
       console.error("Dashboard load error", e);
-    } finally {
-      setLoading(false);
     }
   };
 

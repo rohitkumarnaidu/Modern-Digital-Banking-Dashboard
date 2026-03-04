@@ -1,4 +1,3 @@
-import { getBudgets } from "@/services/api";
 import { createContext, useContext, useState } from "react";
 
 const BudgetContext = createContext();
