@@ -48,7 +48,6 @@ const SendToUpi = () => {
   }, [fromAccountId, navigate]);
 
   // 🚫 Prevent rendering page if account not present
-  if (!fromAccountId) return null;
 
   // ✅ Budget check handler (already in your code)
   const handleSend = () => {
@@ -119,6 +118,8 @@ const SendToUpi = () => {
       setProcessing(false);
     }
   };
+
+  if (!fromAccountId) return null;
 
   return (
     <>

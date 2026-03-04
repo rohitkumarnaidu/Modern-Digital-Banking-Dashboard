@@ -12,14 +12,16 @@
  */
 
 import axios from "axios";
+import { API_ENDPOINTS } from "../constants";
+import { getAccessToken } from "../utils/storage";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
-// attach token automatically
+// Attach token automatically
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
+  const token = getAccessToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -27,90 +29,82 @@ api.interceptors.request.use((config) => {
 });
 
 /* =====================
-   AUTH APIs (ADDED)
+   AUTH APIs
    ===================== */
 
-// Forgot password (email or phone)
 export const forgotPassword = (data) => {
-  return api.post("/auth/forgot-password", data);
+  return api.post(API_ENDPOINTS.FORGOT_PASSWORD, data);
 };
 
-// Verify OTP (used for forgot password & change pin)
 export const verifyOtp = (data) => {
-  return api.post("/auth/verify-otp", data);
+  return api.post(API_ENDPOINTS.VERIFY_OTP, data);
 };
 
-// Reset password
 export const resetPassword = (data) => {
-  return api.post("/auth/reset-password", data);
+  return api.post(API_ENDPOINTS.RESET_PASSWORD, data);
 };
-
 
 /* =====================
-   ACCOUNT APIs (ADDED)
+   ACCOUNT APIs
    ===================== */
 
-// Change account PIN
 export const changeAccountPin = (data) => {
-  return api.post("/accounts/change-pin", data);
+  return api.post(API_ENDPOINTS.CHANGE_PIN, data);
 };
 
-
-// --------------------
-// Budgets API
-// --------------------
+/* =====================
+   BUDGETS API
+   ===================== */
 
 export const getBudgets = (month, year) => {
-  return api.get(`/budgets?month=${month}&year=${year}`);
+  return api.get(`${API_ENDPOINTS.BUDGETS}?month=${month}&year=${year}`);
 };
 
 export const createBudget = (data) => {
-  return api.post("/budgets", data);
+  return api.post(API_ENDPOINTS.BUDGETS, data);
 };
 
-// ✅ ADDED (required by frontend)
 export const updateBudget = (id, data) => {
-  return api.patch(`/budgets/${id}`, data);
+  return api.patch(`${API_ENDPOINTS.BUDGETS}/${id}`, data);
 };
 
-// ✅ ADDED (required by frontend)
 export const deleteBudget = (id) => {
-  return api.delete(`/budgets/${id}`);
+  return api.delete(`${API_ENDPOINTS.BUDGETS}/${id}`);
 };
 
-// --------------------
-// Rewards APIs
-// --------------------
+/* =====================
+   REWARDS APIs
+   ===================== */
+
 export const getRewards = () => {
-  return api.get("/rewards");
+  return api.get(API_ENDPOINTS.REWARDS);
 };
 
-// --------------------
-// Bills API
-// --------------------
+/* =====================
+   BILLS API
+   ===================== */
 
 export const payBill = (data) => {
-  return api.post("/bills/pay", data);
+  return api.post(API_ENDPOINTS.PAY_BILL, data);
 };
 
-
-// --------------------
-// Insights APIs
-// --------------------
+/* =====================
+   INSIGHTS APIs
+   ===================== */
 
 export const getInsightsSummary = () => {
-  return api.get("/insights/summary");
+  return api.get(API_ENDPOINTS.INSIGHTS_SUMMARY);
 };
 
 export const getMonthlySpending = (month, year) => {
-  return api.get(`/insights/monthly?month=${month}&year=${year}`);
+  return api.get(`${API_ENDPOINTS.MONTHLY_SPENDING}?month=${month}&year=${year}`);
 };
 
 export const getCategoryBreakdown = (month, year) => {
-  return api.get(`/insights/categories?month=${month}&year=${year}`);
+  return api.get(`${API_ENDPOINTS.CATEGORY_BREAKDOWN}?month=${month}&year=${year}`);
 };
 
 export const getRecentTransactions = () =>
-  api.get("/transactions?limit=3");
+  api.get(`${API_ENDPOINTS.TRANSACTIONS}?limit=3`);
 
 export default api;

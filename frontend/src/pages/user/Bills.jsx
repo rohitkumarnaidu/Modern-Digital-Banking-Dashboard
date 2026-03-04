@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import api from "@/services/api";
 
@@ -93,31 +93,31 @@ const Bills = () => {
     if (accounts.length > 0 && !selectedAccountId) {
       setSelectedAccountId(accounts[0].id);
     }
-  }, [accounts]); 
+  }, [accounts, selectedAccountId]); 
 
 
-  const bills = [
+  const bills = useMemo(() => ([
     { label: "Electricity", icon: <Lightbulb />, key: "electricity" },
     { label: "Credit Card Bill", icon: <CreditCard />, key: "credit-card" },
     { label: "Subscription", icon: <Repeat />, key: "subscription" }
-  ];
+  ]), []);
 
-  const recharges = [
+  const recharges = useMemo(() => ([
     { label: "Mobile Recharge", icon: <Smartphone />, key: "mobile" },
     { label: "FASTag Recharge", icon: <Car />, key: "fastag" },
     { label: "Google Play", icon: <Gift />, key: "google-play" },
-  ];
+  ]), []);
 
-  const allItems = [...bills, ...recharges];
+  const allItems = useMemo(() => [...bills, ...recharges], [bills, recharges]);
 
-  const defaultMostUsedKeys = [
+  const defaultMostUsedKeys = useMemo(() => ([
     "mobile",
     "fastag",
     "google-play",
     "electricity",
     "subscription",
     "credit-card"
-  ];
+  ]), []);
 
   useEffect(() => {
     let stored = JSON.parse(localStorage.getItem("mostUsedBills"));
@@ -129,7 +129,7 @@ const Bills = () => {
     setMostUsed(
       stored.map((k) => allItems.find((i) => i.key === k)).filter(Boolean)
     );
-  }, []);
+  }, [allItems, defaultMostUsedKeys]);
 
   const handleClick = (item) => {
     let stored = JSON.parse(localStorage.getItem("mostUsedBills")) || [];

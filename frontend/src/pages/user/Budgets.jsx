@@ -1,5 +1,5 @@
 import { getBudgets, createBudget, updateBudget, deleteBudget } from "../../services/api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom"; // ✅ ADDED
 import BudgetCard from "@/components/user/budgets/BudgetCard";
 import AddBudgetModal from "@/components/user/budgets/AddBudgetModal";
@@ -16,18 +16,18 @@ const Budgets = () => {
   const [month] = useState(new Date().getMonth() + 1);
   const [year] = useState(new Date().getFullYear());
 
-  const fetchBudgets = async () => {
+  const fetchBudgets = useCallback(async () => {
     try {
       const res = await getBudgets(month, year);
       setBudgets(res.data);
     } catch (error) {
       console.error("Error fetching budgets:", error);
     }
-  };
+  }, [month, year]);
 
   useEffect(() => {
     fetchBudgets();
-  }, [month, year]);
+  }, [fetchBudgets]);
 
   // ✅ RECEIVE NEW BUDGET FROM MODAL
   const handleAddBudget = async () => {

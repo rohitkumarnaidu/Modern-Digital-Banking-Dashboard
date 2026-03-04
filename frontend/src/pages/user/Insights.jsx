@@ -8,7 +8,7 @@
  * Dynamic analytics using backend data
  */
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   getInsightsSummary,
   getMonthlySpending,
@@ -45,7 +45,7 @@ const Insights = () => {
 
   const [loading, setLoading] = useState(true);
 
-  const loadInsights = async () => {
+  const loadInsights = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -66,7 +66,7 @@ const Insights = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [month, year]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -88,7 +88,7 @@ const Insights = () => {
 
   useEffect(() => {
     loadInsights();
-  }, [month, year]);
+  }, [loadInsights]);
 
   return (
     <div>

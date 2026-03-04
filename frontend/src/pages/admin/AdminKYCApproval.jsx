@@ -1,6 +1,18 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ShieldCheck, XCircle, CheckCircle, Search, User } from "lucide-react";
 import api from "@/services/api";
+
+const KYC_UI_MAP = {
+  UNVERIFIED: "PENDING",
+  VERIFIED: "APPROVED",
+  REJECTED: "REJECTED",
+};
+
+const KYC_API_MAP = {
+  PENDING: "unverified",
+  APPROVED: "verified",
+  REJECTED: "rejected",
+};
 
 const AdminKYCApproval = () => {
   const [users, setUsers] = useState([]);
@@ -8,19 +20,7 @@ const AdminKYCApproval = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [search, setSearch] = useState("");
 
-  const KYC_UI_MAP = {
-    UNVERIFIED: "PENDING",
-    VERIFIED: "APPROVED",
-    REJECTED: "REJECTED",
-  };
-
-  const KYC_API_MAP = {
-    PENDING: "unverified",
-    APPROVED: "verified",
-    REJECTED: "rejected",
-  };
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     const res= await api.get("/admin/users", {
       params: {
         search: search || undefined,
@@ -41,11 +41,11 @@ const AdminKYCApproval = () => {
     }));
 
     setUsers(formatted);
-  }
+  }, [filter, search]);
 
   useEffect(() => {
     fetchUsers();
-  }, [filter, search]);
+  }, [fetchUsers]);
 
 
   const updateStatus = async (id, status) => {

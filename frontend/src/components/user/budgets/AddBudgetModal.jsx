@@ -50,7 +50,7 @@ const AddBudgetModal = ({ onSave }) => {
     const d = new Date(startDate);
     d.setDate(d.getDate() + Number(days) - 1);
     setEndDate(d.toISOString().split("T")[0]);
-  }, [days]);
+  }, [days, startDate]);
 
   // End Date → Days
   useEffect(() => {
@@ -60,7 +60,7 @@ const AddBudgetModal = ({ onSave }) => {
         (1000 * 60 * 60 * 24) +
       1;
     setDays(diff > 0 ? diff : "");
-  }, [endDate]);
+  }, [endDate, startDate]);
 
   const handleSave = () => {
     const limitValue =

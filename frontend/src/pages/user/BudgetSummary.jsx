@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { getBudgets } from "@/services/api";
@@ -11,11 +11,7 @@ const BudgetSummary = () => {
   const month = new Date().getMonth() + 1;
   const year = new Date().getFullYear();
 
-  useEffect(() => {
-    fetchSummary();
-  }, []);
-
-  const fetchSummary = async () => {
+  const fetchSummary = useCallback(async () => {
     try {
       const res = await getBudgets(month, year);
       setBudgets(res.data);
@@ -24,7 +20,11 @@ const BudgetSummary = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [month, year]);
+
+  useEffect(() => {
+    fetchSummary();
+  }, [fetchSummary]);
 
   const totalLimit = budgets.reduce(
     (sum, b) => sum + Number(b.limit_amount || 0),

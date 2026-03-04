@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Layers,
   ArrowLeftRight,
@@ -18,11 +18,7 @@ const AdminTransactions = () => {
   const [dateFilter, setDateFilter] = useState("");
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get("/admin/transactions",{
@@ -38,7 +34,11 @@ const AdminTransactions = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [category, dateFilter, type]);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
 
   /* ================= EXPORT ================= */
   const exportData = async () => {

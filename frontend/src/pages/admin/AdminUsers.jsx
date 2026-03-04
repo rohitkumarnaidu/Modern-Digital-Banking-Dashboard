@@ -1,20 +1,18 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Search, ShieldCheck, User } from "lucide-react";
 import api from "@/services/api";
+
+const KYC_FILTER_MAP = {
+  PENDING: "unverified",
+  APPROVED: "verified",
+  REJECTED: "rejected",
+};
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [kycFilter, setKycFilter] = useState("ALL");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  useEffect(() => {
-    fetchUsers();
-  }, [search, kycFilter]);
 
   const updateKyc = async (userId, status) => {
     try {
@@ -27,14 +25,7 @@ const AdminUsers = () => {
     }
   };
 
-  const KYC_FILTER_MAP = {
-    PENDING: "unverified",
-    APPROVED: "verified",
-    REJECTED: "rejected",
-  };
-
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -60,7 +51,11 @@ const AdminUsers = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [kycFilter, search]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-4 w-full lg:max-w-7xl lg:mx-auto">
