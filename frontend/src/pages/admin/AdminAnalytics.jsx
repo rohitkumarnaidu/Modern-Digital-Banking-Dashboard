@@ -8,6 +8,7 @@ import {
   Gift,
 } from "lucide-react";
 import api from "@/services/api";
+import { API_ENDPOINTS } from "@/constants";
 
 const AdminAnalytics = () => {
   const [loading, setLoading] = useState(true);
@@ -44,11 +45,11 @@ const AdminAnalytics = () => {
       setLoading(true);
 
       // 🔹 summary analytics
-      const summaryRes = await api.get("/admin/analytics/summary");
+      const summaryRes = await api.get(API_ENDPOINTS.ADMIN_ANALYTICS_SUMMARY);
       setSummary(summaryRes.data);
 
       // 🔹 top users analytics
-      const topUsersRes = await api.get("/admin/analytics/top-users");
+      const topUsersRes = await api.get(API_ENDPOINTS.ADMIN_ANALYTICS_TOP_USERS);
       setTopUsers(topUsersRes.data || []);
     } catch (err) {
       console.error("Failed to load admin analytics", err);

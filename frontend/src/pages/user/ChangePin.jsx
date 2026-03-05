@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "@/services/api";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
 
 const ChangePin = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const ChangePin = () => {
 
 
   if (!accountID) {
-    navigate("/dashboard/accounts");
+    navigate(ROUTES.ACCOUNTS);
     return null;
   }
 
@@ -38,13 +39,13 @@ const ChangePin = () => {
     try {
       setLoading(true);
 
-      await api.post("/accounts/change-pin", {
+      await api.post(API_ENDPOINTS.CHANGE_PIN, {
         account_id: accountID,
         new_pin: newPin,
       });
 
       alert("PIN changed successfully");
-      navigate("/dashboard/accounts");
+      navigate(ROUTES.ACCOUNTS);
     } catch (err) {
       setError(
         err.response?.data?.detail || "Failed to change PIN. Please try again."

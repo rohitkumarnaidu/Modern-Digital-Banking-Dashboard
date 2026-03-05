@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Search, ShieldCheck, User } from "lucide-react";
 import api from "@/services/api";
+import { API_ENDPOINTS } from "@/constants";
 
 const KYC_FILTER_MAP = {
   PENDING: "unverified",
@@ -16,7 +17,7 @@ const AdminUsers = () => {
 
   const updateKyc = async (userId, status) => {
     try {
-      await api.patch(`/admin/users/${userId}/kyc`, {
+      await api.patch(`${API_ENDPOINTS.ADMIN_USERS}/${userId}/kyc`, {
         status,
       });
       fetchUsers(); // 🔄 refresh list
@@ -29,7 +30,7 @@ const AdminUsers = () => {
     try {
       setLoading(true);
 
-      const res = await api.get("/admin/users", {
+      const res = await api.get(API_ENDPOINTS.ADMIN_USERS, {
         params: {
           search: search || undefined,
           kyc_status: kycFilter === "ALL" ? undefined : KYC_FILTER_MAP[kycFilter],

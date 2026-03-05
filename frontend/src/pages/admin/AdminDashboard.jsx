@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import api from "@/services/api";
 import { useNavigate } from "react-router-dom";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
 
 const EMPTY_SUMMARY = {
   total_users: 0,
@@ -25,7 +26,7 @@ const AdminDashboard = () => {
 
   const loadDashboard = async () => {
     try {
-      const res = await api.get("/admin/dashboard/summary");
+      const res = await api.get(API_ENDPOINTS.ADMIN_DASHBOARD_SUMMARY);
       setSummary(res.data);
     } catch (e) {
       console.error("Dashboard load error", e);
@@ -99,7 +100,7 @@ const AdminDashboard = () => {
             icon={<ShieldAlert />}
             bg="bg-amber-100"
             iconColor="text-amber-600"
-            onClick={() => navigate("/admin/kyc")}
+            onClick={() => navigate(ROUTES.ADMIN_KYC)}
           />
 
           <ActionCard
@@ -108,7 +109,7 @@ const AdminDashboard = () => {
             icon={<Users />}
             bg="bg-blue-100"
             iconColor="text-blue-600"
-            onClick={() => navigate("/admin/users")}
+            onClick={() => navigate(ROUTES.ADMIN_USERS)}
           />
 
           <ActionCard
@@ -117,7 +118,7 @@ const AdminDashboard = () => {
             icon={<ArrowUpRight />}
             bg="bg-green-100"
             iconColor="text-green-600"
-            onClick={() => navigate("/admin/transactions")}
+            onClick={() => navigate(ROUTES.ADMIN_TRANSACTIONS)}
           />
 
           <ActionCard
@@ -126,7 +127,7 @@ const AdminDashboard = () => {
             icon={<Bell />}
             bg="bg-rose-100"
             iconColor="text-rose-600"
-            onClick={() => navigate("/admin/alerts")}
+            onClick={() => navigate(ROUTES.ADMIN_ALERTS)}
           />
         </div>
       </div>

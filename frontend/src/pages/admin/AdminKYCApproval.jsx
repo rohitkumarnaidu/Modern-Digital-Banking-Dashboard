@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { ShieldCheck, XCircle, CheckCircle, Search, User } from "lucide-react";
 import api from "@/services/api";
+import { API_ENDPOINTS } from "@/constants";
 
 const KYC_UI_MAP = {
   UNVERIFIED: "PENDING",
@@ -21,7 +22,7 @@ const AdminKYCApproval = () => {
   const [search, setSearch] = useState("");
 
   const fetchUsers = useCallback(async () => {
-    const res= await api.get("/admin/users", {
+    const res= await api.get(API_ENDPOINTS.ADMIN_USERS, {
       params: {
         search: search || undefined,
         kyc_status:
@@ -50,7 +51,7 @@ const AdminKYCApproval = () => {
 
   const updateStatus = async (id, status) => {
     try {
-      await api.patch(`/admin/users/${id}/kyc`, {
+      await api.patch(`${API_ENDPOINTS.ADMIN_USERS}/${id}/kyc`, {
         status: KYC_API_MAP[status],
       });
       

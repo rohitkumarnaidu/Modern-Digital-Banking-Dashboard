@@ -2,33 +2,41 @@ import { createContext, useContext, useState } from "react";
 
 const BudgetContext = createContext();
 
+const INITIAL_BUDGETS = [
+  {
+    id: 1,
+    category: "Food",
+    limit_amount: 10000,
+    spent_amount: 9500,
+  },
+];
+
+const findBudgetByCategory = (budgets, category) =>
+  budgets.find((budget) => budget.category === category);
+
+const getRemainingBudget = (budget) => budget.limit_amount - budget.spent_amount;
+
+const isNearBudgetThreshold = (budget, amount) =>
+  getRemainingBudget(budget) - amount <= budget.limit_amount * 0.2;
+
 export const BudgetProvider = ({ children }) => {
-  const [budgets, setBudgets] = useState([
-    // sample structure (later from backend)
-    {
-      id: 1,
-      category: "Food",
-      limit_amount: 10000,
-      spent_amount: 9500,
-    },
-  ]);
+  const [budgets, setBudgets] = useState(INITIAL_BUDGETS);
 
   const applyPaymentToBudget = (category, amount) => {
-    setBudgets((prev) =>
-      prev.map((b) =>
-        b.category === category
-          ? { ...b, spent_amount: b.spent_amount + amount }
-          : b
+    setBudgets((prevBudgets) =>
+      prevBudgets.map((budget) =>
+        budget.category === category
+          ? { ...budget, spent_amount: budget.spent_amount + amount }
+          : budget
       )
     );
   };
 
   const checkBudget = (category, amount) => {
-    const budget = budgets.find((b) => b.category === category);
+    const budget = findBudgetByCategory(budgets, category);
     if (!budget) return { status: "no-budget" };
 
-    const remaining = budget.limit_amount - budget.spent_amount;
-
+    const remaining = getRemainingBudget(budget);
     if (amount > remaining) {
       return {
         status: "exceeded",
@@ -37,7 +45,7 @@ export const BudgetProvider = ({ children }) => {
       };
     }
 
-    if (remaining - amount <= budget.limit_amount * 0.2) {
+    if (isNearBudgetThreshold(budget, amount)) {
       return { status: "near", budget };
     }
 
@@ -45,9 +53,7 @@ export const BudgetProvider = ({ children }) => {
   };
 
   return (
-    <BudgetContext.Provider
-      value={{ budgets, checkBudget, applyPaymentToBudget }}
-    >
+    <BudgetContext.Provider value={{ budgets, checkBudget, applyPaymentToBudget }}>
       {children}
     </BudgetContext.Provider>
   );

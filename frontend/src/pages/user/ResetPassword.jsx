@@ -22,6 +22,8 @@
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import api from "@/services/api";
+import { API_ENDPOINTS, ROUTES, STORAGE_KEYS } from "@/constants";
+import { removeStorageItem } from "@/utils/storage";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -35,7 +37,7 @@ const ResetPassword = () => {
   const email = location.state?.email;
 
   if (!email) {
-    navigate("/forgot-password");
+    navigate(ROUTES.FORGOT_PASSWORD);
     return null;
   }
 
@@ -56,16 +58,16 @@ const ResetPassword = () => {
     try {
       setLoading(true);
 
-      await api.post("/auth/reset-password", {
+      await api.post(API_ENDPOINTS.RESET_PASSWORD, {
         email,
         new_password: password,
       });
 
-      localStorage.removeItem("resetOtp");
-      localStorage.removeItem("otpExpiry");
-      localStorage.removeItem("resetEmail");
+      removeStorageItem(STORAGE_KEYS.RESET_OTP);
+      removeStorageItem(STORAGE_KEYS.OTP_EXPIRY);
+      removeStorageItem(STORAGE_KEYS.RESET_EMAIL);
 
-      navigate("/login");
+      navigate(ROUTES.LOGIN);
     } catch (err) {
       setError(
         err.response?.data?.detail ||
@@ -165,7 +167,7 @@ const ResetPassword = () => {
         </form>
 
         <p style={{ marginTop: "20px", fontSize: "14px" }}>
-          <Link to="/login" style={{ color: "#7c3aed" }}>
+          <Link to={ROUTES.LOGIN} style={{ color: "#7c3aed" }}>
             Back to Login
           </Link>
         </p>

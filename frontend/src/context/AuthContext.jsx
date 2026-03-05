@@ -11,30 +11,36 @@
  * - Dashboard.jsx
  */
 
+import React, { createContext, useCallback, useEffect, useMemo, useState } from "react";
 
-
-
-import React, { createContext, useState, useEffect } from 'react';
-import api from '@/services/api';
+import { API_ENDPOINTS } from "@/constants";
+import api from "@/services/api";
 
 export const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
-  const [auth, setAuth] = useState({ user: null, accessToken: null });
+const INITIAL_AUTH_STATE = { user: null, accessToken: null };
 
-  useEffect(() => {
-    const tryRefresh = async () => {
-      try {
-        const res = await api.post('/auth/refresh/cookie'); // uses cookie
-        if (res?.data?.access_token) {
-          setAuth({ user: res.data.user, accessToken: res.data.access_token });
-        }
-      } catch {
-        // no active session
+export function AuthProvider({ children }) {
+  const [auth, setAuth] = useState(INITIAL_AUTH_STATE);
+
+  const tryRefresh = useCallback(async () => {
+    try {
+      const res = await api.post(API_ENDPOINTS.REFRESH);
+      if (res?.data?.access_token) {
+        setAuth({
+          user: res.data.user,
+          accessToken: res.data.access_token,
+        });
       }
-    };
-    tryRefresh();
+    } catch {
+      // no active session
+    }
   }, []);
 
-  return <AuthContext.Provider value={{ auth, setAuth }}>{children}</AuthContext.Provider>;
+  useEffect(() => {
+    tryRefresh();
+  }, [tryRefresh]);
+
+  const contextValue = useMemo(() => ({ auth, setAuth }), [auth]);
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 }

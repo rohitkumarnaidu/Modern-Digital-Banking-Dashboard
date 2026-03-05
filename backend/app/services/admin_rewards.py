@@ -1,5 +1,18 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Query, Session
+
 from app.models.admin_rewards import AdminReward, RewardStatus
+
+
+def _admin_rewards_query(db: Session) -> Query:
+    return db.query(AdminReward)
+
+
+def _get_reward_by_id(db: Session, reward_id: int):
+    return _admin_rewards_query(db).filter(AdminReward.id == reward_id).first()
+
+
+def _to_csv_applies_to(values: list[str]) -> str:
+    return ",".join(values)
 
 
 def create_admin_reward(db: Session, data):
@@ -7,10 +20,9 @@ def create_admin_reward(db: Session, data):
         name=data.name,
         description=data.description,
         reward_type=data.reward_type,
-        applies_to=",".join(data.applies_to),
+        applies_to=_to_csv_applies_to(data.applies_to),
         value=data.value,
     )
-
     db.add(reward)
     db.commit()
     db.refresh(reward)
@@ -18,18 +30,11 @@ def create_admin_reward(db: Session, data):
 
 
 def get_all_admin_rewards(db: Session):
-    return (
-        db.query(AdminReward)
-        .order_by(AdminReward.created_at.desc())
-        .all()
-    )
+    return _admin_rewards_query(db).order_by(AdminReward.created_at.desc()).all()
 
 
 def approve_admin_reward(db: Session, reward_id: int):
-    reward = db.query(AdminReward).filter(
-        AdminReward.id == reward_id
-    ).first()
-
+    reward = _get_reward_by_id(db, reward_id)
     if not reward:
         return None
 
@@ -40,10 +45,7 @@ def approve_admin_reward(db: Session, reward_id: int):
 
 
 def delete_admin_reward(db: Session, reward_id: int):
-    reward = db.query(AdminReward).filter(
-        AdminReward.id == reward_id
-    ).first()
-
+    reward = _get_reward_by_id(db, reward_id)
     if not reward:
         return False
 
@@ -53,8 +55,4 @@ def delete_admin_reward(db: Session, reward_id: int):
 
 
 def get_active_admin_rewards(db: Session):
-    return (
-        db.query(AdminReward)
-        .filter(AdminReward.status == RewardStatus.active)
-        .all()
-    )
+    return _admin_rewards_query(db).filter(AdminReward.status == RewardStatus.active).all()

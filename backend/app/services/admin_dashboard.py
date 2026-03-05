@@ -1,41 +1,41 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import func, cast, Date
 from datetime import date
 
-from app.models.user import User
-from app.models.transaction import Transaction
+from sqlalchemy import Date, cast, func
+from sqlalchemy.orm import Session
+
 from app.models.alert import Alert
-from app.models.user import KYCStatus
+from app.models.transaction import Transaction
+from app.models.user import KYCStatus, User
 
 
-def get_admin_dashboard_summary(db: Session):
-    # TOTAL USERS
-    total_users = db.query(func.count(User.id)).scalar()
+def _count_users(db: Session):
+    return db.query(func.count(User.id)).scalar()
 
-    # KYC PENDING
-    kyc_pending = (
+
+def _count_pending_kyc(db: Session):
+    return (
         db.query(func.count(User.id))
         .filter(User.kyc_status == KYCStatus.unverified)
         .scalar()
     )
 
-    # TODAY TRANSACTIONS
-    today_transactions = (
+
+def _count_today_transactions(db: Session):
+    return (
         db.query(func.count(Transaction.id))
         .filter(cast(Transaction.txn_date, Date) == date.today())
         .scalar()
     )
 
-    # ACTIVE ALERTS (unread)
-    active_alerts = (
-        db.query(func.count(Alert.id))
-        .filter(Alert.is_read == False)
-        .scalar()
-    )
 
+def _count_unread_alerts(db: Session):
+    return db.query(func.count(Alert.id)).filter(Alert.is_read == False).scalar()
+
+
+def get_admin_dashboard_summary(db: Session):
     return {
-        "total_users": total_users,
-        "kyc_pending": kyc_pending,
-        "today_transactions": today_transactions,
-        "active_alerts": active_alerts,
+        "total_users": _count_users(db),
+        "kyc_pending": _count_pending_kyc(db),
+        "today_transactions": _count_today_transactions(db),
+        "active_alerts": _count_unread_alerts(db),
     }

@@ -3,78 +3,61 @@
  * Authentication state and operations
  */
 
+import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { ROUTES } from "../constants";
 import {
-  getUser,
-  setUser,
-  setAccessToken,
-  setRefreshToken,
-  setLoggedIn,
   clearAuthData,
+  getUser,
   isLoggedIn as checkLoggedIn,
+  setAccessToken,
+  setLoggedIn,
+  setRefreshToken,
+  setUser,
 } from "../utils/storage";
+
+const isAdminUser = (user) => user?.is_admin === true;
 
 export const useAuth = () => {
   const navigate = useNavigate();
 
-  /**
-   * Get current user
-   */
-  const getCurrentUser = () => {
-    return getUser();
-  };
+  const getCurrentUser = useCallback(() => getUser(), []);
+  const isAuthenticated = useCallback(() => checkLoggedIn(), []);
+  const isAdmin = useCallback(() => isAdminUser(getUser()), []);
 
-  /**
-   * Check if user is authenticated
-   */
-  const isAuthenticated = () => {
-    return checkLoggedIn();
-  };
-
-  /**
-   * Check if user is admin
-   */
-  const isAdmin = () => {
-    const user = getUser();
-    return user?.is_admin === true;
-  };
-
-  /**
-   * Login user
-   */
-  const login = (userData, tokens) => {
+  const login = useCallback((userData, tokens) => {
     setAccessToken(tokens.access_token);
     if (tokens.refresh_token) {
       setRefreshToken(tokens.refresh_token);
     }
     setUser(userData);
     setLoggedIn(true);
-  };
+  }, []);
 
-  /**
-   * Logout user
-   */
-  const logout = () => {
+  const logout = useCallback(() => {
     clearAuthData();
     navigate(ROUTES.LOGIN);
-  };
+  }, [navigate]);
 
-  /**
-   * Update user data
-   */
-  const updateUser = (userData) => {
+  const updateUser = useCallback((userData) => {
     const currentUser = getUser();
-    const updatedUser = { ...currentUser, ...userData };
-    setUser(updatedUser);
-  };
+    setUser({ ...currentUser, ...userData });
+  }, []);
 
-  return {
-    user: getCurrentUser(),
-    isAuthenticated: isAuthenticated(),
-    isAdmin: isAdmin(),
-    login,
-    logout,
-    updateUser,
-  };
+  const user = getCurrentUser();
+  const authenticated = isAuthenticated();
+  const admin = isAdmin();
+
+  return useMemo(
+    () => ({
+      user,
+      isAuthenticated: authenticated,
+      isAdmin: admin,
+      login,
+      logout,
+      updateUser,
+    }),
+    [user, authenticated, admin, login, logout, updateUser]
+  );
 };

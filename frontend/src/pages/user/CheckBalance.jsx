@@ -12,6 +12,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import api from "@/services/api";
+import { API_ENDPOINTS } from "@/constants";
 import AddAccount from "./AddAccount";
 
 const CheckBalance = () => {
@@ -28,7 +29,7 @@ const CheckBalance = () => {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const res = await api.get("/accounts");
+        const res = await api.get(API_ENDPOINTS.ACCOUNTS);
         setAccounts(res.data || []);
       } catch {
         setAccounts([]);

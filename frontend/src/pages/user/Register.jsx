@@ -19,6 +19,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "@/services/api";
+import { API_ENDPOINTS, ROUTES, VALIDATION } from "@/constants";
 import registerImage from "@/assets/register-illustration.png";
 import logo from "@/assets/logo.png";
 import "./Register.css";
@@ -51,13 +52,13 @@ const Register = () => {
       newErrors.email = "Email is required";
     } else if (!email.includes("@")) {
       newErrors.email = "Email must contain @ symbol";
-    } else if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+    } else if (!email.match(VALIDATION.EMAIL_REGEX)) {
       newErrors.email = "Please enter a valid email address";
     }
     
     if (!phone) {
       newErrors.phone = "Phone number is required";
-    } else if (!/^\d{10}$/.test(phone)) {
+    } else if (!VALIDATION.PHONE_REGEX.test(phone)) {
       newErrors.phone = "Phone number must be exactly 10 digits";
     }
     if (!dob) newErrors.dob = "Date of birth is required";
@@ -66,7 +67,7 @@ const Register = () => {
     // Strong password validation to match backend
     if (!password) {
       newErrors.password = "Password is required";
-    } else if (password.length < 8) {
+    } else if (password.length < VALIDATION.MIN_PASSWORD_LENGTH) {
       newErrors.password = "Password must be at least 8 characters";
     } else if (!/(?=.*[a-z])/.test(password)) {
       newErrors.password = "Password must contain at least one lowercase letter";
@@ -97,7 +98,7 @@ const Register = () => {
     }  
 
     try {
-      const res = await api.post("/auth/register", {
+      const res = await api.post(API_ENDPOINTS.REGISTER, {
         name,
         email,
         password,
@@ -109,7 +110,7 @@ const Register = () => {
       });
 
       alert("Registration successful. Please login.");
-      navigate("/login");
+      navigate(ROUTES.LOGIN);
     } catch (err) {
       console.error("REGISTER ERROR:", err);
 
@@ -187,7 +188,7 @@ const Register = () => {
                     Email must contain @ symbol
                   </p>
                 )}
-                {!submitted && email && email.includes("@") && !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) && (
+                {!submitted && email && email.includes("@") && !email.match(VALIDATION.EMAIL_REGEX) && (
                   <p style={{ color: "#dc2626", fontSize: "13px", marginTop: "4px" }}>
                     Please enter a valid email format (e.g., user@example.com)
                   </p>
@@ -328,7 +329,7 @@ const Register = () => {
 
             <p style={{ textAlign: "center", marginTop: "16px" }}>
               Already have an account?{" "}
-              <Link to="/login" style={{ color: "#2E5A88", fontWeight: 600 }}>
+              <Link to={ROUTES.LOGIN} style={{ color: "#2E5A88", fontWeight: 600 }}>
                 Login
               </Link>
             </p>

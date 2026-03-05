@@ -14,15 +14,20 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import get_current_user
-from app.models.user import User
-from app.models.transaction import Transaction
 from app.exports.csv_export import export_transactions_csv
 from app.exports.pdf_export import generate_transaction_pdf
+from app.models.transaction import Transaction
+from app.models.user import User
 
-router = APIRouter(
-    prefix="/exports",
-    tags=["Exports"]
-)
+router = APIRouter(prefix="/exports", tags=["Exports"])
+
+
+def _get_user_transaction(db: Session, user_id: int, transaction_id: int):
+    return (
+        db.query(Transaction)
+        .filter(Transaction.id == transaction_id, Transaction.user_id == user_id)
+        .first()
+    )
 
 
 @router.get("/transactions/csv")
@@ -39,16 +44,7 @@ def export_pdf(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    transaction = (
-        db.query(Transaction)
-        .filter(
-            Transaction.id == transaction_id,
-            Transaction.user_id == current_user.id
-        )
-        .first()
-    )
-
+    transaction = _get_user_transaction(db, current_user.id, transaction_id)
     if not transaction:
         return {"detail": "Transaction not found"}
-
     return generate_transaction_pdf(transaction)

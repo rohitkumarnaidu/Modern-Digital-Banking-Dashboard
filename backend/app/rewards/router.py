@@ -3,32 +3,24 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import get_current_user
-
-# USER REWARDS (earned)
 from app.rewards.schemas import RewardCreate, RewardResponse
-from app.rewards.service import (
-    get_user_rewards,
-    create_reward_program
-)
-
-# ADMIN REWARDS (available offers)
-from app.services.admin_rewards import get_active_admin_rewards
+from app.rewards.service import create_reward_program, get_user_rewards
 from app.schemas.admin_rewards import AdminRewardResponse
+from app.services.admin_rewards import get_active_admin_rewards
+
+router = APIRouter(prefix="/rewards", tags=["Rewards"])
 
 
-router = APIRouter(
-    prefix="/rewards",
-    tags=["Rewards"]
-)
+def _normalize_applies_to_csv(applies_to: str | list[str]):
+    if isinstance(applies_to, str):
+        return applies_to.split(",")
+    return applies_to
 
 
-# ============================
-# USER EARNED REWARDS
-# ============================
 @router.get("/", response_model=list[RewardResponse])
 def list_rewards(
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ):
     return get_user_rewards(db, current_user.id)
 
@@ -37,26 +29,16 @@ def list_rewards(
 def create_reward(
     data: RewardCreate,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ):
-    return create_reward_program(
-        db,
-        current_user.id,
-        data.program_name
-    )
+    return create_reward_program(db, current_user.id, data.program_name)
 
 
-# ============================
-# AVAILABLE REWARDS (ADMIN → USER)
-# ============================
 @router.get("/available", response_model=list[AdminRewardResponse])
 def list_available_rewards(
     db: Session = Depends(get_db),
 ):
     rewards = get_active_admin_rewards(db)
-
-    # Convert CSV -> list for frontend
-    for r in rewards:
-        r.applies_to = r.applies_to.split(",")
-
+    for reward in rewards:
+        reward.applies_to = _normalize_applies_to_csv(reward.applies_to)
     return rewards

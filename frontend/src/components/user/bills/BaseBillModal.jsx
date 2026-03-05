@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EnterPinModal from "../payments/EnterPinModal";
+import { ROUTES } from "@/constants";
 
 const BaseBillModal = ({ title, children, confirmData, onClose }) => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const BaseBillModal = ({ title, children, confirmData, onClose }) => {
           setShowPin(false);
           onClose();
 
-          navigate("/dashboard/bill-processing", {
+          navigate(ROUTES.BILL_PROCESSING, {
             state: {
               bill_id: confirmData.bill_id ?? null,
               account_id: confirmData.account_id,

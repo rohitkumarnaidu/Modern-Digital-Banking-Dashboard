@@ -24,6 +24,7 @@
 
 import { useState } from "react";
 import api from "@/services/api";
+import { API_ENDPOINTS } from "@/constants";
 
 const AddAccount = ({ onClose, onSuccess }) => {
   const [bankName, setBankName] = useState("");
@@ -87,7 +88,7 @@ const AddAccount = ({ onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      await api.post("/accounts", {
+      await api.post(API_ENDPOINTS.ACCOUNTS, {
         bank_name: bankName,
         account_type: accountType,
         account_number: accountNumber,

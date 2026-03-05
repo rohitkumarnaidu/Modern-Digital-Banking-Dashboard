@@ -16,28 +16,24 @@
  * - Acts as the first layer of frontend route protection
  */
 
-
-
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("access_token");
-  const user = JSON.parse(localStorage.getItem("user"));
+import { ROUTES } from "@/constants";
+import { getAccessToken, getUser } from "@/utils/storage";
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
+const hasUserToken = () => Boolean(getAccessToken());
+const isAdminUser = () => Boolean(getUser()?.is_admin);
+
+const ProtectedRoute = ({ children }) => {
+  if (!hasUserToken()) {
+    return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
-  // 🚫 BLOCK ADMIN FROM USER DASHBOARD
-  if (user?.is_admin) {
-    return <Navigate to="/admin" replace />;
+  if (isAdminUser()) {
+    return <Navigate to={ROUTES.ADMIN} replace />;
   }
 
   return children;
 };
 
 export default ProtectedRoute;
-
-
-
-

@@ -17,8 +17,8 @@
 
 
 
-import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   Home,
   CreditCard,
@@ -36,14 +36,30 @@ import {
   X
 } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
 import api from "@/services/api";
+import { clearAuthData, getUser } from "@/utils/storage";
+
+const SIDEBAR_ITEMS = [
+  { path: ROUTES.DASHBOARD, icon: Home, label: "Home" },
+  { path: ROUTES.ACCOUNTS, icon: CreditCard, label: "Accounts" },
+  { path: ROUTES.TRANSFERS, icon: Send, label: "Send Money" },
+  { path: ROUTES.CHECK_BALANCE, icon: Wallet, label: "Check Balance" },
+  { path: ROUTES.TRANSACTIONS, icon: ArrowLeftRight, label: "Transactions" },
+  { path: ROUTES.BUDGETS, icon: PieChart, label: "Budgets" },
+  { path: ROUTES.BILLS, icon: FileText, label: "Recharge & Bills" },
+  { path: ROUTES.REWARDS, icon: Gift, label: "Rewards" },
+  { path: ROUTES.INSIGHTS, icon: LineChart, label: "Insights" },
+  { path: ROUTES.ALERTS, icon: AlertCircle, label: "Alerts" },
+  { path: ROUTES.SETTINGS, icon: Settings, label: "Settings" },
+];
 
 
 const Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const user = getUser() || {};
   const username = user?.name || "User";
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -60,31 +76,17 @@ const Dashboard = () => {
 
 
   const isActive = (path) =>{
-    if (path === "/dashboard") {
-      return location.pathname === "/dashboard";
+    if (path === ROUTES.DASHBOARD) {
+      return location.pathname === ROUTES.DASHBOARD;
     }
     return location.pathname.startsWith(path);
   }
 
 
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
+    clearAuthData();
+    navigate(ROUTES.LOGIN);
   };
-
-  const sidebarItems = [
-    { path: "/dashboard", icon: Home, label: "Home" },
-    { path: "/dashboard/accounts", icon: CreditCard, label: "Accounts" },
-    { path: "/dashboard/transfers", icon: Send, label: "Send Money" },
-    { path: "/dashboard/balance", icon: Wallet, label: "Check Balance" },
-    { path: "/dashboard/transactions", icon: ArrowLeftRight, label: "Transactions" },
-    { path: "/dashboard/budgets", icon: PieChart, label: "Budgets" },
-    { path: "/dashboard/bills", icon: FileText, label: "Recharge & Bills" },
-    { path: "/dashboard/rewards", icon: Gift, label: "Rewards" },
-    { path: "/dashboard/insights", icon: LineChart, label: "Insights" },
-    { path: "/dashboard/alerts", icon: AlertCircle, label: "Alerts" },
-    { path: "/dashboard/settings", icon: Settings, label: "Settings" },
-  ];
 
   useEffect(() => {
     const closeMenu = () => setShowProfileMenu(false);
@@ -117,7 +119,7 @@ const Dashboard = () => {
   useEffect(() => {
   const fetchUnreadAlerts = async () => {
     try {
-      const res = await api.get("/alerts");
+      const res = await api.get(API_ENDPOINTS.ALERTS);
       setUnreadCount(res.data.length);
     } catch (err) {
       console.error("Failed to fetch alerts:", err);
@@ -187,7 +189,7 @@ const Dashboard = () => {
 
         {/* NAV */}
         <nav className="sidebar-nav">
-          {sidebarItems.map((item) => (
+          {SIDEBAR_ITEMS.map((item) => (
             <Link
               key={item.path}
               to={item.path}
@@ -220,7 +222,7 @@ const Dashboard = () => {
         <div
           onClick={(e) => {
             e.stopPropagation();
-            navigate("/dashboard/notifications");
+            navigate(ROUTES.NOTIFICATIONS);
           }}
          style={{
           width: isMobile ? 32 : 36,
@@ -295,8 +297,8 @@ const Dashboard = () => {
                   boxShadow: "0 12px 30px rgba(0,0,0,0.15)",
                 }}
               >
-                <MenuItem label="Profile" onClick={() => navigate("/dashboard/profile")} />
-                <MenuItem label="Settings" onClick={() => navigate("/dashboard/settings")} />
+                <MenuItem label="Profile" onClick={() => navigate(ROUTES.PROFILE)} />
+                <MenuItem label="Settings" onClick={() => navigate(ROUTES.SETTINGS)} />
                 <MenuItem label="Logout" danger onClick={handleLogout} />
               </div>
             )}

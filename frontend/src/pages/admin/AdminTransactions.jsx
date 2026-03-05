@@ -9,6 +9,7 @@ import {
   Search,
 } from "lucide-react";
 import api from "@/services/api";
+import { API_ENDPOINTS } from "@/constants";
 
 const AdminTransactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -21,7 +22,7 @@ const AdminTransactions = () => {
   const fetchTransactions = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await api.get("/admin/transactions",{
+      const res = await api.get(API_ENDPOINTS.ADMIN_TRANSACTIONS,{
         params: {
           category: category|| undefined,
           type: type|| undefined,
@@ -43,7 +44,7 @@ const AdminTransactions = () => {
   /* ================= EXPORT ================= */
   const exportData = async () => {
     try {
-      const res = await api.get("/admin/transactions/export");
+      const res = await api.get(API_ENDPOINTS.ADMIN_TRANSACTIONS_EXPORT);
       const blob = new Blob([res.data.content], {
         type: "text/csv",
       });
@@ -67,7 +68,7 @@ const AdminTransactions = () => {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      await api.post("/admin/transactions/import", formData, {
+      await api.post(API_ENDPOINTS.ADMIN_TRANSACTIONS_IMPORT, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

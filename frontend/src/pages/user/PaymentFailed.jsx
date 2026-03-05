@@ -22,6 +22,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Download, Share2 } from "lucide-react";
 import appLogo from "@/assets/logo.png";
 import upiLogo from "@/assets/upi.png";
+import { ROUTES } from "@/constants";
 
 const PaymentFailed = () => {
   const { state } = useLocation();
@@ -64,11 +65,11 @@ const PaymentFailed = () => {
 
   const handleHome = () => {
     if (state?.source === "bills") {
-      navigate("/dashboard/bills");
+      navigate(ROUTES.BILLS);
     } else if (state?.source === "send-money") {
       navigate("/dashboard/send-money");
     } else {
-      navigate("/dashboard");
+      navigate(ROUTES.DASHBOARD);
     }
   };
 
@@ -146,7 +147,7 @@ const PaymentFailed = () => {
           <div className="flex gap-3">
             <button
               onClick={() => navigate(state?.source === "bills"
-                ? "/dashboard/bills"
+                ? ROUTES.BILLS
                 : "/dashboard/send-money"
               )}
               className="flex-1 border py-3 rounded-lg"

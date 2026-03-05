@@ -1,37 +1,20 @@
 import { useState } from "react";
-import axios from "axios";
+import { convertUsdToInr } from "@/services/currency";
 
 const CurrencyConverter = () => {
   const [amount, setAmount] = useState(1);
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // fixed currencies (bank-style)
-  const from = "USD";
-  const to = "INR";
-
   const convert = async () => {
     try {
       setLoading(true);
-
-      const res = await axios.get(
-        "https://api.frankfurter.app/latest",
-        {
-          params: {
-            from,
-            to,
-          },
-        }
-      );
-
-      const rate = res.data?.rates?.[to];
-
-      if (!rate) {
+      const convertedAmount = await convertUsdToInr(amount);
+      if (!convertedAmount) {
         setResult("Not available");
         return;
       }
 
-      const convertedAmount = (Number(amount) * rate).toFixed(2);
       setResult(convertedAmount);
     } catch (error) {
       console.error("Conversion failed", error);

@@ -17,6 +17,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "@/services/api";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
 import EnterPinModal from "@/components/user/payments/EnterPinModal";
 import PaymentProcessing from "@/components/user/payments/PaymentProcessing";
 import { useBudgets } from "@/context/BudgetContext";
@@ -43,7 +44,7 @@ const SendToUpi = () => {
   useEffect(() => {
     if (!fromAccountId) {
       alert("Please create an account first");
-      navigate("/dashboard/accounts");
+      navigate(ROUTES.ACCOUNTS);
     }
   }, [fromAccountId, navigate]);
 
@@ -96,7 +97,7 @@ const SendToUpi = () => {
     };
 
     try {
-      await api.post("/transfers", {
+      await api.post(API_ENDPOINTS.TRANSFERS, {
         from_account_id: fromAccountId,
         amount: Number(amount),
         pin,
@@ -106,9 +107,9 @@ const SendToUpi = () => {
 
       applyPaymentToBudget("Food", Number(amount));
 
-      navigate("/dashboard/payment-success", { state: receipt });
+      navigate(ROUTES.PAYMENT_SUCCESS, { state: receipt });
     } catch (err) {
-      navigate("/dashboard/payment-failed", {
+      navigate(ROUTES.PAYMENT_FAILED, {
         state: {
           ...receipt,
           reason: err.response?.data?.detail || "Transaction failed",

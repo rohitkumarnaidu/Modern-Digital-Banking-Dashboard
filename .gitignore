@@ -19,3 +19,7 @@ Thumbs.db
 
 # Secrets (DO NOT COMMIT)
 backend/app/config/firebase_key.json
+
+
+# Frontend build output
+frontend/dist/

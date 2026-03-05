@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Search, Gift, Calendar, Coins, Check, Trash2 } from "lucide-react";
 import api from "@/services/api";
+import { API_ENDPOINTS } from "@/constants";
 import "./AdminRewards.css";
 
 const AdminRewards = () => {
@@ -35,7 +36,7 @@ const AdminRewards = () => {
 
   const fetchRewards = async () => {
     try {
-      const res = await api.get("/admin/rewards");
+      const res = await api.get(API_ENDPOINTS.ADMIN_REWARDS);
       setRewards(res.data);
     } catch (err) {
       console.error("Failed to load rewards", err);
@@ -50,7 +51,7 @@ const AdminRewards = () => {
     }
 
     try {
-      await api.post("/admin/rewards", {
+      await api.post(API_ENDPOINTS.ADMIN_REWARDS, {
         name: newReward.name,
         description: newReward.description,
         reward_type: newReward.type,
@@ -77,7 +78,7 @@ const AdminRewards = () => {
 
   const approveReward = async (id) => {
     try {
-      await api.patch(`/admin/rewards/${id}/approve`);
+      await api.patch(`${API_ENDPOINTS.ADMIN_REWARDS}/${id}/approve`);
       fetchRewards();
     } catch (err) {
       alert("Failed to approve reward");
@@ -88,7 +89,7 @@ const AdminRewards = () => {
     if (!window.confirm("Remove this reward?")) return;
     
     try {
-      await api.delete(`/admin/rewards/${id}`);
+      await api.delete(`${API_ENDPOINTS.ADMIN_REWARDS}/${id}`);
       fetchRewards();
     } catch (err) {
       alert("Failed to remove reward");

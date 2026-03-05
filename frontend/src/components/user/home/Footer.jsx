@@ -248,10 +248,7 @@
  * - Static informational component
  */
 
-
-
-
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Home,
   Layers,
@@ -265,6 +262,7 @@ import {
   Lock,
 } from "lucide-react";
 
+import { ROUTES } from "@/constants";
 import logoWhite from "@/assets/logo-white.png";
 import "./Footer.css";
 
@@ -404,7 +402,7 @@ const Footer = () => {
               style={linkStyle}
               onMouseEnter={hoverEffect}
               onMouseLeave={leaveEffect}
-              onClick={() => navigate("/login")}
+              onClick={() => navigate(ROUTES.LOGIN)}
             >
               <LogIn size={18} /> Login
             </li>
@@ -414,7 +412,7 @@ const Footer = () => {
               style={linkStyle}
               onMouseEnter={hoverEffect}
               onMouseLeave={leaveEffect}
-              onClick={() => navigate("/register")}
+              onClick={() => navigate(ROUTES.REGISTER)}
             >
               <UserPlus size={18} /> Register
             </li>

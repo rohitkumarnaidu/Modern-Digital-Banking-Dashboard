@@ -1,22 +1,24 @@
 import { Navigate } from "react-router-dom";
 
-const AdminRoute = ({ children }) => {
-  const token = localStorage.getItem("access_token");
-  const rawUser = localStorage.getItem("user");
+import { ROUTES } from "@/constants";
+import { getAccessToken, getUser } from "@/utils/storage";
 
-  if (!token || !rawUser) {
-    return <Navigate to="/login" replace />;
+const isAdminSession = () => {
+  const token = getAccessToken();
+  const user = getUser();
+  return Boolean(token && user && user.is_admin === true);
+};
+
+const AdminRoute = ({ children }) => {
+  if (!getAccessToken() || !getUser()) {
+    return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
-  const user = JSON.parse(rawUser);
-
-  // ✅ allow admins ONLY
-  if (user.is_admin === true) {
+  if (isAdminSession()) {
     return children;
   }
 
-  // ❌ block non-admins
-  return <Navigate to="/dashboard" replace />;
+  return <Navigate to={ROUTES.DASHBOARD} replace />;
 };
 
 export default AdminRoute;

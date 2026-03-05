@@ -1,74 +1,60 @@
 """
-Shared Dependencies
-
-What:
-- Extracts logged-in user from JWT
-- Protects secure endpoints
-
-Backend Connections:
-- Used inside routers:
-  - accounts.py
-  - transactions.py
-
-Frontend Connections:
-- ProtectedRoute.jsx
-- Any dashboard page after login
-
-Flow:
-Frontend sends token → dependency validates → router executes
+Shared route dependencies.
 """
 
-
-
-
-
-from typing import Generator
-from sqlalchemy.orm import Session
-from app.database import Base, SessionLocal  # ensure your database.py exports engine & Base
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from app.utils.jwt import decode_access_token
-from app.models.user import User
+from sqlalchemy.orm import Session
 
-# if you already have create_engine in database.py, reuse it instead
+from app.database import get_db
+from app.models.user import User
+from app.utils.jwt import decode_access_token
+
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-def get_db() -> Generator[Session, None, None]:
-    db = SessionLocal()
+
+def _credentials_exception(detail: str = "Could not validate credentials") -> HTTPException:
+    return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=detail)
+
+
+def _decode_valid_access_payload(token: str) -> dict:
     try:
-        yield db
-    finally:
-        db.close()
+        payload = decode_access_token(token)
+    except Exception as exc:
+        raise _credentials_exception() from exc
+
+    if payload.get("type") != "access":
+        raise _credentials_exception("Invalid token type")
+
+    return payload
+
+
+def _get_user_id_from_payload(payload: dict) -> int:
+    subject = payload.get("sub")
+    if subject is None:
+        raise _credentials_exception()
+
+    try:
+        return int(subject)
+    except (TypeError, ValueError) as exc:
+        raise _credentials_exception() from exc
+
+
+def _get_user_or_401(db: Session, user_id: int) -> User:
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise _credentials_exception("User not found")
+    return user
+
 
 def get_current_user(
-        token: str = Depends(oauth2_scheme), 
-        db: Session = Depends(get_db)
-    ) -> User:
-        try:
-            payload = decode_access_token(token)
-
-            if payload.get("type") != "access":
-                raise HTTPException(
-                     status_code=status.HTTP_401_UNAUTHORIZED,
-                     detail="Invalid token type"
-                     )
-
-            user_id = int(payload.get("sub"))
-               
-        except Exception:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate credentials"
-            )
-
-        user = db.query(User).filter(User.id == user_id).first()
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, 
-                detail="User not found"
-            )
-        return user
-
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db),
+) -> User:
+    payload = _decode_valid_access_payload(token)
+    user_id = _get_user_id_from_payload(payload)
+    return _get_user_or_401(db, user_id)
 
 
 def get_current_admin_user(
@@ -77,7 +63,6 @@ def get_current_admin_user(
     if not current_user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
+            detail="Admin access required",
         )
-
     return current_user

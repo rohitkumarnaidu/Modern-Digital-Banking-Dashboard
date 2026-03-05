@@ -5,148 +5,95 @@
 
 import { STORAGE_KEYS } from "../constants";
 
-/**
- * Get item from localStorage
- */
-export const getStorageItem = (key) => {
+const safeStorageOperation = (operation, fallback, errorMessage) => {
   try {
-    const item = localStorage.getItem(key);
-    return item;
+    return operation();
   } catch (error) {
-    console.error(`Error getting ${key} from localStorage:`, error);
-    return null;
+    console.error(errorMessage, error);
+    return fallback;
   }
 };
 
-/**
- * Get JSON item from localStorage
- */
-export const getStorageJSON = (key) => {
-  try {
-    const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : null;
-  } catch (error) {
-    console.error(`Error parsing ${key} from localStorage:`, error);
-    return null;
-  }
+export const getStorageItem = (key) =>
+  safeStorageOperation(
+    () => localStorage.getItem(key),
+    null,
+    `Error getting ${key} from localStorage:`
+  );
+
+export const getStorageJSON = (key) =>
+  safeStorageOperation(
+    () => {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : null;
+    },
+    null,
+    `Error parsing ${key} from localStorage:`
+  );
+
+export const setStorageItem = (key, value) =>
+  safeStorageOperation(
+    () => {
+      localStorage.setItem(key, value);
+      return true;
+    },
+    false,
+    `Error setting ${key} in localStorage:`
+  );
+
+export const setStorageJSON = (key, value) =>
+  safeStorageOperation(
+    () => {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    },
+    false,
+    `Error setting ${key} in localStorage:`
+  );
+
+export const removeStorageItem = (key) =>
+  safeStorageOperation(
+    () => {
+      localStorage.removeItem(key);
+      return true;
+    },
+    false,
+    `Error removing ${key} from localStorage:`
+  );
+
+export const clearStorage = () =>
+  safeStorageOperation(
+    () => {
+      localStorage.clear();
+      return true;
+    },
+    false,
+    "Error clearing localStorage:"
+  );
+
+const AUTH_STORAGE_KEYS = {
+  accessToken: STORAGE_KEYS.ACCESS_TOKEN,
+  refreshToken: STORAGE_KEYS.REFRESH_TOKEN,
+  user: STORAGE_KEYS.USER,
+  isLoggedIn: STORAGE_KEYS.IS_LOGGED_IN,
 };
 
-/**
- * Set item in localStorage
- */
-export const setStorageItem = (key, value) => {
-  try {
-    localStorage.setItem(key, value);
-    return true;
-  } catch (error) {
-    console.error(`Error setting ${key} in localStorage:`, error);
-    return false;
-  }
-};
+export const getAccessToken = () => getStorageItem(AUTH_STORAGE_KEYS.accessToken);
+export const setAccessToken = (token) => setStorageItem(AUTH_STORAGE_KEYS.accessToken, token);
 
-/**
- * Set JSON item in localStorage
- */
-export const setStorageJSON = (key, value) => {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-    return true;
-  } catch (error) {
-    console.error(`Error setting ${key} in localStorage:`, error);
-    return false;
-  }
-};
+export const getRefreshToken = () => getStorageItem(AUTH_STORAGE_KEYS.refreshToken);
+export const setRefreshToken = (token) => setStorageItem(AUTH_STORAGE_KEYS.refreshToken, token);
 
-/**
- * Remove item from localStorage
- */
-export const removeStorageItem = (key) => {
-  try {
-    localStorage.removeItem(key);
-    return true;
-  } catch (error) {
-    console.error(`Error removing ${key} from localStorage:`, error);
-    return false;
-  }
-};
+export const getUser = () => getStorageJSON(AUTH_STORAGE_KEYS.user);
+export const setUser = (user) => setStorageJSON(AUTH_STORAGE_KEYS.user, user);
 
-/**
- * Clear all localStorage
- */
-export const clearStorage = () => {
-  try {
-    localStorage.clear();
-    return true;
-  } catch (error) {
-    console.error("Error clearing localStorage:", error);
-    return false;
-  }
-};
+export const isLoggedIn = () => getStorageItem(AUTH_STORAGE_KEYS.isLoggedIn) === "true";
+export const setLoggedIn = (status) =>
+  setStorageItem(AUTH_STORAGE_KEYS.isLoggedIn, status ? "true" : "false");
 
-// ==================== AUTH SPECIFIC ====================
-
-/**
- * Get access token
- */
-export const getAccessToken = () => {
-  return getStorageItem(STORAGE_KEYS.ACCESS_TOKEN);
-};
-
-/**
- * Set access token
- */
-export const setAccessToken = (token) => {
-  return setStorageItem(STORAGE_KEYS.ACCESS_TOKEN, token);
-};
-
-/**
- * Get refresh token
- */
-export const getRefreshToken = () => {
-  return getStorageItem(STORAGE_KEYS.REFRESH_TOKEN);
-};
-
-/**
- * Set refresh token
- */
-export const setRefreshToken = (token) => {
-  return setStorageItem(STORAGE_KEYS.REFRESH_TOKEN, token);
-};
-
-/**
- * Get user data
- */
-export const getUser = () => {
-  return getStorageJSON(STORAGE_KEYS.USER);
-};
-
-/**
- * Set user data
- */
-export const setUser = (user) => {
-  return setStorageJSON(STORAGE_KEYS.USER, user);
-};
-
-/**
- * Check if user is logged in
- */
-export const isLoggedIn = () => {
-  return getStorageItem(STORAGE_KEYS.IS_LOGGED_IN) === "true";
-};
-
-/**
- * Set logged in status
- */
-export const setLoggedIn = (status) => {
-  return setStorageItem(STORAGE_KEYS.IS_LOGGED_IN, status ? "true" : "false");
-};
-
-/**
- * Clear auth data
- */
 export const clearAuthData = () => {
-  removeStorageItem(STORAGE_KEYS.ACCESS_TOKEN);
-  removeStorageItem(STORAGE_KEYS.REFRESH_TOKEN);
-  removeStorageItem(STORAGE_KEYS.USER);
-  removeStorageItem(STORAGE_KEYS.IS_LOGGED_IN);
+  removeStorageItem(AUTH_STORAGE_KEYS.accessToken);
+  removeStorageItem(AUTH_STORAGE_KEYS.refreshToken);
+  removeStorageItem(AUTH_STORAGE_KEYS.user);
+  removeStorageItem(AUTH_STORAGE_KEYS.isLoggedIn);
 };

@@ -12,6 +12,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import api from "@/services/api";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -26,9 +27,9 @@ const ForgotPassword = () => {
 
     try {
       setLoading(true);
-      await api.post("/auth/forgot-password", { email });
+      await api.post(API_ENDPOINTS.FORGOT_PASSWORD, { email });
 
-      navigate("/verify-otp", {
+      navigate(ROUTES.VERIFY_OTP, {
         state: { 
           email,
           mode: "reset_password",
@@ -88,7 +89,7 @@ const ForgotPassword = () => {
         </form>
 
         <p style={{ marginTop: "20px", fontSize: "14px" }}>
-          <Link to="/login" style={link}>
+          <Link to={ROUTES.LOGIN} style={link}>
             Back to Login
           </Link>
         </p>

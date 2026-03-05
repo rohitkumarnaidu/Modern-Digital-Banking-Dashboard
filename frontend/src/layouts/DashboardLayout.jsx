@@ -8,38 +8,37 @@
  */
 
 import { Outlet } from "react-router-dom";
-import { useState, useEffect } from "react";
+
+import useResponsive from "@/hooks/useResponsive";
 
 const DashboardLayout = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const { isMobile } = useResponsive();
 
   return (
-    <div style={{ 
-      display: "flex", 
-      minHeight: "100vh",
-      flexDirection: isMobile ? "column" : "row"
-    }}>
-      <div style={{ 
-        flex: 1, 
-        display: "flex", 
-        flexDirection: "column",
-        width: "100%"
-      }}>
-        <main style={{ 
-          padding: isMobile ? "16px" : "30px 40px", 
+    <div
+      style={{
+        display: "flex",
+        minHeight: "100vh",
+        flexDirection: isMobile ? "column" : "row",
+      }}
+    >
+      <div
+        style={{
           flex: 1,
+          display: "flex",
+          flexDirection: "column",
           width: "100%",
-          maxWidth: "100%",
-          overflowX: "hidden"
-        }}>
+        }}
+      >
+        <main
+          style={{
+            padding: isMobile ? "16px" : "30px 40px",
+            flex: 1,
+            width: "100%",
+            maxWidth: "100%",
+            overflowX: "hidden",
+          }}
+        >
           <Outlet />
         </main>
       </div>
@@ -48,4 +47,3 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
-

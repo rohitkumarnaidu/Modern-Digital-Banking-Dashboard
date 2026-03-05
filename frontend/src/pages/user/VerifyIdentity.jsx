@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "@/services/api";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
 
 const VerifyIdentity = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const VerifyIdentity = () => {
 
   useEffect(() => {
     if (!accountID) {
-      navigate("/dashboard/accounts", { replace: true });
+      navigate(ROUTES.ACCOUNTS, { replace: true });
     }
   }, [accountID, navigate]);
 
@@ -24,9 +25,9 @@ const VerifyIdentity = () => {
     try {
       setLoading(true);
 
-      await api.post("/auth/forgot-password", { email });
+      await api.post(API_ENDPOINTS.FORGOT_PASSWORD, { email });
 
-      navigate("/dashboard/accounts/verify-otp", {
+      navigate(ROUTES.VERIFY_OTP_ACCOUNT, {
         state: { email, accountID, mode: "change_pin" },
       });
     } catch (err) {

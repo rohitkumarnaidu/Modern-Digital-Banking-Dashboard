@@ -8,32 +8,19 @@ What:
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+
+from app.bills.schemas import BillCreate, BillOut, BillPaymentCreate, BillUpdate
+from app.bills.service import create_bill, delete_bill, get_user_bills, pay_bill, update_bill
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
-from app.bills.schemas import BillPaymentCreate
 from app.tasks.bill_reminders import run_bill_reminders
-from app.bills.schemas import (
-    BillPaymentCreate,
-    BillCreate,
-    BillUpdate,
-    BillOut
-)
 
-from app.bills.service import (
-    pay_bill,
-    create_bill,
-    get_user_bills,
-    update_bill,
-    delete_bill
-)
+router = APIRouter(prefix="/bills", tags=["Bills & Recharges"])
 
 
-
-router = APIRouter(
-    prefix="/bills",
-    tags=["Bills & Recharges"]
-)
+def _get_current_user_id(current_user: User) -> int:
+    return current_user.id
 
 
 @router.post("/pay")
@@ -43,17 +30,15 @@ def pay_bill_api(
     current_user: User = Depends(get_current_user),
 ):
     transaction = pay_bill(db, current_user, payload)
-
     return {
         "status": "success",
         "transaction_id": transaction.id,
-        "message": "Payment successful"
+        "message": "Payment successful",
     }
 
+
 @router.post("/run-reminders")
-def trigger_bill_reminders(
-    db: Session = Depends(get_db)
-):
+def trigger_bill_reminders(db: Session = Depends(get_db)):
     run_bill_reminders(db)
     return {"status": "bill reminders executed"}
 
@@ -64,7 +49,7 @@ def create_bill_api(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return create_bill(db, current_user.id, payload)
+    return create_bill(db, _get_current_user_id(current_user), payload)
 
 
 @router.get("", response_model=list[BillOut])
@@ -72,7 +57,7 @@ def list_bills_api(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return get_user_bills(db, current_user.id)
+    return get_user_bills(db, _get_current_user_id(current_user))
 
 
 @router.put("/{bill_id}", response_model=BillOut)
@@ -82,7 +67,7 @@ def update_bill_api(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return update_bill(db, bill_id, current_user.id, payload)
+    return update_bill(db, bill_id, _get_current_user_id(current_user), payload)
 
 
 @router.delete("/{bill_id}")
@@ -91,5 +76,5 @@ def delete_bill_api(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    delete_bill(db, bill_id, current_user.id)
+    delete_bill(db, bill_id, _get_current_user_id(current_user))
     return {"status": "deleted"}

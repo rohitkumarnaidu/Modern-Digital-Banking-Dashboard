@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import RewardsModal from "@/components/user/rewards/RewardsModal";
 import api from "@/services/api";
 import useResponsive from "@/hooks/useResponsive";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
 
 const Rewards = () => {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ const Rewards = () => {
   useEffect(() => {
     const fetchAvailableRewards = async () => {
       try {
-        const res = await api.get("/rewards/available");
+        const res = await api.get(API_ENDPOINTS.REWARDS_AVAILABLE);
 
         const mapped = res.data.map(r => ({
           id: r.id,
@@ -90,7 +91,7 @@ const Rewards = () => {
           value={totalEarned}
           accent="#2563EB"
           bg="#FFFFFF"
-          onClick={() => navigate("/dashboard/rewards/total-earned")}
+          onClick={() => navigate(ROUTES.TOTAL_EARNED)}
         />
         <SummaryCard
           label="Completed"

@@ -32,6 +32,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import api from "@/services/api";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
 
 const SendMoney = () => {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ const SendMoney = () => {
   const hasAccounts = accounts.length > 0;
 
   useEffect(() => {
-    api.get("/accounts").then((res) => {
+    api.get(API_ENDPOINTS.ACCOUNTS).then((res) => {
       const data = res.data || [];
       setAccounts(data);
 
@@ -59,7 +60,7 @@ const SendMoney = () => {
         <h2 className="text-2xl font-semibold">Payments</h2>
         <button
           className="text-indigo-600 text-sm font-medium"
-          onClick={() => navigate("/dashboard/balance")}
+          onClick={() => navigate(ROUTES.CHECK_BALANCE)}
         >
           Check Balance
         </button>
@@ -93,7 +94,7 @@ const SendMoney = () => {
               No accounts found
             </span>
             <button
-              onClick={() => navigate("/dashboard/accounts")}
+              onClick={() => navigate(ROUTES.ACCOUNTS)}
               className="text-indigo-600 text-sm font-medium"
             >
               + Add Account
@@ -109,7 +110,7 @@ const SendMoney = () => {
           title="To Mobile / UPI"
           variant="blue"
           onClick={() =>
-            navigate("/dashboard/transfers/upi", {
+            navigate(ROUTES.TRANSFER_UPI, {
               state: { fromAccountId: Number(selectedAccount) },
             })
           }
@@ -119,7 +120,7 @@ const SendMoney = () => {
           title="To My Account"
           variant="blue"
           onClick={() =>
-            navigate("/dashboard/transfers/self", {
+            navigate(ROUTES.TRANSFER_SELF, {
               state: { fromAccountId: Number(selectedAccount) },
             })
           }
@@ -129,7 +130,7 @@ const SendMoney = () => {
           title="To Bank Account"
           variant="blue"
           onClick={() =>
-            navigate("/dashboard/transfers/bank", {
+            navigate(ROUTES.TRANSFER_BANK, {
               state: { fromAccountId: Number(selectedAccount) },
             })
           }
@@ -144,13 +145,13 @@ const SendMoney = () => {
       </Section>
 
       {/* BILLS & RECHARGES */}
-      <Section title="Bills & Recharges" viewAll onViewAll={() => navigate("/dashboard/bills")}>
+      <Section title="Bills & Recharges" viewAll onViewAll={() => navigate(ROUTES.BILLS)}>
         <Card
           icon={<Smartphone size={20} />}
           title="Mobile Recharge"
           variant="orange"
           onClick={() =>
-            navigate("/dashboard/bills", {
+            navigate(ROUTES.BILLS, {
               state: { fromAccountId: Number(selectedAccount) },
             })
           }
@@ -160,7 +161,7 @@ const SendMoney = () => {
           title="Subscription"
           variant="orange"
           onClick={() =>
-            navigate("/dashboard/bills", {
+            navigate(ROUTES.BILLS, {
               state: { fromAccountId: Number(selectedAccount) },
             })
           }
@@ -170,7 +171,7 @@ const SendMoney = () => {
           title="Electricity Bill"
           variant="orange"
           onClick={() =>
-            navigate("/dashboard/bills", {
+            navigate(ROUTES.BILLS, {
               state: { fromAccountId: Number(selectedAccount) },
             })
           }

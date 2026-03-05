@@ -15,6 +15,7 @@
 
 import { useEffect, useState } from "react";
 import api from "@/services/api";
+import { API_ENDPOINTS } from "@/constants";
 
 
 const Alerts = () => {
@@ -34,7 +35,7 @@ const Alerts = () => {
 
   const fetchAlerts = async () => {
     try {
-      const res = await api.get("/alerts");
+      const res = await api.get(API_ENDPOINTS.ALERTS);
       setAlerts(res.data || []);
     } catch (err) {
       console.error("Failed to load alerts");
@@ -46,7 +47,7 @@ const Alerts = () => {
   useEffect(() => {
     const load = async () => {
       await fetchAlerts();
-      await api.post("/alerts/mark-read");
+      await api.post(API_ENDPOINTS.ALERTS_MARK_READ);
     }
     load();
   }, []);

@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "@/services/api";
 import useResponsive from "@/hooks/useResponsive";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
+import { setAccessToken, setUser } from "@/utils/storage";
 
 const OTP_LENGTH = 6;
 const RESEND_TIME = 60;
@@ -26,7 +28,7 @@ const VerifyOtp = () => {
   // 🔒 Redirect safety (FIXED)
   useEffect(() => {
     if (!email || !mode) {
-      navigate("/login", { replace: true });
+      navigate(ROUTES.LOGIN, { replace: true });
     }
   }, [initialState, email, mode, navigate]);
 
@@ -85,21 +87,21 @@ const VerifyOtp = () => {
       setLoading(true);
       setError("");
 
-      const res = await api.post("/auth/verify-otp", {
+      const res = await api.post(API_ENDPOINTS.VERIFY_OTP, {
         otp: finalOtp,
         email,
       });
 
       if (mode === "login") {
-        localStorage.setItem("access_token", res.data.access_token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        navigate("/dashboard", { replace: true });
+        setAccessToken(res.data.access_token);
+        setUser(res.data.user);
+        navigate(ROUTES.DASHBOARD, { replace: true });
         return;
       }
 
 
       if (mode === "change_pin") {
-        navigate("/dashboard/accounts/change-pin", {
+        navigate(ROUTES.CHANGE_PIN, {
           state: { accountID },
           replace: true,
         });
@@ -107,7 +109,7 @@ const VerifyOtp = () => {
       }
 
       if (mode === "reset_password") {
-        navigate("/reset-password", {
+        navigate(ROUTES.RESET_PASSWORD, {
           state: { email },
           replace: true,
         });
@@ -129,13 +131,13 @@ const VerifyOtp = () => {
       setError("");
 
       if (mode === "login") {
-        await api.post("/auth/resend-login-otp", { email });
+        await api.post(API_ENDPOINTS.RESEND_LOGIN_OTP, { email });
       }
       else if (mode === "change_pin") {
-        await api.post("/auth/resend-pin-otp", { email });
+        await api.post(API_ENDPOINTS.RESEND_PIN_OTP, { email });
       }
       else{
-        await api.post("/auth/forgot-password", {
+        await api.post(API_ENDPOINTS.FORGOT_PASSWORD, {
           email,
         });
       }

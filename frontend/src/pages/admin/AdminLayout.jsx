@@ -5,8 +5,6 @@ import {
   Users,
   ShieldCheck,
   FileText,
-  Bell,
-  BarChart3,
   Settings,
   Gift,
   AlertTriangle,
@@ -16,6 +14,8 @@ import {
   X,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { ROUTES } from "@/constants";
+import { clearStorage } from "@/utils/storage";
 
 const AdminLayout = () => {
   const location = useLocation();
@@ -26,6 +26,7 @@ const AdminLayout = () => {
   const isMobile = screenWidth < 768;
   const isTablet = screenWidth >= 768 && screenWidth < 1024;
   const isDesktop = screenWidth >= 1024;
+  const adminBasePath = ROUTES.ADMIN;
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,24 +45,24 @@ const AdminLayout = () => {
 
 
   const isActive = (path) =>
-    path === "/admin"
-      ? location.pathname === "/admin"
+    path === adminBasePath
+      ? location.pathname === adminBasePath
       : location.pathname.startsWith(path);
 
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
+    clearStorage();
+    navigate(ROUTES.LOGIN);
   };
 
   const sidebarItems = [
-    { path: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-    { path: "/admin/users", icon: Users, label: "Users" },
-    { path: "/admin/kyc", icon: ShieldCheck, label: "KYC Approval" },
-    { path: "/admin/transactions", icon: FileText, label: "Transactions" },
-    { path: "/admin/rewards", icon: Gift, label: "Rewards" },
-    { path: "/admin/analytics", icon: Activity, label: "Analytics" },
-    { path: "/admin/alerts", icon: AlertTriangle, label: "Alerts & Logs" },
-    { path: "/admin/settings", icon: Settings, label: "Admin Settings" },
+    { path: ROUTES.ADMIN, icon: LayoutDashboard, label: "Dashboard" },
+    { path: ROUTES.ADMIN_USERS, icon: Users, label: "Users" },
+    { path: ROUTES.ADMIN_KYC, icon: ShieldCheck, label: "KYC Approval" },
+    { path: ROUTES.ADMIN_TRANSACTIONS, icon: FileText, label: "Transactions" },
+    { path: ROUTES.ADMIN_REWARDS, icon: Gift, label: "Rewards" },
+    { path: ROUTES.ADMIN_ANALYTICS, icon: Activity, label: "Analytics" },
+    { path: ROUTES.ADMIN_ALERTS, icon: AlertTriangle, label: "Alerts & Logs" },
+    { path: ROUTES.ADMIN_SETTINGS, icon: Settings, label: "Admin Settings" },
   ];
 
 

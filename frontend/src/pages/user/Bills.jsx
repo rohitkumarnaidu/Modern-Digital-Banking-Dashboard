@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import api from "@/services/api";
+import { API_ENDPOINTS, STORAGE_KEYS } from "@/constants";
+import { getStorageJSON, setStorageJSON } from "@/utils/storage";
 
 import AddBillModal from "../../components/user/bills/AddBillModal";
 
@@ -14,18 +16,9 @@ import CreditCardBillModal from "../../components/user/bills/CreditCardBillModal
 
 import {
   Smartphone,
-  Tv,
   Lightbulb,
   CreditCard,
-  Wifi,
-  Droplet,
-  Flame,
-  GraduationCap,
-  Home,
-  Building,
-  ShieldCheck,
   Repeat,
-  FileText,
   Gift,
   Car
 } from "lucide-react";
@@ -39,6 +32,8 @@ const BILL_MODAL_MAP = {
   "google-play": GooglePlayRechargeModal,
   "credit-card": CreditCardBillModal,
 };
+
+const MOST_USED_BILLS_KEY = STORAGE_KEYS.MOST_USED_BILLS;
 
 const Bills = () => {
   const [mostUsed, setMostUsed] = useState([]);
@@ -54,7 +49,7 @@ const Bills = () => {
 
   const fetchBills = async () => {
     try {
-      const res = await api.get("/bills");
+      const res = await api.get(API_ENDPOINTS.BILLS);
 
       const mappedBills = res.data.map((bill) => ({
         id: bill.id,
@@ -79,7 +74,7 @@ const Bills = () => {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const res = await api.get("/accounts");
+        const res = await api.get(API_ENDPOINTS.ACCOUNTS);
         setAccounts(res.data || []);
       } catch (err) {
        console.error("Failed to load accounts", err);
@@ -120,10 +115,10 @@ const Bills = () => {
   ]), []);
 
   useEffect(() => {
-    let stored = JSON.parse(localStorage.getItem("mostUsedBills"));
+    let stored = getStorageJSON(MOST_USED_BILLS_KEY);
     if (!stored) {
       stored = defaultMostUsedKeys;
-      localStorage.setItem("mostUsedBills", JSON.stringify(stored));
+      setStorageJSON(MOST_USED_BILLS_KEY, stored);
     }
 
     setMostUsed(
@@ -132,12 +127,12 @@ const Bills = () => {
   }, [allItems, defaultMostUsedKeys]);
 
   const handleClick = (item) => {
-    let stored = JSON.parse(localStorage.getItem("mostUsedBills")) || [];
+    let stored = getStorageJSON(MOST_USED_BILLS_KEY) || [];
     stored = stored.filter((k) => k !== item.key);
     stored.unshift(item.key);
     stored = stored.slice(0, 6);
 
-    localStorage.setItem("mostUsedBills", JSON.stringify(stored));
+    setStorageJSON(MOST_USED_BILLS_KEY, stored);
     setMostUsed(stored.map((k) => allItems.find((i) => i.key === k)).filter(Boolean));
     setActiveItem(item);
   };
@@ -312,7 +307,7 @@ const Bills = () => {
                 onClick={async () => {
                   if (!window.confirm("Remove this reminder?")) return;
                   try {
-                    await api.delete(`/bills/${bill.id}`);
+                    await api.delete(`${API_ENDPOINTS.BILLS}/${bill.id}`);
                     await fetchBills();
                   } catch (err) {
                     console.error("Failed to remove bill", err);
@@ -385,7 +380,7 @@ const Bills = () => {
           onAdd={async (bill) => {
             try {
               if (editingBill) {
-                await api.put(`/bills/${editingBill.id}`, {
+                await api.put(`${API_ENDPOINTS.BILLS}/${editingBill.id}`, {
                   biller_name: bill.billerName,
                   amount_due: bill.amount,
                   due_date: bill.dueDate,
@@ -394,7 +389,7 @@ const Bills = () => {
                   status: bill.status,
                 });
               }else{
-                await api.post("/bills", {
+                await api.post(API_ENDPOINTS.BILLS, {
                   biller_name: bill.billerName,
                   due_date: bill.dueDate,
                   amount_due: Number(bill.amount),

@@ -10,10 +10,12 @@ import "./Profile.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/services/api";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
+import { getUser, setUser } from "@/utils/storage";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")) || {});
+  const [user, setCurrentUser] = useState(getUser() || {});
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   const isMobile = screenWidth <= 480;
@@ -35,9 +37,9 @@ const Profile = () => {
   useEffect(() => {
     const syncUser = async () => {
       try {
-        const res = await api.get("/user/me");
-        localStorage.setItem("user", JSON.stringify(res.data));
+        const res = await api.get(API_ENDPOINTS.USER_ME);
         setUser(res.data);
+        setCurrentUser(res.data);
       } catch (err) {
         console.error("Failed to sync user", err);
       }
@@ -81,7 +83,8 @@ const Profile = () => {
       phone,
     };
 
-    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    setCurrentUser(updatedUser);
     setEditing(false);
     alert("Profile updated successfully");
   };
@@ -217,7 +220,7 @@ const Profile = () => {
               fontWeight: 600,
               cursor: "pointer",
               fontSize: isMobile ? "14px" : "16px",
-            }} onClick={() => navigate("/dashboard")}>
+            }} onClick={() => navigate(ROUTES.DASHBOARD)}>
               🏠 Go to Home
             </button>
             

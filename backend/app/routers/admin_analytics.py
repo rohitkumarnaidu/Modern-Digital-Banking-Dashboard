@@ -1,21 +1,13 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 from typing import List
 
-from app.database import get_db
-from app.schemas.admin_analytics import (
-    AdminAnalyticsSummary,
-    TopUserAnalytics
-)
-from app.services.admin_analytics import (
-    get_admin_analytics_summary,
-    get_top_users_by_activity
-)
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
-router = APIRouter(
-    prefix="/admin/analytics",
-    tags=["Admin Analytics"]
-)
+from app.database import get_db
+from app.schemas.admin_analytics import AdminAnalyticsSummary, TopUserAnalytics
+from app.services.admin_analytics import get_admin_analytics_summary, get_top_users_by_activity
+
+router = APIRouter(prefix="/admin/analytics", tags=["Admin Analytics"])
 
 
 @router.get("/summary", response_model=AdminAnalyticsSummary)

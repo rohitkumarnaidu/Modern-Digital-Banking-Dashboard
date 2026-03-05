@@ -20,6 +20,8 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import api from "@/services/api";
+import { API_ENDPOINTS, ROUTES, VALIDATION } from "@/constants";
+import { setAccessToken, setLoggedIn, setUser } from "@/utils/storage";
 import logo from "@/assets/logo.png";
 import loginImage from "@/assets/login-illustration.png";
 import "./Login.css";
@@ -40,10 +42,10 @@ const Login = () => {
     }
     
     const isEmail = value.includes("@");
-    const isPhone = /^\d{10}$/.test(value);
+    const isPhone = VALIDATION.PHONE_REGEX.test(value);
     
     if (isEmail) {
-      if (!value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      if (!value.match(VALIDATION.EMAIL_REGEX)) {
         setIdentifierError("Please enter a valid email address format (e.g., user@example.com)");
       } else {
         setIdentifierError("");
@@ -69,7 +71,7 @@ const Login = () => {
     setLoading(true); // 👈 START loading
 
     const isEmail = identifier.includes("@");
-    const isPhone = /^\d{10}$/.test(identifier);
+    const isPhone = VALIDATION.PHONE_REGEX.test(identifier);
 
     if (!isEmail && !isPhone){
       alert("Please enter a valid email address or 10-digit phone number.");
@@ -78,14 +80,14 @@ const Login = () => {
     }
 
     // Additional email validation for @ symbol
-    if (identifier.includes("@") && !identifier.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+    if (identifier.includes("@") && !identifier.match(VALIDATION.EMAIL_REGEX)) {
       alert("Please enter a valid email address with proper format.");
       setLoading(false);
       return;
     }
 
     try {
-      const res = await api.post("/auth/login/cookie", {
+      const res = await api.post(API_ENDPOINTS.LOGIN, {
         identifier,
         password,
       });
@@ -93,7 +95,7 @@ const Login = () => {
       if (res.data.otp_required) {
         // 🚫 DO NOT STORE TOKEN
         // 🚫 DO NOT SET isLoggedIn
-        navigate("/verify-otp", {
+        navigate(ROUTES.VERIFY_OTP, {
           state: { 
             email: isEmail ? identifier : res.data.email,
             mode: "login",
@@ -102,25 +104,22 @@ const Login = () => {
         return;
       }
 
-      localStorage.setItem("access_token", res.data.access_token);
-      localStorage.setItem("isLoggedIn", "true");
+      setAccessToken(res.data.access_token);
+      setLoggedIn(true);
 
       const user = res.data.user;
-      localStorage.setItem(
-        "user", 
-        JSON.stringify({
+      setUser({
           id: user.id,
           name: user.name,
           email: user.email,
           phone: user.phone,
           is_admin: user.is_admin,
-      })
-      );
+      });
 
       if(user.is_admin){
-        navigate("/admin");      // ✅ FIX
+        navigate(ROUTES.ADMIN);      // ✅ FIX
       } else {       
-        navigate("/dashboard");
+        navigate(ROUTES.DASHBOARD);
       }
     } catch (err) {
       alert(err.response?.data?.detail || "Invalid email or password");
@@ -212,7 +211,7 @@ const Login = () => {
               </div>
 
               <div style={{ textAlign: "right", marginBottom: "20px" }}>
-                <Link to="/forgot-password" style={forgotLink}>
+                <Link to={ROUTES.FORGOT_PASSWORD} style={forgotLink}>
                   Forgot Password?
                 </Link>
               </div>
@@ -234,7 +233,7 @@ const Login = () => {
 
             <p style={{ textAlign: "center", marginTop: "16px" }}>
               Don&apos;t have an account?{" "}
-              <Link to="/register" style={{ color: "#2E5A88", fontWeight: 600 }}>
+              <Link to={ROUTES.REGISTER} style={{ color: "#2E5A88", fontWeight: 600 }}>
                 Create one
               </Link>
             </p>

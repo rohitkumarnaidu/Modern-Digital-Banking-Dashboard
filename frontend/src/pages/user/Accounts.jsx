@@ -8,8 +8,9 @@
  */
 
 import { useEffect, useState, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "@/services/api";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
 import AddAccount from "./AddAccount";
 
 const Accounts = () => {
@@ -27,17 +28,9 @@ const Accounts = () => {
   const [pin, setPin] = useState(["", "", "", ""]);
   const [deleteError, setDeleteError] = useState("");
 
-  const location = useLocation();
-  const selectedId = location.state?.accountId;
-
-  const visibleAccounts = selectedId
-    ? accounts.filter(a => a.id === selectedId)
-    : accounts;
-
   // Responsive breakpoints
   const isMobile = screenWidth <= 480;
   const isTablet = screenWidth <= 768;
-  const isLaptop = screenWidth <= 1024;
 
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
@@ -58,7 +51,7 @@ const Accounts = () => {
   
   const fetchAccounts = async () => {
     try {
-      const res = await api.get("/accounts");
+      const res = await api.get(API_ENDPOINTS.ACCOUNTS);
       setAccounts(res.data || []);
     } catch (err) {
       console.error("Failed to fetch accounts", err);
@@ -72,13 +65,9 @@ const Accounts = () => {
   }, []);
 
   const openCheckBalance = (accountId) => {
-    navigate("/dashboard/balance",{
+    navigate(ROUTES.CHECK_BALANCE,{
       state: { accountId },
     });
-  };
-
-  const openChangePin = (accountId) => {
-    console.log("Change PIN:", accountId);
   };
 
   const handleDeleteClick = (id) => {
@@ -90,7 +79,7 @@ const Accounts = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      await api.delete(`/accounts/${selectedAccountId}`, {
+      await api.delete(`${API_ENDPOINTS.ACCOUNTS}/${selectedAccountId}`, {
         data: { pin: pin.join("") },
       });
       setShowPinModal(false);
@@ -267,7 +256,7 @@ const Accounts = () => {
                   cursor: "pointer"
                 }}
                 onClick={() => 
-                  navigate("/dashboard/accounts/verify-identity", {
+                  navigate(ROUTES.VERIFY_IDENTITY, {
                     state: { accountId: acc.id },
                   })
                 }

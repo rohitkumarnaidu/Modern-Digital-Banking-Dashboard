@@ -11,6 +11,7 @@
 
 import { useState } from "react";
 import useResponsive from "@/hooks/useResponsive";
+import { ROUTES } from "@/constants";
 
 const RewardsModal = ({ reward, onClose }) => {
   const { isMobile } = useResponsive();
@@ -27,7 +28,7 @@ const RewardsModal = ({ reward, onClose }) => {
   };
 
   const handleShare = () => {
-    const url = "http://localhost:5173/register";
+    const url = `${window.location.origin}${ROUTES.REGISTER}`;
     const text = `Join Modern Digital Banking using my referral 🎁`;
 
     if (navigator.share) {

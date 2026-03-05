@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "@/services/api";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
 
 const BillProcessing = () => {
   const navigate = useNavigate();
@@ -8,13 +9,13 @@ const BillProcessing = () => {
 
   useEffect(() => {
     if (!state) {
-      navigate("/dashboard");
+      navigate(ROUTES.DASHBOARD);
       return;
     }
 
     const processBill = async () => {
       try {
-        await api.post("/bills/pay", {
+        await api.post(API_ENDPOINTS.PAY_BILL, {
           bill_id: state.bill_id,
           account_id: state.account_id,
           amount: state.amount,
@@ -24,7 +25,7 @@ const BillProcessing = () => {
           provider: state.provider || null,
         });
 
-        navigate("/dashboard/payment-success", {
+        navigate(ROUTES.PAYMENT_SUCCESS, {
           state: {
             to: state.to,
             amount: state.amount,
@@ -43,7 +44,7 @@ const BillProcessing = () => {
           reason = detail[0]?.msg || reason;
         }
 
-        navigate("/dashboard/payment-failed", {
+        navigate(ROUTES.PAYMENT_FAILED, {
           state: {
             to: state.to,
             amount: state.amount,

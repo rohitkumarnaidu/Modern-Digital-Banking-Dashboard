@@ -1,321 +1,314 @@
+from datetime import datetime, timedelta
+import traceback
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-import traceback
 
-# Internal Imports
-from app.database import get_db
 from app import models
+from app.database import get_db
 from app.models.user import User
-from app.utils.jwt_handler import verify_token, create_access_token, create_refresh_token
-from app.utils.hash_password import verify_password, hash_password
+from app.utils.hash_password import hash_password, verify_password
+from app.utils.jwt_handler import create_access_token, create_refresh_token, verify_token
 
-router = APIRouter(
-    prefix="/api/auth",
-    tags=["Authentication"]
-)
-
-# =======================
-# 🔐 OAuth2 Scheme
-# =======================
-# This defines where the frontend should send the username/password to get a token
+router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
-# =======================
-# 📝 Pydantic Models
-# =======================
+INVALID_CREDENTIALS_DETAIL = "Could not validate credentials"
+INVALID_LOGIN_DETAIL = "Invalid credentials"
+SIGNUP_FAILED_DETAIL = "Signup failed"
+GENERIC_FORGOT_PASSWORD_MESSAGE = "If the email exists, an OTP has been sent"
+INVALID_OTP_DETAIL = "Invalid OTP"
+OTP_REQUIRED_DETAIL = "OTP is required to reset password"
+USER_NOT_FOUND_DETAIL = "User not found"
+INVALID_OR_EXPIRED_OTP_DETAIL = "Invalid or expired OTP"
+RESET_FAILED_DETAIL = "Failed to reset password"
+OTP_VERIFIED_RESPONSE = {"message": "OTP verified", "valid": True}
+
 
 class UserLogin(BaseModel):
     email: str
     password: str
-    role: str = "user"  # Optional role field
+    role: str = "user"
+
 
 class UserRegister(BaseModel):
     email: str
     password: str
-    name: str = None 
+    name: str = None
 
-# Models for Password Reset
+
 class ForgotPassword(BaseModel):
     email: str
+
 
 class VerifyOTP(BaseModel):
     email: str
     otp: str
+
 
 class ResetPassword(BaseModel):
     email: str
     new_password: str
     otp: str = None
 
-# =======================
-# 🛡️ GLOBAL AUTH DEPENDENCY
-# =======================
-# 🚨 CRITICAL: This is the function 'transactions.py' is trying to import!
-# It verifies the token and returns the User object from the database.
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    credentials_exception = HTTPException(
+
+def _credentials_exception() -> HTTPException:
+    return HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail=INVALID_CREDENTIALS_DETAIL,
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
-    # 1. Verify token and extract User ID
-    # Note: We pass the exception so verify_token can raise it if needed
+
+
+def _extract_nested_value(value: Any, key: str) -> Any:
+    if isinstance(value, dict):
+        return value.get(key)
+    return value
+
+
+def _generic_forgot_password_response() -> dict:
+    return {"message": GENERIC_FORGOT_PASSWORD_MESSAGE}
+
+
+def _get_user_by_email(db: Session, email: str):
+    return db.query(models.User).filter(models.User.email == email).first()
+
+
+def _create_token_pair(user_id: int) -> tuple[str, str]:
+    access_token = create_access_token(data={"user_id": str(user_id)})
+    refresh_token = create_refresh_token(data={"user_id": str(user_id)})
+    return access_token, refresh_token
+
+
+def _load_send_otp_email():
+    from app.utils.email_service import send_otp_email
+
+    return send_otp_email
+
+
+def _load_verify_otp_logic():
+    from app.utils.email_service import verify_otp_logic
+
+    return verify_otp_logic
+
+
+def _load_password_reset_model():
+    from app.auth.models import PasswordReset
+
+    return PasswordReset
+
+
+def _get_latest_unused_password_reset(db: Session, email: str, password_reset_model):
+    return (
+        db.query(password_reset_model)
+        .filter(
+            password_reset_model.email == email,
+            password_reset_model.is_used == False,
+        )
+        .order_by(password_reset_model.created_at.desc())
+        .first()
+    )
+
+
+def _normalize_utc_naive(value: datetime) -> datetime:
+    if getattr(value, "tzinfo", None):
+        return value.replace(tzinfo=None)
+    return value
+
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = _credentials_exception()
     try:
         user_id = verify_token(token, credentials_exception)
     except Exception:
         raise credentials_exception
 
-    # 2. Query Database for this User ID
-    # Convert user_id to int just in case it came back as a string
     user = db.query(User).filter(User.id == int(user_id)).first()
-    
     if user is None:
         raise credentials_exception
-        
     return user
 
-# =======================
-# 🚀 Auth Routes
-# =======================
 
 @router.post("/signup")
 def register(user: UserRegister, db: Session = Depends(get_db)):
     try:
-        user_exist = db.query(models.User).filter(models.User.email == user.email).first()
+        user_exist = _get_user_by_email(db, user.email)
         if user_exist:
             raise HTTPException(status_code=400, detail="User already exists")
 
         new_user = models.User(
             email=user.email,
             password=hash_password(user.password),
-            name=user.name 
+            name=user.name,
         )
-        
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
-        
-        access_token = create_access_token(data={"user_id": str(new_user.id)})
-        refresh_token = create_refresh_token(data={"user_id": str(new_user.id)})
-        
+
+        access_token, refresh_token = _create_token_pair(new_user.id)
         return {
-            "access_token": access_token, 
+            "access_token": access_token,
             "refresh_token": refresh_token,
-            "token_type": "bearer", 
-            "user": {"email": new_user.email, "name": new_user.name}
+            "token_type": "bearer",
+            "user": {"email": new_user.email, "name": new_user.name},
         }
     except HTTPException:
         raise
-    except Exception as e:
-        print(f"❌ SIGNUP ERROR: {str(e)}")
-        raise HTTPException(status_code=500, detail="Signup failed")
+    except Exception as exc:
+        print(f"SIGNUP ERROR: {exc}")
+        raise HTTPException(status_code=500, detail=SIGNUP_FAILED_DETAIL)
+
 
 @router.post("/login")
 def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
     try:
-        print(f"🔍 Login attempt for: {user_credentials.email}")
-        
-        # 1. Find user
+        print(f"Login attempt for: {user_credentials.email}")
         user = db.query(User).filter(User.email == user_credentials.email).first()
-        print(f"👤 User found: {user is not None}")
+        print(f"User found: {user is not None}")
 
         if not user:
-            print("❌ User not found in database")
-            raise HTTPException(status_code=401, detail="Invalid credentials")
+            print("User not found in database")
+            raise HTTPException(status_code=401, detail=INVALID_LOGIN_DETAIL)
 
-        # 2. Verify password
-        print(f"🔐 Verifying password...")
+        print("Verifying password...")
         password_valid = verify_password(user_credentials.password, user.password)
-        print(f"🔐 Password valid: {password_valid}")
-        
-        if not password_valid:
-            print("❌ Password verification failed")
-            raise HTTPException(status_code=401, detail="Invalid credentials")
+        print(f"Password valid: {password_valid}")
 
-        # 3. Generate Tokens
-        access_token = create_access_token(data={"user_id": str(user.id)})
-        refresh_token = create_refresh_token(data={"user_id": str(user.id)})
-        
-        print(f"✅ Login successful for user: {user.email}")
-        
-        # 4. Return Response
+        if not password_valid:
+            print("Password verification failed")
+            raise HTTPException(status_code=401, detail=INVALID_LOGIN_DETAIL)
+
+        access_token, refresh_token = _create_token_pair(user.id)
+        print(f"Login successful for user: {user.email}")
         return {
-            "access_token": access_token, 
+            "access_token": access_token,
             "refresh_token": refresh_token,
-            "token_type": "bearer", 
+            "token_type": "bearer",
             "user": {
                 "id": user.id,
-                "email": user.email, 
-                "name": getattr(user, 'full_name', 'User') or getattr(user, 'name', 'User')
-            }
+                "email": user.email,
+                "name": getattr(user, "full_name", "User") or getattr(user, "name", "User"),
+            },
         }
-
     except HTTPException as http_ex:
         raise http_ex
-    except Exception as e:
-        print(f"💥 Login error: {str(e)}")
-        traceback.print_exc() 
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception as exc:
+        print(f"Login error: {exc}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(exc))
 
-# =======================
-# 🔐 Password Reset Routes
-# =======================
 
 @router.post("/forgot-password")
 def forgot_password(request: ForgotPassword, db: Session = Depends(get_db)):
-    """Generates an OTP, sends it via email (reads sender creds from env), and stores a PasswordReset row.
-
-    This endpoint is tolerant to clients that might send a nested payload like
-    { "email": { "email": "user@example.com" } } due to frontend bugs.
-    """
-    # Accept nested shapes: normalize to a simple email string
-    email_val = request.email
-    if isinstance(email_val, dict):
-        email_val = email_val.get('email')
+    email_val = _extract_nested_value(request.email, "email")
 
     if not email_val or not isinstance(email_val, str):
-        # Return generic success (avoid user enumeration) but also log the invalid payload
-        print(f"⚠️ forgot-password received invalid payload: {request}")
-        return {"message": "If the email exists, an OTP has been sent"}
+        print(f"forgot-password received invalid payload: {request}")
+        return _generic_forgot_password_response()
 
-    user = db.query(models.User).filter(models.User.email == email_val).first()
-    # Always return success message to avoid leaking which emails are registered
+    user = _get_user_by_email(db, email_val)
     if not user:
-        return {"message": "If the email exists, an OTP has been sent"}
+        return _generic_forgot_password_response()
 
     try:
-        # Use centralized email service which returns the OTP (or a mocked OTP if creds missing)
-        from app.utils.email_service import send_otp_email
-        from app.auth.models import PasswordReset
+        send_otp_email = _load_send_otp_email()
+        PasswordReset = _load_password_reset_model()
 
         otp = send_otp_email(user.email)
-
-        # Persist OTP so it can be validated server-side (extra safety vs in-memory)
         pr = PasswordReset(email=user.email, otp=str(otp))
         db.add(pr)
         db.commit()
 
-        print(f"✅ Password reset OTP created and email queued for {user.email}")
-        return {"message": "If the email exists, an OTP has been sent"}
+        print(f"Password reset OTP created and email queued for {user.email}")
+        return _generic_forgot_password_response()
+    except Exception as exc:
+        print(f"Forgot-password error: {exc}")
+        return _generic_forgot_password_response()
 
-    except Exception as e:
-        print(f"❌ Forgot-password error: {e}")
-        return {"message": "If the email exists, an OTP has been sent"}
 
 @router.post("/verify-otp")
 def verify_otp_endpoint(request: VerifyOTP, db: Session = Depends(get_db)):
-    """Verify OTP using in-memory storage or persisted PasswordReset entries.
+    verify_otp_logic = _load_verify_otp_logic()
+    PasswordReset = _load_password_reset_model()
 
-    Accepts either plain strings or nested payloads from misbehaving clients.
-    """
-    from app.utils.email_service import verify_otp_logic
-    from app.auth.models import PasswordReset
-
-    email_val = request.email
-    otp_val = request.otp
-    if isinstance(email_val, dict):
-        email_val = email_val.get('email')
-    if isinstance(otp_val, dict):
-        otp_val = otp_val.get('otp')
+    email_val = _extract_nested_value(request.email, "email")
+    otp_val = _extract_nested_value(request.otp, "otp")
 
     if not email_val or not otp_val:
-        raise HTTPException(status_code=400, detail="Invalid OTP")
+        raise HTTPException(status_code=400, detail=INVALID_OTP_DETAIL)
 
-    # First try in-memory verification
     if verify_otp_logic(email_val, otp_val):
-        return {"message": "OTP verified", "valid": True}
+        return OTP_VERIFIED_RESPONSE
 
-    # Fallback to DB check: find most recent unused OTP for this email
-    pr = db.query(PasswordReset).filter(PasswordReset.email == email_val, PasswordReset.is_used == False).order_by(PasswordReset.created_at.desc()).first()
+    pr = _get_latest_unused_password_reset(db, email_val, PasswordReset)
     if pr and pr.otp == otp_val:
-        return {"message": "OTP verified", "valid": True}
+        return OTP_VERIFIED_RESPONSE
 
-    raise HTTPException(status_code=400, detail="Invalid OTP")
+    raise HTTPException(status_code=400, detail=INVALID_OTP_DETAIL)
+
 
 @router.post("/reset-password")
 def reset_password(request: ResetPassword, db: Session = Depends(get_db)):
-    """Reset password if OTP is valid. Marks the PasswordReset row as used."""
-    # Log incoming payload for debugging malformed client requests
     try:
-        print(f"🔁 Reset-password request payload: email={request.email}, otp={request.otp}, new_password={'***' if request.new_password else None}")
+        masked_new_password = "***" if request.new_password else None
+        print(
+            "Reset-password request payload: "
+            f"email={request.email}, otp={request.otp}, new_password={masked_new_password}"
+        )
     except Exception:
-        print(f"🔁 Reset-password request payload parsing failed: {request}")
+        print(f"Reset-password request payload parsing failed: {request}")
 
     if not request.otp:
-        raise HTTPException(status_code=400, detail="OTP is required to reset password")
+        raise HTTPException(status_code=400, detail=OTP_REQUIRED_DETAIL)
 
-    user = db.query(models.User).filter(models.User.email == request.email).first()
+    user = _get_user_by_email(db, request.email)
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail=USER_NOT_FOUND_DETAIL)
 
-    from app.utils.email_service import verify_otp_logic
-    from app.auth.models import PasswordReset
+    verify_otp_logic = _load_verify_otp_logic()
+    PasswordReset = _load_password_reset_model()
     from app.config import settings
-    from datetime import datetime, timedelta
-    import traceback
 
     try:
-        # Verify OTP via in-memory store first
         valid = verify_otp_logic(request.email, request.otp)
 
-        pr = None
         if not valid:
-            pr = db.query(PasswordReset).filter(
-                PasswordReset.email == request.email,
-                PasswordReset.is_used == False
-            ).order_by(PasswordReset.created_at.desc()).first()
-
+            pr = _get_latest_unused_password_reset(db, request.email, PasswordReset)
             if not pr or pr.otp != request.otp:
-                raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+                raise HTTPException(status_code=400, detail=INVALID_OR_EXPIRED_OTP_DETAIL)
 
-            # Check expiry
-            expiry_minutes = getattr(settings, 'OTP_EXPIRY_MINUTES', 15)
+            expiry_minutes = getattr(settings, "OTP_EXPIRY_MINUTES", 15)
             pr_time = pr.created_at
             if pr_time is None:
-                raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+                raise HTTPException(status_code=400, detail=INVALID_OR_EXPIRED_OTP_DETAIL)
 
-            # Make timezone-naive comparison if necessary
+            pr_time = _normalize_utc_naive(pr_time)
             now = datetime.utcnow()
-            if getattr(pr_time, 'tzinfo', None):
-                pr_time = pr_time.replace(tzinfo=None)
-
             if pr_time < (now - timedelta(minutes=expiry_minutes)):
-                raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+                raise HTTPException(status_code=400, detail=INVALID_OR_EXPIRED_OTP_DETAIL)
 
-            # mark as used
             pr.is_used = True
             db.add(pr)
 
-        # All good, set new password and commit
         user.password = hash_password(request.new_password)
         db.commit()
-
         return {"message": "Password reset successfully"}
-
     except HTTPException as http_ex:
-        # Propagate expected HTTP errors
         raise http_ex
-    except Exception as e:
-        print(f"❌ Reset-password error: {e}")
+    except Exception as exc:
+        print(f"Reset-password error: {exc}")
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail="Failed to reset password")
+        raise HTTPException(status_code=500, detail=RESET_FAILED_DETAIL)
 
-# =======================
-# 👤 Profile Route
-# =======================
 
 @router.get("/me")
 def get_current_user_profile(current_user: User = Depends(get_current_user)):
-    """
-    Returns the profile of the currently logged-in user.
-    We reuse the 'get_current_user' dependency defined above.
-    """
     return {
         "id": current_user.id,
-        "name": getattr(current_user, 'full_name', None) or getattr(current_user, 'name', None),
+        "name": getattr(current_user, "full_name", None) or getattr(current_user, "name", None),
         "email": current_user.email,
-        "kyc_status": getattr(current_user, 'kyc_status', 'unverified')
+        "kyc_status": getattr(current_user, "kyc_status", "unverified"),
     }

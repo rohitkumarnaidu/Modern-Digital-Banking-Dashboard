@@ -12,6 +12,7 @@
  */
 
 import axios from "axios";
+
 import { API_ENDPOINTS } from "../constants";
 import { getAccessToken } from "../utils/storage";
 
@@ -19,92 +20,53 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
-// Attach token automatically
-api.interceptors.request.use((config) => {
+const attachAuthHeader = (config) => {
   const token = getAccessToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-});
-
-/* =====================
-   AUTH APIs
-   ===================== */
-
-export const forgotPassword = (data) => {
-  return api.post(API_ENDPOINTS.FORGOT_PASSWORD, data);
 };
 
-export const verifyOtp = (data) => {
-  return api.post(API_ENDPOINTS.VERIFY_OTP, data);
+api.interceptors.request.use(attachAuthHeader);
+
+const request = (method, endpoint, dataOrParams) => {
+  if (method === "get") {
+    return api.get(endpoint, dataOrParams ? { params: dataOrParams } : undefined);
+  }
+  if (method === "delete") {
+    return api.delete(endpoint);
+  }
+  return api[method](endpoint, dataOrParams);
 };
 
-export const resetPassword = (data) => {
-  return api.post(API_ENDPOINTS.RESET_PASSWORD, data);
-};
+const getRequest = (endpoint, params) => request("get", endpoint, params);
+const postRequest = (endpoint, data) => request("post", endpoint, data);
+const patchRequest = (endpoint, data) => request("patch", endpoint, data);
+const deleteRequest = (endpoint) => request("delete", endpoint);
 
-/* =====================
-   ACCOUNT APIs
-   ===================== */
+export const forgotPassword = (data) => postRequest(API_ENDPOINTS.FORGOT_PASSWORD, data);
+export const verifyOtp = (data) => postRequest(API_ENDPOINTS.VERIFY_OTP, data);
+export const resetPassword = (data) => postRequest(API_ENDPOINTS.RESET_PASSWORD, data);
 
-export const changeAccountPin = (data) => {
-  return api.post(API_ENDPOINTS.CHANGE_PIN, data);
-};
+export const changeAccountPin = (data) => postRequest(API_ENDPOINTS.CHANGE_PIN, data);
 
-/* =====================
-   BUDGETS API
-   ===================== */
+export const getBudgets = (month, year) => getRequest(API_ENDPOINTS.BUDGETS, { month, year });
+export const createBudget = (data) => postRequest(API_ENDPOINTS.BUDGETS, data);
+export const updateBudget = (id, data) => patchRequest(`${API_ENDPOINTS.BUDGETS}/${id}`, data);
+export const deleteBudget = (id) => deleteRequest(`${API_ENDPOINTS.BUDGETS}/${id}`);
 
-export const getBudgets = (month, year) => {
-  return api.get(`${API_ENDPOINTS.BUDGETS}?month=${month}&year=${year}`);
-};
+export const getRewards = () => getRequest(API_ENDPOINTS.REWARDS);
 
-export const createBudget = (data) => {
-  return api.post(API_ENDPOINTS.BUDGETS, data);
-};
+export const payBill = (data) => postRequest(API_ENDPOINTS.PAY_BILL, data);
 
-export const updateBudget = (id, data) => {
-  return api.patch(`${API_ENDPOINTS.BUDGETS}/${id}`, data);
-};
-
-export const deleteBudget = (id) => {
-  return api.delete(`${API_ENDPOINTS.BUDGETS}/${id}`);
-};
-
-/* =====================
-   REWARDS APIs
-   ===================== */
-
-export const getRewards = () => {
-  return api.get(API_ENDPOINTS.REWARDS);
-};
-
-/* =====================
-   BILLS API
-   ===================== */
-
-export const payBill = (data) => {
-  return api.post(API_ENDPOINTS.PAY_BILL, data);
-};
-
-/* =====================
-   INSIGHTS APIs
-   ===================== */
-
-export const getInsightsSummary = () => {
-  return api.get(API_ENDPOINTS.INSIGHTS_SUMMARY);
-};
-
-export const getMonthlySpending = (month, year) => {
-  return api.get(`${API_ENDPOINTS.MONTHLY_SPENDING}?month=${month}&year=${year}`);
-};
-
-export const getCategoryBreakdown = (month, year) => {
-  return api.get(`${API_ENDPOINTS.CATEGORY_BREAKDOWN}?month=${month}&year=${year}`);
-};
+export const getInsightsSummary = () => getRequest(API_ENDPOINTS.INSIGHTS_SUMMARY);
+export const getMonthlySpending = (month, year) =>
+  getRequest(API_ENDPOINTS.MONTHLY_SPENDING, { month, year });
+export const getCategoryBreakdown = (month, year) =>
+  getRequest(API_ENDPOINTS.CATEGORY_BREAKDOWN, { month, year });
 
 export const getRecentTransactions = () =>
-  api.get(`${API_ENDPOINTS.TRANSACTIONS}?limit=3`);
+  getRequest(API_ENDPOINTS.TRANSACTIONS, { limit: 3 });
 
 export default api;

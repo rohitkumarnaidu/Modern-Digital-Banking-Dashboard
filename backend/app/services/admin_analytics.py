@@ -1,38 +1,35 @@
-from sqlalchemy.orm import Session
 from sqlalchemy import func
+from sqlalchemy.orm import Session
 
-from app.models.user import User, KYCStatus
-from app.models.transaction import Transaction
 from app.models.reward import Reward
+from app.models.transaction import Transaction
+from app.models.user import KYCStatus, User
+
+
+def _count_users(db: Session):
+    return db.query(func.count(User.id)).scalar()
+
+
+def _count_users_by_kyc_status(db: Session, status: KYCStatus):
+    return db.query(func.count(User.id)).filter(User.kyc_status == status).scalar()
+
+
+def _count_transactions(db: Session):
+    return db.query(func.count(Transaction.id)).scalar()
+
+
+def _count_rewards(db: Session):
+    return db.query(func.count(Reward.id)).scalar()
 
 
 def get_admin_analytics_summary(db: Session):
-    total_users = db.query(func.count(User.id)).scalar()
-
-    kyc_approved = db.query(func.count(User.id)) \
-        .filter(User.kyc_status == KYCStatus.verified) \
-        .scalar()
-
-    kyc_pending = db.query(func.count(User.id)) \
-        .filter(User.kyc_status == KYCStatus.unverified) \
-        .scalar()
-
-    kyc_rejected = db.query(func.count(User.id)) \
-        .filter(User.kyc_status == KYCStatus.rejected) \
-        .scalar()
-
-
-    total_transactions = db.query(func.count(Transaction.id)).scalar()
-
-    rewards_issued = db.query(func.count(Reward.id)).scalar()
-
     return {
-        "totalUsers": total_users,
-        "kycApproved": kyc_approved,
-        "kycPending": kyc_pending,
-        "kycRejected": kyc_rejected,
-        "totalTransactions": total_transactions,
-        "rewardsIssued": rewards_issued,
+        "totalUsers": _count_users(db),
+        "kycApproved": _count_users_by_kyc_status(db, KYCStatus.verified),
+        "kycPending": _count_users_by_kyc_status(db, KYCStatus.unverified),
+        "kycRejected": _count_users_by_kyc_status(db, KYCStatus.rejected),
+        "totalTransactions": _count_transactions(db),
+        "rewardsIssued": _count_rewards(db),
     }
 
 
@@ -53,10 +50,10 @@ def get_top_users_by_activity(db: Session, limit: int = 5):
 
     return [
         {
-            "name": r.name,
-            "transaction_count": r.transaction_count,
-            "total_amount": float(r.total_amount),
-            "kyc_status": r.kyc_status.value,
+            "name": row.name,
+            "transaction_count": row.transaction_count,
+            "total_amount": float(row.total_amount),
+            "kyc_status": row.kyc_status.value,
         }
-        for r in results
+        for row in results
     ]

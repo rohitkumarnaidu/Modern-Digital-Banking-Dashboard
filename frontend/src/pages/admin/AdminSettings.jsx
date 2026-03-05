@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "@/services/api";
+import { API_ENDPOINTS } from "@/constants";
+import { getUser } from "@/utils/storage";
 import { User } from "lucide-react";
 
 const AdminSettings = () => {
@@ -10,7 +12,6 @@ const AdminSettings = () => {
 
   const isMobile = screenWidth < 768;
   const isTablet = screenWidth >= 768 && screenWidth < 1024;
-  const isLaptop = screenWidth >= 1024;
 
   const [passwords, setPasswords] = useState({
     current: "",
@@ -39,10 +40,10 @@ const AdminSettings = () => {
 
   const loadAdminProfile = async () => {
     try {
-      const res = await api.get("/admin/profile");
+      const res = await api.get(API_ENDPOINTS.ADMIN_PROFILE);
       setAdmin(res.data);
     } catch {
-      const localUser = JSON.parse(localStorage.getItem("user")) || {};
+      const localUser = getUser() || {};
       setAdmin({
         name: localUser.name || "",
         email: localUser.email || "",
@@ -56,7 +57,7 @@ const AdminSettings = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await api.put("/admin/profile", {
+      await api.put(API_ENDPOINTS.ADMIN_PROFILE, {
         name: admin.name,
         phone: admin.phone,
       });
@@ -272,7 +273,7 @@ const AdminSettings = () => {
                   }
 
                   try {
-                    await api.put("/admin/change-password", {
+                    await api.put(API_ENDPOINTS.ADMIN_CHANGE_PASSWORD, {
                       current_password: passwords.current,
                       new_password: passwords.new,
                     });
@@ -355,17 +356,20 @@ const Field = ({ label, children }) => (
 );
 
 /* ---------- INPUT STYLE ---------- */
-const style = document.createElement("style");
-style.innerHTML = `
-  .input {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #cbd5f5;
-    font-size: 14px;
-  }
-`;
-document.head.appendChild(style);
+if (typeof document !== "undefined" && !document.getElementById("admin-settings-input-style")) {
+  const style = document.createElement("style");
+  style.id = "admin-settings-input-style";
+  style.innerHTML = `
+    .input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #cbd5f5;
+      font-size: 14px;
+    }
+  `;
+  document.head.appendChild(style);
+}
 
 const PasswordField = ({ label, value, onChange }) => (
   <div style={{ marginBottom: "1rem" }}>

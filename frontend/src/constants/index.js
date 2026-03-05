@@ -66,12 +66,15 @@ export const API_ENDPOINTS = {
   // Auth
   LOGIN: "/auth/login/cookie",
   SIGNUP: "/auth/signup",
+  REGISTER: "/auth/register",
   LOGOUT: "/auth/logout",
   REFRESH: "/auth/refresh/cookie",
   ME: "/auth/me",
   FORGOT_PASSWORD: "/auth/forgot-password",
   VERIFY_OTP: "/auth/verify-otp",
   RESET_PASSWORD: "/auth/reset-password",
+  RESEND_LOGIN_OTP: "/auth/resend-login-otp",
+  RESEND_PIN_OTP: "/auth/resend-pin-otp",
   
   // Accounts
   ACCOUNTS: "/accounts",
@@ -79,6 +82,8 @@ export const API_ENDPOINTS = {
   
   // Transactions
   TRANSACTIONS: "/transactions",
+  TRANSACTIONS_EXPORT: "/transactions/export",
+  TRANSACTIONS_IMPORT: "/transactions/import",
   
   // Transfers
   TRANSFERS: "/transfers",
@@ -92,17 +97,38 @@ export const API_ENDPOINTS = {
   
   // Rewards
   REWARDS: "/rewards",
+  REWARDS_AVAILABLE: "/rewards/available",
   
   // Insights
   INSIGHTS_SUMMARY: "/insights/summary",
   MONTHLY_SPENDING: "/insights/monthly",
   CATEGORY_BREAKDOWN: "/insights/categories",
+  INSIGHTS_DASHBOARD_DAILY: "/insights/dashboard/daily",
+  TRANSACTIONS_RECENT: "/transactions/recent",
   
   // Alerts
   ALERTS: "/alerts",
+  ALERTS_MARK_READ: "/alerts/mark-read",
   
   // Settings
   SETTINGS: "/settings",
+
+  // User
+  USER_ME: "/user/me",
+
+  // Admin
+  ADMIN_DASHBOARD_SUMMARY: "/admin/dashboard/summary",
+  ADMIN_USERS: "/admin/users",
+  ADMIN_PROFILE: "/admin/profile",
+  ADMIN_CHANGE_PASSWORD: "/admin/change-password",
+  ADMIN_TRANSACTIONS: "/admin/transactions",
+  ADMIN_TRANSACTIONS_EXPORT: "/admin/transactions/export",
+  ADMIN_TRANSACTIONS_IMPORT: "/admin/transactions/import",
+  ADMIN_ANALYTICS_SUMMARY: "/admin/analytics/summary",
+  ADMIN_ANALYTICS_TOP_USERS: "/admin/analytics/top-users",
+  ADMIN_ALERTS: "/admin/alerts",
+  ADMIN_LOGS: "/admin/logs",
+  ADMIN_REWARDS: "/admin/rewards",
 };
 
 // ==================== STORAGE KEYS ====================
@@ -111,6 +137,10 @@ export const STORAGE_KEYS = {
   REFRESH_TOKEN: "refresh_token",
   USER: "user",
   IS_LOGGED_IN: "isLoggedIn",
+  RESET_OTP: "resetOtp",
+  OTP_EXPIRY: "otpExpiry",
+  RESET_EMAIL: "resetEmail",
+  MOST_USED_BILLS: "mostUsedBills",
 };
 
 // ==================== USER ROLES ====================

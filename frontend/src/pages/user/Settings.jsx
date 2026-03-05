@@ -13,6 +13,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/services/api";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
 
 
 const Settings = () => {
@@ -43,7 +44,7 @@ const Settings = () => {
   
 
   useEffect(() => {
-    api.get("/settings").then(res => {
+    api.get(API_ENDPOINTS.SETTINGS).then(res => {
       setSettings(res.data);
     });
   }, []);
@@ -51,7 +52,7 @@ const Settings = () => {
 
   const updateSetting = async (key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));
-    await api.put("/settings", {
+    await api.put(API_ENDPOINTS.SETTINGS, {
     [key]: value,
   });
 };
@@ -132,7 +133,7 @@ const Settings = () => {
               title="Change Password"
               desc="Update your account password"
               actionLabel="Change"
-              onClick={() => navigate("/forgot-password")}
+              onClick={() => navigate(ROUTES.FORGOT_PASSWORD)}
             />
 
             <ActionItem isMobile={isMobile}
@@ -140,7 +141,7 @@ const Settings = () => {
               title="Change PIN"
               desc="Update your account PIN"
               actionLabel="Change"
-              onClick={() => navigate("/dashboard/accounts/verify-identity")}
+              onClick={() => navigate(ROUTES.VERIFY_IDENTITY)}
             />
           </SectionCard>
 

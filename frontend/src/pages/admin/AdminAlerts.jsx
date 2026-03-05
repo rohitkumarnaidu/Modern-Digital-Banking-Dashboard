@@ -6,6 +6,7 @@ import {
   Search,
 } from "lucide-react";
 import api from "@/services/api";
+import { API_ENDPOINTS } from "@/constants";
 
 const AdminAlerts = () => {
   const [tab, setTab] = useState("alerts");
@@ -35,7 +36,7 @@ const AdminAlerts = () => {
   const fetchAlerts = async () => {
     try {
       setAlertsLoading(true);
-      const res = await api.get("/admin/alerts", {
+      const res = await api.get(API_ENDPOINTS.ADMIN_ALERTS, {
         params: { type: alertType || undefined },
       });
       setAlerts(res.data.items || []);
@@ -49,7 +50,7 @@ const AdminAlerts = () => {
   const fetchLogs = async () => {
     try {
       setLogsLoading(true);
-      const res = await api.get("/admin/logs", {
+      const res = await api.get(API_ENDPOINTS.ADMIN_LOGS, {
         params: { action: action || undefined },
       });
       setLogs(res.data.items || []);

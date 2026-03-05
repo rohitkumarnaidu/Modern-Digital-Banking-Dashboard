@@ -6,6 +6,8 @@
 
 import { useEffect, useState } from "react";
 import api from "@/services/api";
+import { API_ENDPOINTS } from "@/constants";
+import { getUser } from "@/utils/storage";
 
 import CircleMetric from "@/components/user/dashboard/CircleMetric";
 import CurrencyConverter from "@/components/user/dashboard/CurrencyConverter";
@@ -15,7 +17,7 @@ import QuickActions from "@/components/user/dashboard/QuickActions";
 
 
 const DashboardHome = () => {
-  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const user = getUser() || {};
   const username = user?.name || "User";
 
   const [summary, setSummary] = useState(null);
@@ -23,21 +25,17 @@ const DashboardHome = () => {
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-  const [mounted, setMounted] = useState(false);
 
   const isMobile = screenWidth <= 480;
-  const isTablet = screenWidth > 480 && screenWidth <= 768;
-  const isLaptop = screenWidth > 768 && screenWidth <= 1024;
-  const isDesktop = screenWidth > 1024;
 
 
   useEffect(() => {
     const loadDashboard = async () => {
       try {
         const [summaryRes, insightsRes, txnRes] = await Promise.all([
-          api.get("/insights/summary"),
-          api.get("/insights/dashboard/daily?days=15"),
-          api.get("/transactions/recent"),
+          api.get(API_ENDPOINTS.INSIGHTS_SUMMARY),
+          api.get(`${API_ENDPOINTS.INSIGHTS_DASHBOARD_DAILY}?days=15`),
+          api.get(API_ENDPOINTS.TRANSACTIONS_RECENT),
         ]);
 
         setSummary(summaryRes.data);
@@ -60,7 +58,6 @@ const DashboardHome = () => {
     };
 
     handleResize(); // sync immediately
-    setMounted(true);
 
     window.addEventListener("resize", handleResize);
     window.addEventListener("orientationchange", handleResize);
