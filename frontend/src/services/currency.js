@@ -1,9 +1,30 @@
 import axios from "axios";
 
-const CURRENCY_API_URL = "https://api.frankfurter.app/latest";
-const FROM_CURRENCY = "USD";
-const TO_CURRENCY = "INR";
-const RATE_CACHE_TTL_MS = 5 * 60 * 1000;
+const {
+  VITE_CURRENCY_API_URL,
+  VITE_CURRENCY_FROM,
+  VITE_CURRENCY_TO,
+  VITE_CURRENCY_RATE_CACHE_TTL_MS,
+} = import.meta.env;
+
+const parsedRateTtl = Number(VITE_CURRENCY_RATE_CACHE_TTL_MS);
+
+if (
+  !VITE_CURRENCY_API_URL ||
+  !VITE_CURRENCY_FROM ||
+  !VITE_CURRENCY_TO ||
+  !Number.isFinite(parsedRateTtl) ||
+  parsedRateTtl <= 0
+) {
+  throw new Error(
+    "Invalid currency env configuration. Check VITE_CURRENCY_API_URL, VITE_CURRENCY_FROM, VITE_CURRENCY_TO, and VITE_CURRENCY_RATE_CACHE_TTL_MS."
+  );
+}
+
+const CURRENCY_API_URL = VITE_CURRENCY_API_URL;
+const FROM_CURRENCY = VITE_CURRENCY_FROM;
+const TO_CURRENCY = VITE_CURRENCY_TO;
+const RATE_CACHE_TTL_MS = parsedRateTtl;
 
 let cachedRate = null;
 let cachedRateExpiresAt = 0;
@@ -39,4 +60,3 @@ export const convertUsdToInr = async (amount) => {
 
   return (Number(amount) * rate).toFixed(2);
 };
-

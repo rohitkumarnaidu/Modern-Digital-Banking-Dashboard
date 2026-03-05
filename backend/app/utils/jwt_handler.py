@@ -5,13 +5,13 @@ from jose import JWTError, jwt
 
 from app.config import settings
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_DAYS = 7
-ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+REFRESH_TOKEN_EXPIRE_DAYS = settings.REFRESH_TOKEN_EXPIRE_DAYS
+ALGORITHM = settings.JWT_ALGORITHM
 
 # Keep existing key semantics for backward compatibility.
 JWT_SECRET_KEY = settings.JWT_SECRET_KEY
-JWT_REFRESH_SECRET_KEY = "REDACTED_REFRESH_SECRET"
+JWT_REFRESH_SECRET_KEY = settings.JWT_REFRESH_SECRET_KEY
 
 
 def _now_utc() -> datetime:
