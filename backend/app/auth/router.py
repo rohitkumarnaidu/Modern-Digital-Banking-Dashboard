@@ -1,4 +1,5 @@
 import logging
+import os
 import traceback
 from datetime import datetime
 
@@ -21,10 +22,12 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 logger = logging.getLogger("uvicorn.error")
 
 REFRESH_COOKIE_NAME = "refresh_token"
+COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() == "true"
+COOKIE_SAMESITE = os.getenv("COOKIE_SAMESITE", "none" if COOKIE_SECURE else "lax")
 REFRESH_COOKIE_PARAMS = {
     "httponly": True,
-    "samesite": "lax",
-    "secure": False,
+    "samesite": COOKIE_SAMESITE,
+    "secure": COOKIE_SECURE,
 }
 MISSING_CREDENTIALS_DETAIL = "Missing credentials"
 INVALID_CREDENTIALS_DETAIL = "Invalid credentials"
