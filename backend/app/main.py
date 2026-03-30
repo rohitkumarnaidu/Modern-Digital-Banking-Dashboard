@@ -23,8 +23,6 @@ Frontend → api.js → FastAPI (main.py) → Router → Service → DB
 
 
 
-import os
-
 from fastapi import FastAPI
 from app.auth.router import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
@@ -50,6 +48,7 @@ from app.routers.admin_analytics import router as admin_analytics_router
 from app.routers.admin_profile import router as admin_profile_router
 
 from app.firebase.firebase import init_firebase
+from app.config import settings
 
 
 
@@ -88,16 +87,11 @@ app.include_router(admin_profile_router)
 def root():
     return {"message": "Banking API Running"}
 
-DEFAULT_CORS_ORIGINS = [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "https://aureus-banking.vercel.app",
-    "https://modern-digital-banking-dashboard-8q5y9g9iz.vercel.app",
-    "https://modern-digital-banking-dashboard-tawny.vercel.app",
+origins = [
+  origin.strip()
+  for origin in settings.CORS_ALLOWED_ORIGINS.split(",")
+  if origin.strip()
 ]
-
-cors_env = os.getenv("CORS_ALLOWED_ORIGINS", "")
-origins = [origin.strip() for origin in cors_env.split(",") if origin.strip()] or DEFAULT_CORS_ORIGINS
 
 app.add_middleware(
     CORSMiddleware,
