@@ -25,6 +25,7 @@ export default defineConfig({
         target: "https://modern-digital-banking-backend.onrender.com",
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
   },
