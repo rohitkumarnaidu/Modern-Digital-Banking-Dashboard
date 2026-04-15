@@ -9,7 +9,7 @@ const {
 
 const parsedRateTtl = Number(VITE_CURRENCY_RATE_CACHE_TTL_MS);
 
-const isCurrencyConfigValid =
+const isCurrencyConfigMissing =
   !VITE_CURRENCY_API_URL ||
   !VITE_CURRENCY_FROM ||
   !VITE_CURRENCY_TO ||
@@ -26,7 +26,7 @@ let cachedRateExpiresAt = 0;
 let hasLoggedConfigError = false;
 
 const isConfigReady = () => {
-  if (!isCurrencyConfigValid) {
+  if (!isCurrencyConfigMissing) {
     return true;
   }
 
