@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.alerts.service import create_alert
+from app.config import settings
 from app.firebase.firebase import send_push_notification
 from app.models.otp import OTP
 from app.models.user import User
@@ -19,10 +20,10 @@ from app.utils.validators import is_strong_password
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-SECRET_KEY = "replace_this_with_env_secret"  # move to backend/app/config.py or env
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
-REFRESH_TOKEN_EXPIRE_DAYS = 30
+SECRET_KEY = settings.JWT_SECRET_KEY
+ALGORITHM = settings.JWT_ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+REFRESH_TOKEN_EXPIRE_DAYS = settings.REFRESH_TOKEN_EXPIRE_DAYS
 OTP_MIN_VALUE = 100000
 OTP_MAX_VALUE = 999999
 OTP_EMAIL_SUBJECT = "Your OTP Code"
@@ -49,7 +50,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
 
 def create_refresh_token(data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS))
+    expire = datetime.utcnow() + (expires_delta or timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS))\
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 

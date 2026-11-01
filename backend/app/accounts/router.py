@@ -103,6 +103,22 @@ def change_pin(
     if not account:
         raise HTTPException(status_code=404, detail=ACCOUNT_NOT_FOUND_DETAIL)
 
-    account.pin = Hash.bcrypt(data.new_pin)
+    # Step-up verification: Validate existing PIN before updating
+    existing_pin = getattr(account, "pin_hash", None) or getattr(account, "pin", None)
+    if existing_pin:
+        if not data.current_pin:
+            raise HTTPException(
+                status_code=400,
+                detail="Current PIN is required to change transaction PIN",
+            )
+        if not Hash.verify(existing_pin, data.current_pin):
+            raise HTTPException(status_code=401, detail="Invalid current PIN")
+
+    new_pin_hash = Hash.bcrypt(data.new_pin)
+    if hasattr(account, "pin_hash"):
+        account.pin_hash = new_pin_hash
+    if hasattr(account, "pin"):
+        account.pin = new_pin_hash
+
     db.commit()
     return {"message": "PIN updated successfully"}
