@@ -18,8 +18,7 @@ Why Needed:
 - Prevents invalid data from frontend
 """
 
-
-
+from typing import Optional
 from pydantic import BaseModel, Field
 from decimal import Decimal
 
@@ -53,7 +52,7 @@ class AccountDelete(BaseModel):
     pin: str = Field(..., min_length=4, max_length=4)
 
 
-
 class ChangePinSchema(BaseModel):
     account_id: int
     new_pin: str
+    current_pin: Optional[str] = None
